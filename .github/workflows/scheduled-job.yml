@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
-    
-
-env:
-  STATSIG_API_KEY: ${{ secrets.STATSIG_API_KEY }}
 
 jobs:
   get-project-data:
@@ -22,9 +18,6 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - name: Check env var
-        run: echo '$STATSIG_API_KEY'
-
       - name: Checkout
         uses: actions/checkout@v3
 
@@ -41,7 +34,7 @@ jobs:
         id: data
         uses: ./
         with:
-          sdk-key: '$STATSIG_API_KEY'
+          sdk-key: ${{ secrets.STATSIG_API_KEY }}
 
       - name: Print Project Data
         run: |
