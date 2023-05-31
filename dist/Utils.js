@@ -4,7 +4,6 @@ const core = require("@actions/core");
 class Utils {
     static getKey() {
         const sdkKey = this.parseInputString("sdk-key", true);
-        console.log(sdkKey);
         core.setSecret(sdkKey);
         return sdkKey;
     }
