@@ -37,7 +37,7 @@ jobs:
 
       - name: Get Project Data
         id: data
-        uses: ./action.yml
+        uses: statsig-io/github-code-references
         with:
           sdk-key: ${{ env.STATSIG_API_KEY }}
 
