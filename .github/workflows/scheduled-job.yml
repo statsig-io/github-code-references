@@ -30,6 +30,9 @@ jobs:
       - name: NPM Install
         run: npm install
 
+      - name: Dependency Tree
+        run: npm list
+
       - name: Get Project Data
         id: data
         uses: statsig-io/github-code-references@main
