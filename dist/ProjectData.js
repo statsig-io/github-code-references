@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = require("axios");
 const axios_retry_1 = require("axios-retry");
 const Utils_1 = require("./Utils");
+const core = require("@actions/core");
 (0, axios_retry_1.default)(axios_1.default, {
     retries: 3,
 });
@@ -25,8 +26,7 @@ async function getProjectData() {
     }
     const data = projectRes?.data;
     console.log(data);
-    return data;
+    core.setOutput("project-data", data);
 }
 exports.default = getProjectData;
-getProjectData();
 //# sourceMappingURL=ProjectData.js.map
