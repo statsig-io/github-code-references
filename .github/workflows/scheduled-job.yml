@@ -37,7 +37,7 @@ jobs:
         id: data
         uses: ./
         with:
-          sdk-key: ${{ secrets.STATSIG_API_KEY }}
+          sdk-key: 'TEST_KEY'
 
       - name: Print Project Data
         run: |
