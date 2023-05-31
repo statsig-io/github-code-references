@@ -20,6 +20,9 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
+      - name: Check env var
+        run: echo ${{ env.STATSIG_API_KEY }}
+
       - name: Checkout
         uses: actions/checkout@v3
 
