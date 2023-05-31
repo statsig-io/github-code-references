@@ -18,6 +18,9 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
+      - name: Check Secret
+        run: echo ${{ secrets.STATSIG_API_KEY }}
+
       - name: Checkout
         uses: actions/checkout@v3
 
