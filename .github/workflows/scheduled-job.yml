@@ -28,14 +28,7 @@ jobs:
           cache: 'npm'
 
       - name: NPM Install
-        run: npm ci
-
-      - run: npm run build --if-present
-
-      - name: Echoooo
-        run: | 
-          echo Hello World
-          echo ${{ matrix.node-version }}
+        run: npm install
 
       - name: Get Project Data
         id: data
