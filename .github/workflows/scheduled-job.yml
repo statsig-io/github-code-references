@@ -8,7 +8,7 @@ env:
   STATSIG_API_KEY: ${{ secrets.STATSIG_API_KEY }}
 
 jobs:
-  dummy-job:
+  get-project-data:
 
     runs-on: ubuntu-latest
 
@@ -36,5 +36,12 @@ jobs:
           echo ${{ matrix.node-version }}
 
       - name: Get Project Data
-        run: npm start
+        id: data
+        uses: ./action.yml
+        with:
+          sdk-key: ${{ env.STATSIG_API_KEY }}
+
+      - name: Print Project Data
+        run: |
+          echo ${{ steps.data.outputs.project-data }}
 

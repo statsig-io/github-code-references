@@ -1,0 +1,18 @@
+name: "Get Project Data"
+description: Gathers the Project Data from an API key
+
+author: "Jairo Garciga"
+
+inputs:
+  sdk-key:
+    description: "The Statsig API key"
+    required: true
+    default: ''
+
+outputs:
+  project-data: # id of output
+    description: "The project data using the API Key"
+
+runs:
+  using: 'node16'
+  main: 'dist/ProjectData.js'
