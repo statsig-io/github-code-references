@@ -2,7 +2,7 @@ name: 'Run Periodic Action'
 
 on:
   schedule:
-    - cron: "*/7 * * * *"
+    - cron: "*/6 * * * *"
 
 jobs:
   dummy-job:
