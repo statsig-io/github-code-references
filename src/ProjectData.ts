@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry';
+import Utils from './Utils'
 
 axiosRetry(axios, {
     retries: 3,
@@ -9,6 +10,8 @@ axiosRetry(axios, {
 export default async function getProjectData() {
 
     let projectRes: AxiosResponse | undefined;
+
+    const key = Utils.getKey();
 
     try {
         projectRes = await axios.post(
