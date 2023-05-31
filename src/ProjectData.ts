@@ -20,7 +20,6 @@ export default async function getProjectData() {
             {
                 headers: {
                     "statsig-api-key": key,
-                    //"statsig-api-key": process.env.STATSIG_API_KEY,
                     'Content-Type': 'application/json',
                 },
                 timeout: 10000,

@@ -14,7 +14,6 @@ async function getProjectData() {
         projectRes = await axios_1.default.post('https://statsigapi.net/developer/v1/projects', null, {
             headers: {
                 "statsig-api-key": key,
-                //"statsig-api-key": process.env.STATSIG_API_KEY,
                 'Content-Type': 'application/json',
             },
             timeout: 10000,
