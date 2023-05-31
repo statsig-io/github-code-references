@@ -31,3 +31,5 @@ export default async function getProjectData() {
     const data = projectRes?.data;
     return data;
 }
+
+getProjectData();
