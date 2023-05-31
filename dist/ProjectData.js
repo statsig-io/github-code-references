@@ -29,4 +29,5 @@ async function getProjectData() {
     core.setOutput("project-data", data);
 }
 exports.default = getProjectData;
+getProjectData();
 //# sourceMappingURL=ProjectData.js.map

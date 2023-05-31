@@ -35,3 +35,5 @@ export default async function getProjectData() {
     console.log(data)
     core.setOutput("project-data", data);
 }
+
+getProjectData();
