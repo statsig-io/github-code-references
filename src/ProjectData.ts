@@ -1,6 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry';
 import Utils from './Utils'
+import * as core from "@actions/core";
 
 axiosRetry(axios, {
     retries: 3,
@@ -32,7 +33,5 @@ export default async function getProjectData() {
 
     const data = projectRes?.data;
     console.log(data)
-    return data;
+    core.setOutput("project-data", data);
 }
-
-getProjectData();
