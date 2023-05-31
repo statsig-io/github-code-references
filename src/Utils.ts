@@ -7,6 +7,7 @@ export type Inputs = {
 export default class Utils {
   public static getKey(): string {
     const sdkKey: string = this.parseInputString("sdk-key", true);
+    console.log(sdkKey)
     core.setSecret(sdkKey);
     return sdkKey;
   }

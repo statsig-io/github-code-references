@@ -43,9 +43,7 @@ jobs:
 
       - name: Print Project Data
         run: |
-          echo ${{ steps.data.outputs.dummy }}
           echo ${{ steps.data.outputs.project-data }}
           echo ${{ steps.data.outputs }}
-          echo ${{ steps.data }}
           echo Hello World
 
