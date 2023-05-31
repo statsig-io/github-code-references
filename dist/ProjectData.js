@@ -25,7 +25,7 @@ async function getProjectData() {
         console.log("Error Requesting after 4 attempts");
     }
     const data = projectRes?.data;
-    console.log(data);
+    const cleanedData = Utils_1.default.parseProjects(data);
     core.setOutput("project-data", data);
 }
 exports.default = getProjectData;

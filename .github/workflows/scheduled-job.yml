@@ -35,8 +35,3 @@ jobs:
         uses: ./
         with:
           sdk-key: ${{ secrets.SDK_KEY }}
-
-      - name: Print Project Data
-        run: |
-          echo ${{ steps.data.outputs.project-data }}
-

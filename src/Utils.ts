@@ -19,4 +19,19 @@ export default class Utils {
     }
     return defaultValue;
   }
+
+  public static parseProjects(data: object) {
+    const projectData = data["projects"];
+    let allInfo = [];
+
+    projectData.forEach(function(project) {
+      project["feature_gates"].forEach((function(feature_gate) {
+        allInfo.push({
+          "name": feature_gate["name"],
+          "enabled": feature_gate["enabled"],
+          "defaultValue": feature_gate["defaultValue"],
+        })
+      }))
+    })
+  };
 }
