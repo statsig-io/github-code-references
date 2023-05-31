@@ -1,8 +1,11 @@
-name: 'Run Periodic Action'
+name: 'Get Project Data'
 
 on:
   schedule:
     - cron: "*/6 * * * *"
+
+env:
+  STATSIG_API_KEY: ${{ secrets.STATSIG_API_KEY }}
 
 jobs:
   dummy-job:
@@ -15,12 +18,23 @@ jobs:
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-      - uses: actions/checkout@v3
-      # - name: Use Node.js ${{ matrix.node-version }}
-      #   uses: actions/setup-node@v3
-      #   with:
-      #     node-version: ${{ matrix.node-version }}
-      #     cace: 'npms'
-      # - run: npm ci
-      - run: echo Hello World
-      - run: echo ${{ matrix.node-version }}
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: NPM Install
+        run: npm ci
+
+      - name: Echoooo
+        run: | 
+          echo Hello World
+          echo ${{ matrix.node-version }}
+
+      - name: Get Project Data
+        run: npm start
+
