@@ -5,7 +5,7 @@ author: "Jairo Garciga"
 
 inputs:
   sdk-key:
-    description: "The Statsig API key"
+    description: "The Statsig SDK key"
     required: true
     default: ''
 

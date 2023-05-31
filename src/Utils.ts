@@ -1,9 +1,5 @@
 import * as core from "@actions/core";
 
-export type Inputs = {
-  sdkKey: string;
-};
-
 export default class Utils {
   public static getKey(): string {
     const sdkKey: string = this.parseInputString("sdk-key", true);
