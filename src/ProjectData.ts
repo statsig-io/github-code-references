@@ -33,6 +33,7 @@ export default async function getProjectData() {
 
     const data = projectRes?.data;
     const cleanedData = Utils.parseProjects(data);
+    console.log(cleanedData)
 
     core.setOutput("project-data", data);
 }

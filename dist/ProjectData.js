@@ -26,6 +26,7 @@ async function getProjectData() {
     }
     const data = projectRes?.data;
     const cleanedData = Utils_1.default.parseProjects(data);
+    console.log(cleanedData);
     core.setOutput("project-data", data);
 }
 exports.default = getProjectData;
