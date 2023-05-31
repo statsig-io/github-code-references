@@ -3,6 +3,8 @@ name: 'Get Project Data'
 on:
   schedule:
     - cron: "*/5 * * * *"
+  pull_request:
+    branches: [main]
 
 env:
   STATSIG_API_KEY: ${{ secrets.STATSIG_API_KEY }}
