@@ -28,6 +28,7 @@ class Utils {
                 });
             }));
         });
+        return allInfo;
     }
     ;
 }

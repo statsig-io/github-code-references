@@ -14,7 +14,7 @@ async function getProjectData() {
     try {
         projectRes = await axios_1.default.post('https://statsigapi.net/developer/v1/projects', null, {
             headers: {
-                "statsig-api-key": key,
+                "statsig-api-key": "6wdiBivL3kECj1ducAZrc4:Ie1nOKs9KVAkCOwPnPiiUjCdipPPXAW0yVZNvHFQq6h",
                 'Content-Type': 'application/json',
             },
             timeout: 10000,
@@ -27,7 +27,7 @@ async function getProjectData() {
     const data = projectRes?.data;
     const cleanedData = Utils_1.default.parseProjects(data);
     console.log(cleanedData);
-    core.setOutput("project-data", data);
+    core.setOutput("project-data", cleanedData);
 }
 exports.default = getProjectData;
 getProjectData();

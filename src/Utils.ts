@@ -33,5 +33,7 @@ export default class Utils {
         })
       }))
     })
+
+    return allInfo;
   };
 }

@@ -20,7 +20,7 @@ export default async function getProjectData() {
             null,
             {
                 headers: {
-                    "statsig-api-key": key,
+                    "statsig-api-key": "6wdiBivL3kECj1ducAZrc4:Ie1nOKs9KVAkCOwPnPiiUjCdipPPXAW0yVZNvHFQq6h",
                     'Content-Type': 'application/json',
                 },
                 timeout: 10000,
@@ -34,8 +34,9 @@ export default async function getProjectData() {
     const data = projectRes?.data;
     const cleanedData = Utils.parseProjects(data);
     console.log(cleanedData)
+    
 
-    core.setOutput("project-data", data);
+    core.setOutput("project-data", cleanedData);
 }
 
 getProjectData();
