@@ -17,6 +17,9 @@ class Utils {
         return defaultValue;
     }
     static parseProjects(data) {
+        if (!data) {
+            return [];
+        }
         const projectData = data["projects"];
         let allInfo = [];
         projectData.forEach(function (project) {

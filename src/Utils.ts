@@ -21,6 +21,11 @@ export default class Utils {
   }
 
   public static parseProjects(data: object) {
+
+    if (!data) {
+      return [];
+    }
+    
     const projectData = data["projects"];
     let allInfo = [];
 
