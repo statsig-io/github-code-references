@@ -26,7 +26,10 @@ async function getProjectData() {
     }
     const data = projectRes?.data;
     const cleanedData = Utils_1.default.parseProjects(data);
-    console.log(cleanedData);
+    // Print out each item which consists of feature_gate name, enabled/disabled, default val
+    cleanedData.forEach(function (item) {
+        console.log(`name: ${item.name}, enabled: ${item.enabled}, defaultVal: ${item.defaultValue}`);
+    });
     core.setOutput("project-data", cleanedData);
 }
 exports.default = getProjectData;
