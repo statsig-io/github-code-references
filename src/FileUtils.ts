@@ -2,7 +2,8 @@ import * as fs from 'fs';
 
 export default async function getFiles() {
 
-    const directory = process.env.GITHUB_WORKSPACE;
+    // const directory = process.env.GITHUB_WORKSPACE;
+    const directory = '/Users/jairogarciga/Github-Code-References/github-code-references/'
     console.log(directory)
 
     let fileList = [];
@@ -13,14 +14,15 @@ export default async function getFiles() {
 
         while (queue) {
             console.log('Queue:', queue);
-            let currFile = queue.pop();
+            let currFileDir = queue.pop();
 
-            if (fs.lstatSync(currFile).isDirectory()) { // Get all sub-directories
-                fs.readdirSync(currFile).forEach(file => {
-                    queue.push(file);
+            if (fs.lstatSync(currFileDir).isDirectory()) { // Get all sub-directories
+                fs.readdirSync(currFileDir).forEach(subFileDir => {
+                    console.log(subFileDir);
+                    queue.push(`${currFileDir}/${subFileDir}`);
                 })
             } else { // Scan each file, for now just print file name
-                console.log(currFile);
+                console.log(currFileDir);
             }
         }
     };
