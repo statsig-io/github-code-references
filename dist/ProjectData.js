@@ -24,6 +24,8 @@ async function getProjectData() {
     }
     catch (e) {
         projectRes = e?.response;
+        console.log(e);
+        console.log(projectRes);
         console.log("Error Requesting after 4 attempts");
     }
     const data = projectRes?.data;

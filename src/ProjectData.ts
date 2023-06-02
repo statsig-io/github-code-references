@@ -31,6 +31,8 @@ export default async function getProjectData() {
         )
     } catch (e: unknown) {
         projectRes = (e as AxiosError)?.response;
+        console.log(e)
+        console.log(projectRes)
         console.log("Error Requesting after 4 attempts")
     }
 
