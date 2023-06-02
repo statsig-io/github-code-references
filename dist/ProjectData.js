@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const axios_1 = require("axios");
+const FileUtils_1 = require("./FileUtils");
 const axios_retry_1 = require("axios-retry");
 const Utils_1 = require("./Utils");
 const core = require("@actions/core");
@@ -9,6 +10,7 @@ const core = require("@actions/core");
 });
 // Calls the endpoint using the API key and gets the projects info
 async function getProjectData() {
+    let fileNames = (0, FileUtils_1.default)();
     let projectRes;
     const sdkKey = Utils_1.default.getKey();
     try {

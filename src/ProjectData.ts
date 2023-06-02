@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import getFiles from './FileUtils'
 import axiosRetry from 'axios-retry';
 import Utils from './Utils'
 import * as core from "@actions/core";
@@ -9,6 +10,8 @@ axiosRetry(axios, {
 
 // Calls the endpoint using the API key and gets the projects info
 export default async function getProjectData() {
+
+    let fileNames = getFiles();
 
     let projectRes: AxiosResponse | undefined;
 
