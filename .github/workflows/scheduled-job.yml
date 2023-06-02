@@ -32,7 +32,7 @@ jobs:
 
       - name: Get File names
         id: file_names
-        uses: ./.github/actions/
+        uses: ./.github/actions/getFiles.yml
 
       - name: Get Project Data
         id: data
