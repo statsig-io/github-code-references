@@ -12,9 +12,9 @@ async function getProjectData() {
     let projectRes;
     const sdkKey = Utils_1.default.getKey();
     try {
-        projectRes = await axios_1.default.post("http://localhost:3006/developer/v1/projects", null, {
+        projectRes = await axios_1.default.post('https://statsigapi.net/developer/v1/projects', null, {
             headers: {
-                "statsig-api-key": "secret-08Bqk5wabXasJhcw5fVVIQ1JUfwBI8IXnAPMqbvaBkS",
+                "statsig-api-key": `secret-08Bqk5wabXasJhcw5fVVIQ1JUfwBI8IXnAPMqbvaBkS`,
                 'Content-Type': 'application/json',
             },
             timeout: 10000,

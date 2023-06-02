@@ -3,11 +3,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const core = require("@actions/core");
 class Utils {
     static getKey() {
-        const sdkKey = this.parseInputString("sdk-key", true);
+        const sdkKey = this.parseInputKey("sdk-key", true);
         core.setSecret(sdkKey);
         return sdkKey;
     }
-    static parseInputString(key, required = false, defaultValue = "") {
+    // Parses the input for the action.yml file
+    static parseInputKey(key, required = false, defaultValue = "") {
         try {
             return core.getInput(key, { required: required });
         }
@@ -16,6 +17,7 @@ class Utils {
         }
         return defaultValue;
     }
+    // Parses through the project input data and outputs all feature gates
     static parseProjects(data) {
         if (!data) {
             return [];
