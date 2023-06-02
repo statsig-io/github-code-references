@@ -23,7 +23,7 @@ export default async function getProjectData() {
             null,
             {
                 headers: {
-                    "statsig-api-key": `secret-08Bqk5wabXasJhcw5fVVIQ1JUfwBI8IXnAPMqbvaBkS`, // sdkKey,
+                    "statsig-api-key": `6wdiBivL3kECj1ducAZrc4:Ie1nOKs9KVAkCOwPnPiiUjCdipPPXAW0yVZNvHFQq6h`, // sdkKey,
                     'Content-Type': 'application/json',
                 },
                 timeout: 10000,
