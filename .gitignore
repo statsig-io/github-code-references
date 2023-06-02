@@ -1,2 +1,4 @@
 # Ignore all of node_modules
 node_modules
+
+*.code-workspace

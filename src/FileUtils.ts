@@ -1,5 +1,4 @@
 import * as fs from 'fs';
-import * as os from 'os';
 
 export default async function getFiles() {
 
@@ -7,9 +6,25 @@ export default async function getFiles() {
     console.log(directory)
 
     let fileList = [];
-    fs.readdirSync(directory).forEach(file => {
-        console.log(file);
-        fileList.push(file)
-    })
+
+
+    function scanFiles(dir) { // BFS code to find all gate references
+        let queue = [dir]; // queue of directories
+
+        while (queue) {
+            console.log('Queue:', queue);
+            let currFile = queue.pop();
+
+            if (fs.lstatSync(currFile).isDirectory()) { // Get all sub-directories
+                fs.readdirSync(currFile).forEach(file => {
+                    queue.push(file);
+                })
+            } else { // Scan each file, for now just print file name
+                console.log(currFile);
+            }
+        }
+    };
+
+    scanFiles(directory);
 
 }
