@@ -26,7 +26,7 @@ export default async function getProjectData() {
                     "statsig-api-key": `6wdiBivL3kECj1ducAZrc4:Ie1nOKs9KVAkCOwPnPiiUjCdipPPXAW0yVZNvHFQq6h`, // sdkKey,
                     'Content-Type': 'application/json',
                 },
-                timeout: 10000,
+                timeout: 50000,
             }
         )
     } catch (e: unknown) {
