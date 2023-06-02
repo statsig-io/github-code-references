@@ -30,6 +30,10 @@ jobs:
       - name: NPM Install
         run: npm install
 
+      - name: Get File names
+        id: file_names
+        uses: ./.github/actions/
+
       - name: Get Project Data
         id: data
         uses: ./

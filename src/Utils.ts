@@ -2,12 +2,13 @@ import * as core from "@actions/core";
 
 export default class Utils {
   public static getKey(): string {
-    const sdkKey: string = this.parseInputString("sdk-key", true);
+    const sdkKey: string = this.parseInputKey("sdk-key", true);
     core.setSecret(sdkKey);
     return sdkKey;
   }
 
-  private static parseInputString(
+  // Parses the input for the action.yml file
+  private static parseInputKey(
     key: string,
     required: boolean = false,
     defaultValue: string = ""
@@ -20,6 +21,7 @@ export default class Utils {
     return defaultValue;
   }
 
+  // Parses through the project input data and outputs all feature gates
   public static parseProjects(data: object) {
 
     if (!data) {
@@ -41,4 +43,7 @@ export default class Utils {
 
     return allInfo;
   };
+
+
+
 }

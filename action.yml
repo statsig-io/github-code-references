@@ -1,4 +1,4 @@
-name: "Get Project Data"
+name: "Get Project Gates"
 description: Gathers the Project Data from an API key
 
 author: "Jairo Garciga"
