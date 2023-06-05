@@ -41,6 +41,7 @@ export default async function getProjectData() {
             null,
             {
                 headers: {
+                    // secret-08Bqk5wabXasJhcw5fVVIQ1JUfwBI8IXnAPMqbvaBkS
                     "statsig-api-key": `6wdiBivL3kECj1ducAZrc4:Ie1nOKs9KVAkCOwPnPiiUjCdipPPXAW0yVZNvHFQq6h`, // sdkKey,
                     'Content-Type': 'application/json',
                 },
@@ -50,7 +51,7 @@ export default async function getProjectData() {
     } catch (e: unknown) {
         projectRes = (e as AxiosError)?.response;
         console.log();
-        throw new Error(`Error Requesting after ${retries} attempts`)
+        throw Error(`Error Requesting after ${retries} attempts`);
     }
 
     const data = projectRes?.data;
@@ -61,8 +62,15 @@ export default async function getProjectData() {
         let updatedGates = [];
         file.gates.forEach(function(gate) { // gate{ line: ..., gateName: ...}
             // Get the respective gate from project data
-            let projectGate = cleanedData.get(gate.gateName)
+            console.log(gate);
+            let projectGate = {};
 
+            if (!cleanedData.has(gate.gateName)) {
+                throw Error(`Gate ${gate.gateName} could not be found`)
+            }
+                
+            projectGate = cleanedData.get(gate.gateName)
+        
             gate = {
                 'line': gate.line,
                 'gateName': gate.gateName,

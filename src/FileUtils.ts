@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 
 const ignoreList = new Set<string>(['.git', 'node_modules', 'README.md', 
-    'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json']);
+    'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
 const allowedExtensions = new Set<string>(['ts', 'py'])
 const extensionToRegexMap = new Map<string, string>([
         ["ts", `checkGate\(.*, ?['"]?(?<gateName>.*)['"]\)`],
-        ["py", `check_gate\(.*, ?['"]?(?<gateName>.*)['"]\)`],
+        ["py", `check_gate\(.*, ['"]?(?<gateName>.*)['"]\)`],
     ]);
 
 

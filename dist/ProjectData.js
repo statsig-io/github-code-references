@@ -32,6 +32,7 @@ async function getProjectData() {
     try {
         projectRes = await axios_1.default.post('https://statsigapi.net/developer/v1/projects', null, {
             headers: {
+                // secret-08Bqk5wabXasJhcw5fVVIQ1JUfwBI8IXnAPMqbvaBkS
                 "statsig-api-key": `6wdiBivL3kECj1ducAZrc4:Ie1nOKs9KVAkCOwPnPiiUjCdipPPXAW0yVZNvHFQq6h`,
                 'Content-Type': 'application/json',
             },
@@ -41,7 +42,7 @@ async function getProjectData() {
     catch (e) {
         projectRes = e?.response;
         console.log();
-        throw new Error(`Error Requesting after ${retries} attempts`);
+        throw Error(`Error Requesting after ${retries} attempts`);
     }
     const data = projectRes?.data;
     const cleanedData = Utils_1.default.parseProjects(data); // Map of all the gates from the project
@@ -50,7 +51,12 @@ async function getProjectData() {
         let updatedGates = [];
         file.gates.forEach(function (gate) {
             // Get the respective gate from project data
-            let projectGate = cleanedData.get(gate.gateName);
+            console.log(gate);
+            let projectGate = {};
+            if (!cleanedData.has(gate.gateName)) {
+                throw Error(`Gate ${gate.gateName} could not be found`);
+            }
+            projectGate = cleanedData.get(gate.gateName);
             gate = {
                 'line': gate.line,
                 'gateName': gate.gateName,

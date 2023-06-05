@@ -3,11 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchFile = void 0;
 const fs = require("fs");
 const ignoreList = new Set(['.git', 'node_modules', 'README.md',
-    'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json']);
+    'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
 const allowedExtensions = new Set(['ts', 'py']);
 const extensionToRegexMap = new Map([
     ["ts", `checkGate\(.*, ?['"]?(?<gateName>.*)['"]\)`],
-    ["py", `check_gate\(.*, ?['"]?(?<gateName>.*)['"]\)`],
+    ["py", `check_gate\(.*, ['"]?(?<gateName>.*)['"]\)`],
 ]);
 function getFiles() {
     const directory = process.env.GITHUB_WORKSPACE;
