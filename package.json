@@ -3,7 +3,8 @@
     "@actions/core": "^1.10.0",
     "axios": "^1.4.0",
     "axios-retry": "^3.5.0",
-    "process": "^0.11.10"
+    "process": "^0.11.10",
+    "statsig-node": "^5.7.0"
   },
   "devDependencies": {
     "@types/node": "^20.2.5",
