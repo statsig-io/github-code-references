@@ -9,8 +9,8 @@ const extensionToRegexMap = new Map([
     ["ts", `checkGate\(.*, ['"]?(?<gateName>.*)['"]\)`]
 ]);
 function getFiles() {
-    // const directory = process.env.GITHUB_WORKSPACE;
-    const directory = '/Users/jairogarciga/Github-Code-References/github-code-references';
+    const directory = process.env.GITHUB_WORKSPACE;
+    // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references'
     const fileList = scanFiles(directory);
     return fileList;
 }
