@@ -8,7 +8,6 @@ const extensionToRegexMap = new Map<string, string>([
         ["py", `check_gate\(.*, ['"]?(?<gateName>.*)['"]\)`],
     ]);
 
-
 export default function getFiles(): Promise<string[]> {
 
     let directory = ""

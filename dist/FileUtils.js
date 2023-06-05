@@ -11,8 +11,8 @@ const extensionToRegexMap = new Map([
 ]);
 function getFiles() {
     let directory = "";
-    // directory = process.env.GITHUB_WORKSPACE;
-    directory = '/Users/jairogarciga/Github-Code-References/github-code-references';
+    directory = process.env.GITHUB_WORKSPACE;
+    // directory = '/Users/jairogarciga/Github-Code-References/github-code-references' 
     const fileList = scanFiles(directory);
     return fileList;
 }
