@@ -20,22 +20,33 @@ class Utils {
     // Parses through the project input data and outputs all feature gates
     static parseProjects(data) {
         if (!data) {
-            return [];
+            return null;
         }
-        const projectData = data["projects"];
-        let allInfo = [];
+        let projectData = data["projects"];
+        let allInfo = new Map;
+        // Loop over every project in data
         projectData.forEach(function (project) {
-            project["feature_gates"].forEach((function (feature_gate) {
-                allInfo.push({
-                    "name": feature_gate["name"],
+            // Loop over every feature gate within each project
+            project["feature_gates"].forEach(function (feature_gate) {
+                allInfo.set(feature_gate["name"], {
                     "enabled": feature_gate["enabled"],
                     "defaultValue": feature_gate["defaultValue"],
                 });
-            }));
+            });
         });
         return allInfo;
     }
     ;
+    static outputFinalGateData(allGateData) {
+        allGateData.forEach(function (gateData) {
+            console.log(gateData.fileName);
+            console.log('Location:', gateData.fileDir);
+            gateData.gates.forEach(function (gate) {
+                console.log(`\t Gate: ${gate.gateName}`);
+                console.log(`\t\tline: ${gate.line} \n\t\tenabled: ${gate.enabled} \n\t\tdefault: ${gate.defaultValue}\n`);
+            });
+        });
+    }
 }
 exports.default = Utils;
 //# sourceMappingURL=Utils.js.map

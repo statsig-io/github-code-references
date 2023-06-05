@@ -1,4 +1,5 @@
 import * as core from "@actions/core";
+import GateData from "./GateData";
 
 export default class Utils {
   public static getKey(): string {
@@ -22,28 +23,42 @@ export default class Utils {
   }
 
   // Parses through the project input data and outputs all feature gates
-  public static parseProjects(data: object) {
+  public static parseProjects(data: object): Map<string, {}> | null{
 
     if (!data) {
-      return [];
+      return null;
     }
     
-    const projectData = data["projects"];
-    let allInfo = [];
+    let projectData = data["projects"];
+    let allInfo = new Map<string, {}>;
 
+    // Loop over every project in data
     projectData.forEach(function(project) {
-      project["feature_gates"].forEach((function(feature_gate) {
-        allInfo.push({
-          "name": feature_gate["name"],
-          "enabled": feature_gate["enabled"],
-          "defaultValue": feature_gate["defaultValue"],
-        })
-      }))
+      // Loop over every feature gate within each project
+      project["feature_gates"].forEach(function(feature_gate) {
+        allInfo.set(feature_gate["name"],
+          {
+            "enabled": feature_gate["enabled"],
+            "defaultValue": feature_gate["defaultValue"],
+          }
+        )
+      })
     })
 
     return allInfo;
   };
 
+  public static outputFinalGateData(allGateData: GateData[]) {
+    
+    allGateData.forEach(function(gateData) {
+      console.log(gateData.fileName)
+      console.log('Location:', gateData.fileDir)
+      gateData.gates.forEach(function(gate) {
+        console.log(`\t Gate: ${gate.gateName}`)
+        console.log(`\t\tline: ${gate.line} \n\t\tenabled: ${gate.enabled} \n\t\tdefault: ${gate.defaultValue}\n`)
+      });
+    });
 
+  }
 
 }

@@ -1,32 +1,82 @@
 import * as fs from 'fs';
 
-export default async function getFiles() {
+const ignoreList = new Set<string>(['.git', 'node_modules', 'README.md', 
+    'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
+const allowedExtensiosn = new Set<string>(['ts'])
+const extensionToRegexMap = new Map<string, string>([
+        ["ts", `checkGate\(.*, ['"]?(?<gateName>.*)['"]\)`]
+    ]);
+
+
+export default function getFiles(): Promise<string[]> {
 
     // const directory = process.env.GITHUB_WORKSPACE;
-    const directory = '/Users/jairogarciga/Github-Code-References/github-code-references/'
-    console.log(directory)
+    const directory = '/Users/jairogarciga/Github-Code-References/github-code-references'
 
-    let fileList = [];
+    const fileList = scanFiles(directory);
+    return fileList;
+}
 
+// BFS search through all files
+async function scanFiles(dir: string): Promise<string[]> {
+    let fileList: string[] = [];
+    let queue: string[] = [dir]; // queue of directories
 
-    function scanFiles(dir) { // BFS code to find all gate references
-        let queue = [dir]; // queue of directories
+    while (queue.length > 0) {
+        let currFileDir = queue.pop();
 
-        while (queue) {
-            console.log('Queue:', queue);
-            let currFileDir = queue.pop();
+        if (fs.lstatSync(currFileDir).isDirectory()) { // Get all sub-directories
+            fs.readdirSync(currFileDir).forEach(subFile => {
 
-            if (fs.lstatSync(currFileDir).isDirectory()) { // Get all sub-directories
-                fs.readdirSync(currFileDir).forEach(subFileDir => {
-                    console.log(subFileDir);
-                    queue.push(`${currFileDir}/${subFileDir}`);
-                })
-            } else { // Scan each file, for now just print file name
-                console.log(currFileDir);
+                // Certain directories should be ignored, like node_modules
+                if (!ignoreList.has(subFile)) {
+                    queue.push(`${currFileDir}/${subFile}`);
+                }
+
+            })
+        } else {
+            fileList.push(currFileDir);
+        }
+    }
+
+    return fileList;
+};
+
+export function searchFile(fileDir: string) {
+    // Assume in typescript only for now
+    
+    let gatesFound = []
+    const regex = '';
+
+    // Split current directory based on .
+    const splitDir = fileDir.split('.');
+    const extension = splitDir.at(-1);
+
+    if (allowedExtensiosn.has(extension)) {
+        
+        // Read within the file for the target string
+        const fileData = fs.readFileSync(fileDir, 'utf-8')
+        const lineDividedData = fileData.split('\n')
+
+        // Different languages, clients, servers have differentw ways of creating gates
+        // Different regex target each instead of using one big regex blob
+        const regex = new RegExp(extensionToRegexMap.get(extension))
+
+        // Loop over each line, regex search for the 
+        for (let line = 0; line < lineDividedData.length; line++) {
+            const currLine = lineDividedData[line];
+            const found = currLine.match(regex)
+
+            if (found) {
+                const gateName = found.groups.gateName
+
+                gatesFound.push({
+                    'line': line.toString(), 
+                    'gateName': gateName
+                });
             }
         }
-    };
+    }
 
-    scanFiles(directory);
-
+    return gatesFound;
 }
