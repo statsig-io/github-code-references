@@ -1,8 +1,6 @@
 name: 'Get Project Data'
 
 on:
-  schedule:
-    - cron: "*/30 * * * *"
   pull_request:
     branches: [main]
   workflow_dispatch:
