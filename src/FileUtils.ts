@@ -11,8 +11,9 @@ const extensionToRegexMap = new Map<string, string>([
 
 export default function getFiles(): Promise<string[]> {
 
-    const directory = process.env.GITHUB_WORKSPACE;
-    // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references'
+    let directory = ""
+    directory = process.env.GITHUB_WORKSPACE;
+    // directory = '/Users/jairogarciga/Github-Code-References/github-code-references' 
 
     const fileList = scanFiles(directory);
     return fileList;
@@ -33,13 +34,11 @@ async function scanFiles(dir: string): Promise<string[]> {
                 if (!ignoreList.has(subFile)) {
                     queue.push(`${currFileDir}/${subFile}`);
                 }
-
             })
         } else {
             fileList.push(currFileDir);
         }
     }
-
     return fileList;
 };
 

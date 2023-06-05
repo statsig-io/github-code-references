@@ -3,6 +3,7 @@ interface Gates {
     gateName: string;
     enabled: boolean;
     defaultValue: string;
+    checksInPast30Days: string;
 }
 
 export default class GateData {

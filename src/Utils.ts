@@ -40,25 +40,33 @@ export default class Utils {
           {
             "enabled": feature_gate["enabled"],
             "defaultValue": feature_gate["defaultValue"],
+            "checksInPast30Days": feature_gate["checksInPast30Days"],
           }
         )
       })
     })
-
     return allInfo;
   };
 
+  // Controls the format of the gate outputs
   public static outputFinalGateData(allGateData: GateData[]) {
-    
-    allGateData.forEach(function(gateData) {
+
+    for (const gateData of allGateData) {
       console.log('File:', gateData.fileName)
       console.log('Location:', gateData.fileDir)
-      gateData.gates.forEach(function(gate) {
+
+      for (const gate of gateData.gates) {
         console.log(`\t Gate: ${gate.gateName}`)
-        console.log(`\t\tline: ${gate.line} \n\t\tenabled: ${gate.enabled} \n\t\tdefault: ${gate.defaultValue}\n`)
-      });
-    });
 
+        // Print all critical gate properities
+        for (const gateProp in gate) {
+          if (gateProp != 'gateName') { // Already printed name above, do not reprint
+            console.log(`\t\t${gateProp}: ${gate[gateProp]}`)
+          }
+        }
+
+        console.log(); // Leave a space between each Gate and file
+      }
+    }
   }
-
 }

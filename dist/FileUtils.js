@@ -10,8 +10,9 @@ const extensionToRegexMap = new Map([
     ["py", `check_gate\(.*, ['"]?(?<gateName>.*)['"]\)`],
 ]);
 function getFiles() {
-    const directory = process.env.GITHUB_WORKSPACE;
-    // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references'
+    let directory = "";
+    // directory = process.env.GITHUB_WORKSPACE;
+    directory = '/Users/jairogarciga/Github-Code-References/github-code-references';
     const fileList = scanFiles(directory);
     return fileList;
 }
