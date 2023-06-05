@@ -10,8 +10,8 @@ const extensionToRegexMap = new Map<string, string>([
 
 export default function getFiles(): Promise<string[]> {
 
-    let directory = ""
-    directory = process.env.GITHUB_WORKSPACE;
+    const directory = process.env.GITHUB_WORKSPACE;
+    console.log()
     // directory = '/Users/jairogarciga/Github-Code-References/github-code-references' 
 
     const fileList = scanFiles(directory);
