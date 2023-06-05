@@ -1,10 +1,11 @@
 import * as fs from 'fs';
 
 const ignoreList = new Set<string>(['.git', 'node_modules', 'README.md', 
-    'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
-const allowedExtensiosn = new Set<string>(['ts'])
+    'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json']);
+const allowedExtensions = new Set<string>(['ts', 'py'])
 const extensionToRegexMap = new Map<string, string>([
-        ["ts", `checkGate\(.*, ['"]?(?<gateName>.*)['"]\)`]
+        ["ts", `checkGate\(.*, ?['"]?(?<gateName>.*)['"]\)`],
+        ["py", `check_gate\(.*, ?['"]?(?<gateName>.*)['"]\)`],
     ]);
 
 
@@ -43,7 +44,7 @@ async function scanFiles(dir: string): Promise<string[]> {
 };
 
 export function searchFile(fileDir: string) {
-    // Assume in typescript only for now
+    // Assume in typescript or Python only for now
     
     let gatesFound = []
     const regex = '';
@@ -52,7 +53,7 @@ export function searchFile(fileDir: string) {
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
 
-    if (allowedExtensiosn.has(extension)) {
+    if (allowedExtensions.has(extension)) {
         
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8')
@@ -67,6 +68,7 @@ export function searchFile(fileDir: string) {
             const currLine = lineDividedData[line];
             const found = currLine.match(regex)
 
+            // If a gate exists in a file, add to the list of total gates found
             if (found) {
                 const gateName = found.groups.gateName
 

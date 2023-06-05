@@ -3,10 +3,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchFile = void 0;
 const fs = require("fs");
 const ignoreList = new Set(['.git', 'node_modules', 'README.md',
-    'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
-const allowedExtensiosn = new Set(['ts']);
+    'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json']);
+const allowedExtensions = new Set(['ts', 'py']);
 const extensionToRegexMap = new Map([
-    ["ts", `checkGate\(.*, ['"]?(?<gateName>.*)['"]\)`]
+    ["ts", `checkGate\(.*, ?['"]?(?<gateName>.*)['"]\)`],
+    ["py", `check_gate\(.*, ?['"]?(?<gateName>.*)['"]\)`],
 ]);
 function getFiles() {
     const directory = process.env.GITHUB_WORKSPACE;
@@ -37,13 +38,13 @@ async function scanFiles(dir) {
 }
 ;
 function searchFile(fileDir) {
-    // Assume in typescript only for now
+    // Assume in typescript or Python only for now
     let gatesFound = [];
     const regex = '';
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
-    if (allowedExtensiosn.has(extension)) {
+    if (allowedExtensions.has(extension)) {
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8');
         const lineDividedData = fileData.split('\n');
@@ -54,6 +55,7 @@ function searchFile(fileDir) {
         for (let line = 0; line < lineDividedData.length; line++) {
             const currLine = lineDividedData[line];
             const found = currLine.match(regex);
+            // If a gate exists in a file, add to the list of total gates found
             if (found) {
                 const gateName = found.groups.gateName;
                 gatesFound.push({
