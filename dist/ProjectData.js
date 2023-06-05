@@ -7,8 +7,9 @@ const FileUtils_2 = require("./FileUtils");
 const axios_retry_1 = require("axios-retry");
 const Utils_1 = require("./Utils");
 const core = require("@actions/core");
+const retries = 7;
 (0, axios_retry_1.default)(axios_1.default, {
-    retries: 7,
+    retries: retries,
 });
 // Calls the endpoint using the API key and gets the projects info
 async function getProjectData() {
@@ -34,12 +35,13 @@ async function getProjectData() {
                 "statsig-api-key": `6wdiBivL3kECj1ducAZrc4:Ie1nOKs9KVAkCOwPnPiiUjCdipPPXAW0yVZNvHFQq6h`,
                 'Content-Type': 'application/json',
             },
-            timeout: 100000,
+            timeout: 200000, // Sometimes the delay is greater than the speed GH workflows can get the data
         });
     }
     catch (e) {
         projectRes = e?.response;
-        console.log("Error Requesting after 8 attempts");
+        console.log();
+        throw new Error(`Error Requesting after ${retries} attempts`);
     }
     const data = projectRes?.data;
     const cleanedData = Utils_1.default.parseProjects(data); // Map of all the gates from the project

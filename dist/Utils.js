@@ -39,7 +39,7 @@ class Utils {
     ;
     static outputFinalGateData(allGateData) {
         allGateData.forEach(function (gateData) {
-            console.log(gateData.fileName);
+            console.log('File:', gateData.fileName);
             console.log('Location:', gateData.fileDir);
             gateData.gates.forEach(function (gate) {
                 console.log(`\t Gate: ${gate.gateName}`);

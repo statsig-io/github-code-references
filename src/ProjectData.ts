@@ -6,8 +6,9 @@ import axiosRetry from 'axios-retry';
 import Utils from './Utils'
 import * as core from "@actions/core";
 
+const retries = 7;
 axiosRetry(axios, {
-    retries: 7,
+    retries: retries,
 });
 
 
@@ -43,12 +44,13 @@ export default async function getProjectData() {
                     "statsig-api-key": `6wdiBivL3kECj1ducAZrc4:Ie1nOKs9KVAkCOwPnPiiUjCdipPPXAW0yVZNvHFQq6h`, // sdkKey,
                     'Content-Type': 'application/json',
                 },
-                timeout: 100000,
+                timeout: 200000, // Sometimes the delay is greater than the speed GH workflows can get the data
             }
         )
     } catch (e: unknown) {
         projectRes = (e as AxiosError)?.response;
-        console.log("Error Requesting after 8 attempts");
+        console.log();
+        throw new Error(`Error Requesting after ${retries} attempts`)
     }
 
     const data = projectRes?.data;
