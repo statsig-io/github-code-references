@@ -55,8 +55,9 @@ async function getFiles(githubKey) {
         result = e?.response;
         throw Error(`Error Requesting after ${retries} attempts`);
     }
-    console.log(result?.data);
+    // console.log(result?.data);
     const fileList = parsePullRequestData(result?.data, directory);
+    console.log(fileList);
     return fileList;
 }
 exports.default = getFiles;
@@ -74,27 +75,6 @@ function parsePullRequestData(data, mainDirectory) {
     }
     return fileLocations;
 }
-// // BFS search through all files
-// async function scanFiles(dir: string): Promise<string[]> {
-//     let fileList: string[] = [];
-//     let queue: string[] = [dir]; // queue of directories
-//     while (queue.length > 0) {
-//         let currFileDir = queue.pop();
-//         if (fs.lstatSync(currFileDir).isDirectory()) { // Get all sub-directories
-//             fs.readdirSync(currFileDir).forEach(subFile => {
-//                 const newDir = `${currFileDir}/${subFile}`;
-//                 const extension = subFile.split('.').at(-1); // Get just the extension of the file
-//                 // Certain directories should be ignored, like node_modules
-//                 if (!ignoreList.has(subFile) && !extensionIgnoreList.has(extension)) {
-//                     queue.push(newDir);
-//                 }
-//             })
-//         } else {
-//             fileList.push(currFileDir);
-//         }
-//     }
-//     return fileList;
-// };
 // Searched solely for Feature Gates
 function searchGatesInFile(fileDir) {
     // Assume in typescript or Python only for now
