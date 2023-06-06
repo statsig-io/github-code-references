@@ -13,8 +13,7 @@ const extensionToConfigRegexMap = new Map([
 ---------- Node.js ----------
 
 Feature Gate
-const showNewDesign = await Statsig.checkGate(user, 'nodejs');
-const showNewDesign = await Statsig.checkGate("nodejs3");
+const test = await statsig.checkGate(dummyUser, 'silly_gate');
 
 Dynamic Config 
 const config = await Statsig.getConfig(user, "awesome_product_details");
@@ -38,7 +37,7 @@ config = statsig.get_config(StatsigUser("user-id"), "python")
 
 `;
 let gatesFound = [];
-const regex = /check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i;
+const regex = /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i;
 const fileDir = 'dist/RegexTester.js';
 // Read within the file for the target string
 const fileData = fs.readFileSync(fileDir, 'utf-8');
