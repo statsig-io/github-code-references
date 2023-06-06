@@ -30,10 +30,12 @@ export default async function getFiles(): Promise<string[]> {
     console.log(githubRef);
 
     // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references'
-    console.log()
     const pullRequestNum = githubRef[2];
     console.log('pr num:', pullRequestNum);
-    const githubOwner = githubRepo[3];
+
+    const githubOwner = githubRepo[0];
+    const repoName = githubRepo[1];
+    console.log(githubOwner, repoName);
 
     const retries = 7;
     axiosRetry(axios, {
