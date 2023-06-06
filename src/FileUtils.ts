@@ -43,7 +43,7 @@ export default async function getFiles(githubKey: string): Promise<string[]> {
     let result: AxiosResponse | undefined;
     try {
       result = await axios.get(
-        `/repos/${githubOwner}/${repoName}/pulls/${pullRequestNum}/files`,
+        `https://api.github.com/repos/${githubOwner}/${repoName}/pulls/${pullRequestNum}/files`,
           {
             headers: {
                 'Authorization': `Bearer ${githubKey}`,

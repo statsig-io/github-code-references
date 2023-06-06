@@ -36,7 +36,7 @@ async function getFiles(githubKey) {
     // Use that to get the touched files
     let result;
     try {
-        result = await axios_1.default.get(`/repos/${githubOwner}/${repoName}/pulls/${pullRequestNum}/files`, {
+        result = await axios_1.default.get(`https://api.github.com/repos/${githubOwner}/${repoName}/pulls/${pullRequestNum}/files`, {
             headers: {
                 'Authorization': `Bearer ${githubKey}`,
                 'Accept': 'application/vnd.github+json',
