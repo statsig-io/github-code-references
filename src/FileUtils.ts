@@ -62,9 +62,9 @@ export default async function getFiles(githubKey: string): Promise<string[]> {
         throw Error(`Error Requesting after ${retries} attempts`);
     }
     
-    console.log('Picking up Files');
+    console.log('Picking up Files ☺');
     const fileList = parsePullRequestData(result?.data, directory);
-    console.log('Finished picking up Files\n');
+    console.log('Finished picking up Files ☺\n');
 
     return fileList;
 }
