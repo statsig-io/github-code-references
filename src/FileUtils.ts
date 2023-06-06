@@ -7,7 +7,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 const extensionIgnoreList = new Set<string>(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map'])
 
 // Add to these overtime
-const allowedExtensions = new Set<string>(['ts', 'py'])
+const allowedExtensions = new Set<string>(['ts', 'py', 'js'])
 const extensionToGateRegexMap = new Map<string, RegExp>([
     ["ts", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["js", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
