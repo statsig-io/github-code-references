@@ -76,13 +76,11 @@ function parsePullRequestData(data, mainDirectory: string) {
     for (const pullRequestFile of data) {
         const fileName = pullRequestFile['filename'];
         const fileExtension = fileName.split('.').at(-1);
-        console.log(fileName);
         
         // Check if file has a valid extension for checking
         if (!extensionIgnoreList.has(fileExtension)) {
             const completeFileDir = `${mainDirectory}/${fileName}`;
-            fileLocations.push()
-            console.log(completeFileDir);
+            fileLocations.push(completeFileDir);
         }
     }
 
