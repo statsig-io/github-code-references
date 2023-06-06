@@ -17,7 +17,7 @@ const extensionToConfigRegexMap = new Map<string, string>([
 export default function getFiles(): Promise<string[]> {
 
     const directory = process.env.GITHUB_WORKSPACE;
-    console.log(process.env.GITHUB_REF);
+    console.log('GITHUB_REF:', process.env.GITHUB_REF);
     // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references' 
 
     const fileList = scanFiles(directory);
