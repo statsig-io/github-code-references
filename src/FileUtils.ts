@@ -30,6 +30,8 @@ export default async function getFiles(githubKey: string): Promise<string[]> {
     const githubOwner = githubRepo[0];
     const repoName = githubRepo[1];
 
+    console.log(`Checking out ${githubRepo} on Pull Request ${pullRequestNum}`);
+
     const retries = 7;
     axiosRetry(axios, {
       retries: retries,
@@ -59,9 +61,11 @@ export default async function getFiles(githubKey: string): Promise<string[]> {
         result = (e as AxiosError)?.response;
         throw Error(`Error Requesting after ${retries} attempts`);
     }
-    // console.log(result?.data);
+    
+    console.log('Picking up Files');
     const fileList = parsePullRequestData(result?.data, directory);
-    console.log(fileList);
+    console.log('Finished picking up Files\n');
+
     return fileList;
 }
 
@@ -78,6 +82,7 @@ function parsePullRequestData(data, mainDirectory: string) {
         if (!extensionIgnoreList.has(fileExtension) && fileStatus != 'removed') {
             const completeFileDir = `${mainDirectory}/${fileName}`;
             fileLocations.push(completeFileDir);
+            console.log(`\t${completeFileDir}`)
         }
     }
 

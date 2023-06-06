@@ -26,6 +26,7 @@ async function getFiles(githubKey) {
     const pullRequestNum = githubRef[2];
     const githubOwner = githubRepo[0];
     const repoName = githubRepo[1];
+    console.log(`Checking out ${githubRepo} on Pull Request ${pullRequestNum}`);
     const retries = 7;
     (0, axios_retry_1.default)(axios_1.default, {
         retries: retries,
@@ -52,9 +53,9 @@ async function getFiles(githubKey) {
         result = e?.response;
         throw Error(`Error Requesting after ${retries} attempts`);
     }
-    // console.log(result?.data);
+    console.log('Picking up Files');
     const fileList = parsePullRequestData(result?.data, directory);
-    console.log(fileList);
+    console.log('Finished picking up Files\n');
     return fileList;
 }
 exports.default = getFiles;
@@ -69,6 +70,7 @@ function parsePullRequestData(data, mainDirectory) {
         if (!extensionIgnoreList.has(fileExtension) && fileStatus != 'removed') {
             const completeFileDir = `${mainDirectory}/${fileName}`;
             fileLocations.push(completeFileDir);
+            console.log(`\t${completeFileDir}`);
         }
     }
     return fileLocations;
