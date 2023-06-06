@@ -53,31 +53,31 @@ export default class Utils {
     return result;
   };
 
-    // Parses through statsig project data for targetType (Feature Gates or Dynamic Configs)
-    public static parseProjectData(data: object, targetType: string): Map<string, {}> | null{
+  // Parses through statsig project data for targetType (Feature Gates or Dynamic Configs)
+  public static parseProjectData(data: object, targetType: string): Map<string, {}> | null{
 
-      if (!data) {
-        return null;
+    if (!data) {
+      return null;
+    }
+    
+    let projectData = data["projects"];
+    let allTypeInfo = new Map<string, {}>;
+
+    // Loop over every project in data
+    for (const project of projectData) {
+      for (const target of project[targetType]) { // Either Feature Gates or Dynamic Configs
+        allTypeInfo.set(target["name"],
+          {
+            "enabled": target["enabled"],
+            "defaultValue": target["defaultValue"],
+            "checksInPast30Days": target["checksInPast30Days"],
+          }
+        )
       }
-      
-      let projectData = data["projects"];
-      let allTypeInfo = new Map<string, {}>;
-  
-      // Loop over every project in data
-      for (const project of projectData) {
-        for (const target of project[targetType]) { // Either Feature Gates or Dynamic Configs
-          allTypeInfo.set(target["name"],
-            {
-              "enabled": target["enabled"],
-              "defaultValue": target["defaultValue"],
-              "checksInPast30Days": target["checksInPast30Days"],
-            }
-          )
-        }
-      }
-      
-      return allTypeInfo;
-    };
+    }
+    
+    return allTypeInfo;
+  };
 
   // Controls the format of the gate outputs
   public static outputFinalGateData(allGateData: GateData[]) {

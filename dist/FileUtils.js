@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchConfigsInFile = exports.searchGatesInFile = void 0;
 const fs = require("fs");
+const axios_retry_1 = require("axios-retry");
+const axios_1 = require("axios");
 const ignoreList = new Set(['.git', 'node_modules', 'README.md',
     'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
 // Add to these overtime
@@ -14,11 +16,34 @@ const extensionToConfigRegexMap = new Map([
     ["ts", `getConfig\(.*, ?['"]?(?<configName>.*)['"]\)`],
     ["py", `get_config\(.*, ['"]?(?<configName>.*)['"]\)`],
 ]);
-function getFiles() {
+// Leverage Github API and environment variables to access files touched by Pull Requests
+async function getFiles() {
     const directory = process.env.GITHUB_WORKSPACE;
     console.log('GITHUB_REF:', process.env.GITHUB_REF);
     console.log('GITHUB_REPOSITYORY', process.env.GITHUB_REPOSITORY);
-    // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references' 
+    const githubRepo = process.env.GITHUB_REPOSITORY.split('/');
+    const githubRef = process.env.GITHUB_REF.split('/');
+    console.log(githubRepo);
+    console.log(githubRef);
+    // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references'
+    console.log();
+    const pullRequestNum = githubRef[2];
+    console.log('pr num:', pullRequestNum);
+    const githubOwner = githubRepo[3];
+    const retries = 7;
+    (0, axios_retry_1.default)(axios_1.default, {
+        retries: retries,
+    });
+    // Do a GITHUB API Get request for the specific pull that triggered the workflow
+    // Use that to get the touched files
+    // let result: AxiosResponse | undefined;
+    // try {
+    //   result = await axios.get(
+    //   )
+    // } catch (e: unknown) {
+    //     result = (e as AxiosError)?.response;
+    //     throw Error(`Error Requesting after ${retries} attempts`);
+    // }
     const fileList = scanFiles(directory);
     return fileList;
 }
