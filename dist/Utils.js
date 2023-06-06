@@ -82,7 +82,8 @@ class Utils {
             console.log('File:', gateData.fileName);
             console.log('Location:', gateData.fileDir);
             for (const gate of gateData.gates) {
-                console.log(`\t Gate: ${gate.gateName}`);
+                // Set the Gate names to display as the color Blue
+                console.log(`\t${ForegroundColor.Blue}Gate: ${gate.gateName}${exports.ColorReset}`);
                 // Print all necessary gate properities
                 for (const gateProp in gate) {
                     if (gateProp != 'gateName') { // Already printed name above, do not reprint
@@ -107,7 +108,7 @@ class Utils {
     }
     // Output an individual DynamicConfig objects data
     static outputDynamicConfig(config) {
-        console.log(`\t Dynamic Config: ${config.configName}`);
+        console.log(`\t${ForegroundColor.Blue}Dynamic Config: ${config.configName} ${exports.ColorReset}`);
         // Print all necessary config properities
         for (const configProp in config) {
             // Already printed name above, do not reprint
