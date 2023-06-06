@@ -123,7 +123,10 @@ export default class Utils {
   // Output an individual DynamicConfig objects data
   private static outputDynamicConfig(config: DynamicConfig) {
     
-    console.log(`\t Dynamic Config: ${config.configName}`)
+    console.log(
+      `\t Dynamic Config: ${config.configName}`,
+      'color: blue',
+    )
 
     // Print all necessary config properities
     for (const configProp in config) {
