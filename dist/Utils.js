@@ -30,7 +30,7 @@ class Utils {
             result = await axios_1.default.post('https:/latest.statsigapi.net/developer/v1/projects', // This will change to prod when completed
             null, {
                 headers: {
-                    'statsig-api-key': 'secret-08Bqk5wabXasJhcw5fVVIQ1JUfwBI8IXnAPMqbvaBkS',
+                    'statsig-api-key': sdkKey,
                     'Content-Type': 'application/json',
                 },
                 timeout: timeout, // Sometimes the delay is greater than the speed GH workflows can get the data
