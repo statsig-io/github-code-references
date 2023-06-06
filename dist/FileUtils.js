@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchConfigsInFile = exports.searchGatesInFile = void 0;
 const fs = require("fs");
+const Utils_1 = require("./Utils");
 const axios_retry_1 = require("axios-retry");
 const axios_1 = require("axios");
 const ignoreList = new Set(['.git', 'node_modules', 'README.md',
@@ -70,7 +71,8 @@ function parsePullRequestData(data, mainDirectory) {
         if (!extensionIgnoreList.has(fileExtension) && fileStatus != 'removed') {
             const completeFileDir = `${mainDirectory}/${fileName}`;
             fileLocations.push(completeFileDir);
-            console.log(`\t${completeFileDir}`);
+            // Output a valid file found, wrap it with ANSI Green
+            console.log(`\t${Utils_1.ForegroundColor.Green}${completeFileDir}${Utils_1.ColorReset}`);
         }
     }
     return fileLocations;

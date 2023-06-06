@@ -5,8 +5,8 @@ import getFiles, { searchConfigsInFile } from './FileUtils'
 import { searchGatesInFile } from './FileUtils';
 import Utils from './Utils'
 
-const FeatureGate = 'feature_gates'
-const DynamicConfig = 'dynamic_configs'
+export const FeatureGate = 'feature_gates'
+export const DynamicConfig = 'dynamic_configs'
 
 // Calls the endpoint using the API key and gets the projects info
 export default async function getProjectData() {

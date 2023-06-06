@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import Utils from './Utils'
+import { ForegroundColor, ColorReset } from './Utils';
 import axiosRetry from 'axios-retry';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
@@ -82,7 +82,9 @@ function parsePullRequestData(data, mainDirectory: string) {
         if (!extensionIgnoreList.has(fileExtension) && fileStatus != 'removed') {
             const completeFileDir = `${mainDirectory}/${fileName}`;
             fileLocations.push(completeFileDir);
-            console.log(`\t${completeFileDir}`)
+
+            // Output a valid file found, wrap it with ANSI Green
+            console.log(`\t${ForegroundColor.Green}${completeFileDir}${ColorReset}`)
         }
     }
 

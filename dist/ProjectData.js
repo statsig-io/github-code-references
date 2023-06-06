@@ -1,12 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.DynamicConfig = exports.FeatureGate = void 0;
 const GateData_1 = require("./GateData");
 const DynamicConfigData_1 = require("./DynamicConfigData");
 const FileUtils_1 = require("./FileUtils");
 const FileUtils_2 = require("./FileUtils");
 const Utils_1 = require("./Utils");
-const FeatureGate = 'feature_gates';
-const DynamicConfig = 'dynamic_configs';
+exports.FeatureGate = 'feature_gates';
+exports.DynamicConfig = 'dynamic_configs';
 // Calls the endpoint using the API key and gets the projects info
 async function getProjectData() {
     let projectRes;
@@ -38,9 +39,9 @@ async function getProjectData() {
     const timeout = 250000;
     projectRes = await Utils_1.default.requestProjectData(sdkKey, timeout);
     const data = projectRes?.data; // Axios response returns a data object
-    const parsedGateData = Utils_1.default.parseProjectData(data, FeatureGate); // Map of gate names to gate info
+    const parsedGateData = Utils_1.default.parseProjectData(data, exports.FeatureGate); // Map of gate names to gate info
     // Map of dynamic config names to config info
-    const parsedConfigData = Utils_1.default.parseProjectData(data, DynamicConfig);
+    const parsedConfigData = Utils_1.default.parseProjectData(data, exports.DynamicConfig);
     // Get data only on the feature gates found within the local files
     allGates.forEach(function (fileWithGates) {
         let updatedGates = [];

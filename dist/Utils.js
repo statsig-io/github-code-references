@@ -1,8 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ForegroundColor = exports.ColorReset = void 0;
 const core = require("@actions/core");
 const axios_1 = require("axios");
 const axios_retry_1 = require("axios-retry");
+exports.ColorReset = "\x1b[0m";
+var ForegroundColor;
+(function (ForegroundColor) {
+    ForegroundColor["Blue"] = "\u001B[34m";
+    ForegroundColor["Green"] = "\u001B[32m";
+})(ForegroundColor || (exports.ForegroundColor = ForegroundColor = {}));
 class Utils {
     static getKey() {
         const sdkKey = this.parseInputKey("sdk-key", true);
@@ -100,7 +107,7 @@ class Utils {
     }
     // Output an individual DynamicConfig objects data
     static outputDynamicConfig(config) {
-        console.log(`\t Dynamic Config: ${config.configName}`, 'color: blue');
+        console.log(`\t Dynamic Config: ${config.configName}`);
         // Print all necessary config properities
         for (const configProp in config) {
             // Already printed name above, do not reprint

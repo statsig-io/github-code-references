@@ -4,6 +4,13 @@ import axiosRetry from 'axios-retry';
 import GateData from "./GateData";
 import DynamicConfigData, { DynamicConfig } from "./DynamicConfigData";
 
+export const ColorReset = "\x1b[0m"
+export enum ForegroundColor {
+  Blue = "\x1b[34m",
+  Green = "\x1b[32m",
+}
+
+
 export default class Utils {
   public static getKey(): string {
     const sdkKey: string = this.parseInputKey("sdk-key", true);
@@ -124,8 +131,7 @@ export default class Utils {
   private static outputDynamicConfig(config: DynamicConfig) {
     
     console.log(
-      `\t Dynamic Config: ${config.configName}`,
-      'color: blue',
+      `\t Dynamic Config: ${config.configName}`
     )
 
     // Print all necessary config properities
