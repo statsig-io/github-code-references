@@ -59,8 +59,9 @@ async function getProjectData() {
                     'defaultValue': projectGate['defaultValue'],
                     'checksInPast30Days': projectGate['checksInPast30Days'],
                 };
+                // Only push gate is valid, invalid gates can be caught because of my regex :)
+                updatedGates.push(gate); // Add to the new list of gates for this specific file
             }
-            updatedGates.push(gate); // Add to the new list of gates for this specific file
         });
         fileWithGates.gates = updatedGates;
     });
