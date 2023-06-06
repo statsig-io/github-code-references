@@ -33,3 +33,4 @@ jobs:
         uses: ./
         with:
           sdk-key: ${{ secrets.SDK_KEY }}
+          github-key: ${{ secrets.GH_ACCESS_TOKEN }}

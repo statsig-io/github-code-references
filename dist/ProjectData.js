@@ -11,9 +11,10 @@ const DynamicConfig = 'dynamic_configs';
 async function getProjectData() {
     let projectRes;
     const sdkKey = Utils_1.default.getKey();
+    const githubKey = Utils_1.default.getGithubKey();
     // Scan files for all gates that could be in them
     // Get the file, the line, and the gate name for each gate and dynamic config
-    let fileNames = await (0, FileUtils_1.default)();
+    let fileNames = await (0, FileUtils_1.default)(githubKey);
     let allGates = [];
     for (const file of fileNames) {
         const gatesFound = (0, FileUtils_2.searchGatesInFile)(file);

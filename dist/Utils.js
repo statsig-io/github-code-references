@@ -9,6 +9,11 @@ class Utils {
         core.setSecret(sdkKey);
         return sdkKey;
     }
+    static getGithubKey() {
+        const githubKey = this.parseInputKey("github-key", true);
+        core.setSecret(githubKey);
+        return githubKey;
+    }
     // Parses the input for the action.yml file
     static parseInputKey(key, required = false, defaultValue = "") {
         try {

@@ -11,6 +11,12 @@ export default class Utils {
     return sdkKey;
   }
 
+  public static getGithubKey(): string {
+    const githubKey: string = this.parseInputKey("github-key", true);
+    core.setSecret(githubKey);
+    return githubKey;
+  }
+
   // Parses the input for the action.yml file
   private static parseInputKey(
     key: string,

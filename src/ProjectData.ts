@@ -13,10 +13,11 @@ export default async function getProjectData() {
     
     let projectRes: AxiosResponse | undefined;
     const sdkKey = Utils.getKey();
+    const githubKey = Utils.getGithubKey();
 
     // Scan files for all gates that could be in them
     // Get the file, the line, and the gate name for each gate and dynamic config
-    let fileNames = await getFiles();
+    let fileNames = await getFiles(githubKey);
     let allGates: GateData[] = [];
     for (const file of fileNames) {
         const gatesFound = searchGatesInFile(file);

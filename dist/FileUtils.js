@@ -17,34 +17,43 @@ const extensionToConfigRegexMap = new Map([
     ["py", `get_config\(.*, ['"]?(?<configName>.*)['"]\)`],
 ]);
 // Leverage Github API and environment variables to access files touched by Pull Requests
-async function getFiles() {
+async function getFiles(githubKey) {
     const directory = process.env.GITHUB_WORKSPACE;
     console.log('GITHUB_REF:', process.env.GITHUB_REF);
     console.log('GITHUB_REPOSITYORY', process.env.GITHUB_REPOSITORY);
-    const githubRepo = process.env.GITHUB_REPOSITORY.split('/');
-    const githubRef = process.env.GITHUB_REF.split('/');
-    console.log(githubRepo);
-    console.log(githubRef);
+    const githubRepo = process.env.GITHUB_REPOSITORY.split('/'); // refs/pulls/pr_num/merge
+    const githubRef = process.env.GITHUB_REF.split('/'); // owner/repo
     // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references'
     const pullRequestNum = githubRef[2];
-    console.log('pr num:', pullRequestNum);
     const githubOwner = githubRepo[0];
     const repoName = githubRepo[1];
-    console.log(githubOwner, repoName);
     const retries = 7;
     (0, axios_retry_1.default)(axios_1.default, {
         retries: retries,
     });
+    const timeout = 2000000;
     // Do a GITHUB API Get request for the specific pull that triggered the workflow
     // Use that to get the touched files
-    // let result: AxiosResponse | undefined;
-    // try {
-    //   result = await axios.get(
-    //   )
-    // } catch (e: unknown) {
-    //     result = (e as AxiosError)?.response;
-    //     throw Error(`Error Requesting after ${retries} attempts`);
-    // }
+    let result;
+    try {
+        result = await axios_1.default.get(`/repos/${githubOwner}/${repoName}/pulls/${pullRequestNum}/files`, {
+            headers: {
+                'Authorization': `Bearer ${githubKey}`,
+                'Accept': 'application/vnd.github+json',
+                'Content-Type': 'application/json',
+            },
+            timeout: timeout,
+            data: {
+                'per_page': 100,
+                'page': 1,
+            }
+        });
+    }
+    catch (e) {
+        result = e?.response;
+        throw Error(`Error Requesting after ${retries} attempts`);
+    }
+    console.log(result);
     const fileList = scanFiles(directory);
     return fileList;
 }
