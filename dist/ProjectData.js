@@ -43,9 +43,10 @@ async function getProjectData() {
     // Map of dynamic config names to config info
     const parsedConfigData = Utils_1.default.parseProjectData(data, exports.DynamicConfig);
     // Get data only on the feature gates found within the local files
-    allGates.forEach(function (fileWithGates) {
+    let finalGates = [];
+    for (let fileWithGates of allGates) {
         let updatedGates = [];
-        fileWithGates.gates.forEach(function (gate) {
+        for (let gate of fileWithGates.gates) {
             // The gates found on local files should match gates existing on statsig api
             if (parsedGateData.has(gate.gateName)) {
                 // Get the respective gate from project data
@@ -62,10 +63,15 @@ async function getProjectData() {
                 // Only push gate is valid, invalid gates can be caught because of my regex :)
                 updatedGates.push(gate); // Add to the new list of gates for this specific file
             }
-        });
-        fileWithGates.gates = updatedGates;
-    });
+        }
+        // In the case a file had no good gates (regex caught something wrong) don't include it
+        if (updatedGates.length > 0) {
+            fileWithGates.gates = updatedGates;
+            finalGates.push(fileWithGates);
+        }
+    }
     // Get data only on the dynamic configs in local files
+    let finalConfigs = [];
     for (let fileWithConfigs of allConfigs) {
         let updatedConfigs = [];
         for (let config of fileWithConfigs.dynamicConfigs) {
@@ -85,7 +91,11 @@ async function getProjectData() {
                 updatedConfigs.push(config); // Add to the new list of gates for this specific file
             }
         }
-        fileWithConfigs.dynamicConfigs = updatedConfigs;
+        // In the case a file had no good configs (regex caught something wrong) don't include it
+        if (updatedConfigs.length > 0) {
+            fileWithConfigs.dynamicConfigs = updatedConfigs;
+            finalConfigs.push(fileWithConfigs);
+        }
     }
     Utils_1.default.outputFinalGateData(allGates);
     Utils_1.default.outputFinalConfigData(allConfigs);
