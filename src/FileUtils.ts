@@ -22,10 +22,6 @@ const extensionToConfigRegexMap = new Map<string, string>([
 export default async function getFiles(githubKey: string): Promise<string[]> {
 
     const directory = process.env.GITHUB_WORKSPACE;
-    console.log('Main Directory:', directory);
-    console.log('GITHUB_REF:', process.env.GITHUB_REF);
-    console.log('GITHUB_REPOSITYORY', process.env.GITHUB_REPOSITORY);
-
     const githubRepo = process.env.GITHUB_REPOSITORY.split('/'); // refs/pulls/pr_num/merge
     const githubRef = process.env.GITHUB_REF.split('/'); // owner/repo
 

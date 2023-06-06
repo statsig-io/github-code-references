@@ -83,15 +83,14 @@ export default async function getProjectData() {
         let updatedConfigs = [];
         for (let config of fileWithConfigs.dynamicConfigs) {
             
-            // The gates found on local files should match gates existing on statsig api
-            console.log('Checking Dynamic Config:', config.configName);
+            // The configs found on local files should match gates existing on statsig api
             if (parsedConfigData.has(config.configName)) {
 
                 // Get the respective gate from project data
                 let projectGate = parsedConfigData.get(config.configName)
             
-                // gate is of type Gate, defined in GateData.ts
-                // To add more properties change the Gate object
+                // config is of type DynamicConfig, defined in DynamicConfigData.ts
+                // To add more properties change the DynamicConfig object
                 config = {
                     'line': config.line,
                     'configName': config.configName,
@@ -99,8 +98,8 @@ export default async function getProjectData() {
                     'defaultValue': projectGate['defaultValue'],
                     'checksInPast30Days': projectGate['checksInPast30Days'],
                 }
-            }
-            updatedConfigs.push(config) // Add to the new list of gates for this specific file
+                updatedConfigs.push(config) // Add to the new list of gates for this specific file
+            } 
         }
         fileWithConfigs.dynamicConfigs = updatedConfigs;
     }
