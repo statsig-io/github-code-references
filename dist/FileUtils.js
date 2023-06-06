@@ -67,8 +67,9 @@ function parsePullRequestData(data, mainDirectory) {
     for (const pullRequestFile of data) {
         const fileName = pullRequestFile['filename'];
         const fileExtension = fileName.split('.').at(-1);
-        // Check if file has a valid extension for checking
-        if (!extensionIgnoreList.has(fileExtension)) {
+        const fileStatus = pullRequestFile['status'];
+        // Check if file has a valid extension for checking or if it has been deleted
+        if (!extensionIgnoreList.has(fileExtension) && fileStatus != 'removed') {
             const completeFileDir = `${mainDirectory}/${fileName}`;
             fileLocations.push(completeFileDir);
         }
