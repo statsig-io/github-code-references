@@ -47,8 +47,10 @@ async function getProjectData() {
     for (let fileWithGates of allGates) {
         let updatedGates = [];
         for (let gate of fileWithGates.gates) {
+            console.log(gate);
             // The gates found on local files should match gates existing on statsig api
             if (parsedGateData.has(gate.gateName)) {
+                console.log('Gate inside:', gate.gateName);
                 // Get the respective gate from project data
                 let projectGate = parsedGateData.get(gate.gateName);
                 // gate is of type Gate, defined in GateData.ts

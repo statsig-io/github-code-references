@@ -56,10 +56,10 @@ export default async function getProjectData() {
         let updatedGates = [];
 
         for (let gate of fileWithGates.gates) {
-            
+            console.log(gate);
             // The gates found on local files should match gates existing on statsig api
             if (parsedGateData.has(gate.gateName)) {
-                
+                console.log('Gate inside:', gate.gateName);
                 // Get the respective gate from project data
                 let projectGate = parsedGateData.get(gate.gateName)
             
@@ -88,7 +88,7 @@ export default async function getProjectData() {
     let finalConfigs: DynamicConfigData[] = [];
     for (let fileWithConfigs of allConfigs) {
         let updatedConfigs = [];
-        
+
         for (let config of fileWithConfigs.dynamicConfigs) {
             
             // The configs found on local files should match gates existing on statsig api
