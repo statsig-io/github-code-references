@@ -8,7 +8,7 @@ const axios_1 = require("axios");
 // Not worth checking files that won't have feature gates
 const extensionIgnoreList = new Set(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map']);
 // Add to these overtime
-const allowedExtensions = new Set(['ts', 'py']);
+const allowedExtensions = new Set(['ts', 'py', 'js']);
 const extensionToGateRegexMap = new Map([
     ["ts", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["js", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
