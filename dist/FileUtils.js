@@ -11,10 +11,12 @@ const extensionIgnoreList = new Set(['git', 'yaml', 'yml', 'json', 'github', 'gi
 const allowedExtensions = new Set(['ts', 'py']);
 const extensionToGateRegexMap = new Map([
     ["ts", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["js", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["py", /check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
 ]);
 const extensionToConfigRegexMap = new Map([
     ["ts", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
+    ["js", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
     ["py", /get_config\(.*, ['"]?(?<configName>.*)['"]\)/i],
 ]);
 // Leverage Github API and environment variables to access files touched by Pull Requests

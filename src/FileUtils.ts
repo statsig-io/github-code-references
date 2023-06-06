@@ -10,10 +10,12 @@ const extensionIgnoreList = new Set<string>(['git', 'yaml', 'yml', 'json', 'gith
 const allowedExtensions = new Set<string>(['ts', 'py'])
 const extensionToGateRegexMap = new Map<string, RegExp>([
     ["ts", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["js", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["py", /check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
 ]);
 const extensionToConfigRegexMap = new Map<string, RegExp>([
     ["ts", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
+    ["js", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
     ["py", /get_config\(.*, ['"]?(?<configName>.*)['"]\)/i],
 ]);
 
