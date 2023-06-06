@@ -1,16 +1,13 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import GateData from './GateData'
-import getFiles from './FileUtils'
-import { searchFile } from './FileUtils';
-import axiosRetry from 'axios-retry';
+import DynamicConfigData from './DynamicConfigData';
+import getFiles, { searchConfigsInFile } from './FileUtils'
+import { searchGatesInFile } from './FileUtils';
 import Utils from './Utils'
 import * as core from "@actions/core";
 
-const retries = 7;
-axiosRetry(axios, {
-    retries: retries,
-});
-
+const FeatureGate = 'feature_gates'
+const DynamicConfig = 'dynamic_configs'
 
 // Calls the endpoint using the API key and gets the projects info
 export default async function getProjectData() {
@@ -20,40 +17,40 @@ export default async function getProjectData() {
     const sdkKey = Utils.getKey();
 
     // Scan files for all gates that could be in them
-    // Get the file, the line, and the gate name for each gate
+    // Get the file, the line, and the gate name for each gate and dynamic config
     let fileNames = await getFiles();
-    let allGates: GateData[] = []
-    fileNames.forEach((file) => {
-        const gatesFound = searchFile(file);
+    let allGates: GateData[] = [];
+    for (const file of fileNames) {
+        const gatesFound = searchGatesInFile(file);
         const fileName = file.split('/').at(-1);
         const gateData = new GateData(file, fileName, gatesFound);
 
         if (gatesFound.length >= 1) {
             allGates.push(gateData);
         }
-    })
+    }
+
+    let allConfigs: DynamicConfigData[] = [];
+    for (const file of fileNames) {
+        const configsFound = searchConfigsInFile(file);
+        const fileName = file.split('/').at(-1);
+        const configData = new DynamicConfigData(file, fileName, configsFound);
+
+        if (configsFound.length >= 1) {
+            allConfigs.push(configData);
+        }
+    }
+    
 
     // Post request to the project with the input API key
     // Collect gates into map where the key is the gate name
-    try {
-        projectRes = await axios.post(
-            'https:/latest.statsigapi.net/developer/v1/projects',
-            null,
-            {
-                headers: {
-                    'statsig-api-key': sdkKey,
-                    'Content-Type': 'application/json',
-                },
-                timeout: 200000, // Sometimes the delay is greater than the speed GH workflows can get the data
-            }
-        )
-    } catch (e: unknown) {
-        projectRes = (e as AxiosError)?.response;
-        throw Error(`Error Requesting after ${retries} attempts`);
-    }
+    const timeout = 250000;
+    projectRes = await Utils.requestProjectData(sdkKey, timeout);
 
-    const data = projectRes?.data;
-    const parsedData = Utils.parseProjects(data); // Map of gate names to gate info
+    const data = projectRes?.data; // Axios response returns a data object
+    const parsedGateData = Utils.parseProjectData(data, FeatureGate); // Map of gate names to gate info
+    // Map of dynamic config names to config info
+    const parsedConfigData = Utils.parseProjectData(data, DynamicConfig);
 
     // Get data only on the feature gates found within the local files
     allGates.forEach(function(fileWithGates) {
@@ -61,15 +58,15 @@ export default async function getProjectData() {
         fileWithGates.gates.forEach(function(gate) {
             
             // The gates found on local files should match gates existing on statsig api
-            if (!parsedData.has(gate.gateName)) {
+            if (!parsedGateData.has(gate.gateName)) {
                 throw Error(`Gate ${gate.gateName} could not be found`)
             }
 
             // Get the respective gate from project data
-            let projectGate = parsedData.get(gate.gateName)
+            let projectGate = parsedGateData.get(gate.gateName)
         
             // gate is of type Gate, defined in GateData.ts
-            // To add more properties change the GateData object
+            // To add more properties change the Gate object
             gate = {
                 'line': gate.line,
                 'gateName': gate.gateName,
@@ -82,7 +79,35 @@ export default async function getProjectData() {
         fileWithGates.gates = updatedGates;
     });
 
+    // Get data only on the dynamic configs in local files
+    for (let fileWithConfigs of allConfigs) {
+        let updatedConfigs = [];
+        for (let config of fileWithConfigs.dynamicConfigs) {
+            
+            // The gates found on local files should match gates existing on statsig api
+            if (!parsedConfigData.has(config.configName)) {
+                throw Error(`Gate ${config.configName} could not be found`)
+            }
+
+            // Get the respective gate from project data
+            let projectGate = parsedConfigData.get(config.configName)
+        
+            // gate is of type Gate, defined in GateData.ts
+            // To add more properties change the Gate object
+            config = {
+                'line': config.line,
+                'configName': config.configName,
+                'enabled': projectGate['enabled'],
+                'defaultValue': projectGate['defaultValue'],
+                'checksInPast30Days': projectGate['checksInPast30Days'],
+            }
+            updatedConfigs.push(config) // Add to the new list of gates for this specific file
+        }
+        fileWithConfigs.dynamicConfigs = updatedConfigs;
+    }
+
     Utils.outputFinalGateData(allGates);
+    Utils.outputFinalConfigData(allConfigs);
 }
 
 getProjectData();
