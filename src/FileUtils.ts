@@ -61,7 +61,7 @@ export default async function getFiles(githubKey: string): Promise<string[]> {
         result = (e as AxiosError)?.response;
         throw Error(`Error Requesting after ${retries} attempts`);
     }
-    console.log(result);
+    console.log(result?.data);
     const fileList = scanFiles(directory);
     return fileList;
 }

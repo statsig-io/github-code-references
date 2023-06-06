@@ -53,7 +53,7 @@ async function getFiles(githubKey) {
         result = e?.response;
         throw Error(`Error Requesting after ${retries} attempts`);
     }
-    console.log(result);
+    console.log(result?.data);
     const fileList = scanFiles(directory);
     return fileList;
 }
