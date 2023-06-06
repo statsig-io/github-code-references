@@ -3,20 +3,19 @@ import { ForegroundColor, ColorReset } from './Utils';
 import axiosRetry from 'axios-retry';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
-const ignoreList = new Set<string>(['.git', 'node_modules', 'README.md', 
-    'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
+// Not worth checking files that won't have feature gates
 const extensionIgnoreList = new Set<string>(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map'])
 
 // Add to these overtime
 const allowedExtensions = new Set<string>(['ts', 'py'])
-const extensionToGateRegexMap = new Map<string, string>([
-        ["ts", `checkGate\(.*, ?['"]?(?<gateName>.*)['"]\)`],
-        ["py", `check_gate\(.*, ['"]?(?<gateName>.*)['"]\)`],
-    ]);
-const extensionToConfigRegexMap = new Map<string, string>([
-        ["ts", `getConfig\(.*, ?['"]?(?<configName>.*)['"]\)`],
-        ["py", `get_config\(.*, ['"]?(?<configName>.*)['"]\)`],
-    ]);
+const extensionToGateRegexMap = new Map<string, RegExp>([
+    ["ts", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["py", /check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+]);
+const extensionToConfigRegexMap = new Map<string, RegExp>([
+    ["ts", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
+    ["py", /get_config\(.*, ['"]?(?<configName>.*)['"]\)/i],
+]);
 
 // Leverage Github API and environment variables to access files touched by Pull Requests
 export default async function getFiles(githubKey: string): Promise<string[]> {
@@ -110,7 +109,7 @@ export function searchGatesInFile(fileDir: string) {
 
         // Different languages, clients, servers have differentw ways of creating gates
         // Different regex target each instead of using one big regex blob
-        const regex = new RegExp(extensionToGateRegexMap.get(extension))
+        const regex = extensionToGateRegexMap.get(extension);
 
         // Loop over each line, regex search for the 
         for (let line = 0; line < lineDividedData.length; line++) {

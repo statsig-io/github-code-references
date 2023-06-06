@@ -5,18 +5,17 @@ const fs = require("fs");
 const Utils_1 = require("./Utils");
 const axios_retry_1 = require("axios-retry");
 const axios_1 = require("axios");
-const ignoreList = new Set(['.git', 'node_modules', 'README.md',
-    'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
+// Not worth checking files that won't have feature gates
 const extensionIgnoreList = new Set(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map']);
 // Add to these overtime
 const allowedExtensions = new Set(['ts', 'py']);
 const extensionToGateRegexMap = new Map([
-    ["ts", `checkGate\(.*, ?['"]?(?<gateName>.*)['"]\)`],
-    ["py", `check_gate\(.*, ['"]?(?<gateName>.*)['"]\)`],
+    ["ts", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["py", /check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
 ]);
 const extensionToConfigRegexMap = new Map([
-    ["ts", `getConfig\(.*, ?['"]?(?<configName>.*)['"]\)`],
-    ["py", `get_config\(.*, ['"]?(?<configName>.*)['"]\)`],
+    ["ts", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
+    ["py", /get_config\(.*, ['"]?(?<configName>.*)['"]\)/i],
 ]);
 // Leverage Github API and environment variables to access files touched by Pull Requests
 async function getFiles(githubKey) {
@@ -91,7 +90,7 @@ function searchGatesInFile(fileDir) {
         const lineDividedData = fileData.split('\n');
         // Different languages, clients, servers have differentw ways of creating gates
         // Different regex target each instead of using one big regex blob
-        const regex = new RegExp(extensionToGateRegexMap.get(extension));
+        const regex = extensionToGateRegexMap.get(extension);
         // Loop over each line, regex search for the 
         for (let line = 0; line < lineDividedData.length; line++) {
             const currLine = lineDividedData[line];
