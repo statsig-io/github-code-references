@@ -47,19 +47,18 @@ async function getProjectData() {
         fileWithGates.gates.forEach(function (gate) {
             // The gates found on local files should match gates existing on statsig api
             if (!parsedGateData.has(gate.gateName)) {
-                throw Error(`Gate ${gate.gateName} could not be found`);
+                // Get the respective gate from project data
+                let projectGate = parsedGateData.get(gate.gateName);
+                // gate is of type Gate, defined in GateData.ts
+                // To add more properties change the Gate object
+                gate = {
+                    'line': gate.line,
+                    'gateName': gate.gateName,
+                    'enabled': projectGate['enabled'],
+                    'defaultValue': projectGate['defaultValue'],
+                    'checksInPast30Days': projectGate['checksInPast30Days'],
+                };
             }
-            // Get the respective gate from project data
-            let projectGate = parsedGateData.get(gate.gateName);
-            // gate is of type Gate, defined in GateData.ts
-            // To add more properties change the Gate object
-            gate = {
-                'line': gate.line,
-                'gateName': gate.gateName,
-                'enabled': projectGate['enabled'],
-                'defaultValue': projectGate['defaultValue'],
-                'checksInPast30Days': projectGate['checksInPast30Days'],
-            };
             updatedGates.push(gate); // Add to the new list of gates for this specific file
         });
         fileWithGates.gates = updatedGates;
@@ -69,20 +68,19 @@ async function getProjectData() {
         let updatedConfigs = [];
         for (let config of fileWithConfigs.dynamicConfigs) {
             // The gates found on local files should match gates existing on statsig api
-            if (!parsedConfigData.has(config.configName)) {
-                throw Error(`Gate ${config.configName} could not be found`);
+            if (parsedConfigData.has(config.configName)) {
+                // Get the respective gate from project data
+                let projectGate = parsedConfigData.get(config.configName);
+                // gate is of type Gate, defined in GateData.ts
+                // To add more properties change the Gate object
+                config = {
+                    'line': config.line,
+                    'configName': config.configName,
+                    'enabled': projectGate['enabled'],
+                    'defaultValue': projectGate['defaultValue'],
+                    'checksInPast30Days': projectGate['checksInPast30Days'],
+                };
             }
-            // Get the respective gate from project data
-            let projectGate = parsedConfigData.get(config.configName);
-            // gate is of type Gate, defined in GateData.ts
-            // To add more properties change the Gate object
-            config = {
-                'line': config.line,
-                'configName': config.configName,
-                'enabled': projectGate['enabled'],
-                'defaultValue': projectGate['defaultValue'],
-                'checksInPast30Days': projectGate['checksInPast30Days'],
-            };
             updatedConfigs.push(config); // Add to the new list of gates for this specific file
         }
         fileWithConfigs.dynamicConfigs = updatedConfigs;

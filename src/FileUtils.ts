@@ -5,6 +5,7 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 
 const ignoreList = new Set<string>(['.git', 'node_modules', 'README.md', 
     'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
+const extensionIgnoreList = new Set<string>(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map'])
 
 // Add to these overtime
 const allowedExtensions = new Set<string>(['ts', 'py'])
@@ -21,6 +22,7 @@ const extensionToConfigRegexMap = new Map<string, string>([
 export default async function getFiles(githubKey: string): Promise<string[]> {
 
     const directory = process.env.GITHUB_WORKSPACE;
+    console.log('Main Directory:', directory);
     console.log('GITHUB_REF:', process.env.GITHUB_REF);
     console.log('GITHUB_REPOSITYORY', process.env.GITHUB_REPOSITORY);
 
@@ -62,32 +64,54 @@ export default async function getFiles(githubKey: string): Promise<string[]> {
         throw Error(`Error Requesting after ${retries} attempts`);
     }
     console.log(result?.data);
-    const fileList = scanFiles(directory);
+    const fileList = parsePullRequestData(result?.data, directory);
+
     return fileList;
 }
 
-// BFS search through all files
-async function scanFiles(dir: string): Promise<string[]> {
-    let fileList: string[] = [];
-    let queue: string[] = [dir]; // queue of directories
+// Get the file locations based on the pull request data from the Github API
+function parsePullRequestData(data, mainDirectory: string) {
+    let fileLocations = [];
 
-    while (queue.length > 0) {
-        let currFileDir = queue.pop();
-
-        if (fs.lstatSync(currFileDir).isDirectory()) { // Get all sub-directories
-            fs.readdirSync(currFileDir).forEach(subFile => {
-
-                // Certain directories should be ignored, like node_modules
-                if (!ignoreList.has(subFile)) {
-                    queue.push(`${currFileDir}/${subFile}`);
-                }
-            })
-        } else {
-            fileList.push(currFileDir);
+    for (const pullRequestFile of data) {
+        const fileName = pullRequestFile['filename'];
+        const fileExtension = fileName.split('.').at(-1);
+        
+        // Check if file has a valid extension for checking
+        if (!extensionIgnoreList.has(fileExtension)) {
+            const completeFileDir = `${mainDirectory}/${fileName}`;
+            fileLocations.push()
         }
     }
-    return fileList;
-};
+
+    return fileLocations;
+}
+
+// // BFS search through all files
+// async function scanFiles(dir: string): Promise<string[]> {
+//     let fileList: string[] = [];
+//     let queue: string[] = [dir]; // queue of directories
+
+//     while (queue.length > 0) {
+//         let currFileDir = queue.pop();
+
+//         if (fs.lstatSync(currFileDir).isDirectory()) { // Get all sub-directories
+//             fs.readdirSync(currFileDir).forEach(subFile => {
+
+//                 const newDir = `${currFileDir}/${subFile}`;
+//                 const extension = subFile.split('.').at(-1); // Get just the extension of the file
+
+//                 // Certain directories should be ignored, like node_modules
+//                 if (!ignoreList.has(subFile) && !extensionIgnoreList.has(extension)) {
+//                     queue.push(newDir);
+//                 }
+//             })
+//         } else {
+//             fileList.push(currFileDir);
+//         }
+//     }
+//     return fileList;
+// };
 
 // Searched solely for Feature Gates
 export function searchGatesInFile(fileDir: string) {
