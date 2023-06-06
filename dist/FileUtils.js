@@ -15,9 +15,9 @@ const extensionToConfigRegexMap = new Map([
     ["py", `get_config\(.*, ['"]?(?<configName>.*)['"]\)`],
 ]);
 function getFiles() {
-    // const directory = process.env.GITHUB_WORKSPACE;
-    // console.log(process.env.GITHUB_REF);
-    const directory = '/Users/jairogarciga/Github-Code-References/github-code-references';
+    const directory = process.env.GITHUB_WORKSPACE;
+    console.log('GITHUB_REF:', process.env.GITHUB_REF);
+    // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references' 
     const fileList = scanFiles(directory);
     return fileList;
 }
