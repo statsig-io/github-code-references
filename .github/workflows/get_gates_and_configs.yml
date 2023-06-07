@@ -1,4 +1,4 @@
-name: "Get Project Data"
+name: "Get Gates and Configs"
 
 on:
   pull_request:
