@@ -1,21 +1,21 @@
-export interface Gate {
+export interface DynamicConfig {
     line: string;
-    gateName: string;
+    configName: string;
     enabled: boolean;
-    defaultValue: string;
+    defaultValue: Object;
     checksInPast30Days: string;
 }
 
-export default class GateData {
+export default class DynamicConfigData {
 
     private _fileDir: string;
     private _fileName: string;
-    private _gates: Gate[];
+    private _dynamicConfigs: DynamicConfig[];
 
-    constructor(fileDir: string, fileName: string, gates: Gate[]) {
+    constructor(fileDir: string, fileName: string, configs: DynamicConfig[]) {
         this.fileDir = fileDir;
         this.fileName = fileName;
-        this.gates = gates;
+        this.dynamicConfigs = configs;
     }
 
     public get fileDir(): string {
@@ -34,11 +34,10 @@ export default class GateData {
         this._fileName = value;
     }
 
-    public get gates(): Gate[] {
-        return this._gates;
+    public get dynamicConfigs(): DynamicConfig[] {
+        return this._dynamicConfigs;
     }
-
-    public set gates(value: Gate[]) {
-        this._gates = value;
+    public set dynamicConfigs(value: DynamicConfig[]) {
+        this._dynamicConfigs = value;
     }
 }

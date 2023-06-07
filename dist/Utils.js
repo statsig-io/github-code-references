@@ -1,11 +1,25 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ForegroundColor = exports.ColorReset = void 0;
 const core = require("@actions/core");
+const axios_1 = require("axios");
+const axios_retry_1 = require("axios-retry");
+exports.ColorReset = "\x1b[0m";
+var ForegroundColor;
+(function (ForegroundColor) {
+    ForegroundColor["Blue"] = "\u001B[34m";
+    ForegroundColor["Green"] = "\u001B[32m";
+})(ForegroundColor || (exports.ForegroundColor = ForegroundColor = {}));
 class Utils {
     static getKey() {
         const sdkKey = this.parseInputKey("sdk-key", true);
         core.setSecret(sdkKey);
         return sdkKey;
+    }
+    static getGithubKey() {
+        const githubKey = this.parseInputKey("github-key", true);
+        core.setSecret(githubKey);
+        return githubKey;
     }
     // Parses the input for the action.yml file
     static parseInputKey(key, required = false, defaultValue = "") {
@@ -17,35 +31,60 @@ class Utils {
         }
         return defaultValue;
     }
-    // Parses through the project input data and outputs all feature gates
-    static parseProjects(data) {
+    static async requestProjectData(sdkKey, timeout) {
+        const retries = 7;
+        (0, axios_retry_1.default)(axios_1.default, {
+            retries: retries,
+        });
+        // Post request can fail occassionally, catch this and throw the error if so
+        let result;
+        try {
+            result = await axios_1.default.post('https:/latest.statsigapi.net/developer/v1/projects', // This will change to prod when completed
+            null, {
+                headers: {
+                    'statsig-api-key': sdkKey,
+                    'Content-Type': 'application/json',
+                },
+                timeout: timeout, // Sometimes the delay is greater than the speed GH workflows can get the data
+            });
+        }
+        catch (e) {
+            result = e?.response;
+            throw Error(`Error Requesting after ${retries} attempts`);
+        }
+        return result;
+    }
+    ;
+    // Parses through statsig project data for targetType (Feature Gates or Dynamic Configs)
+    static parseProjectData(data, targetType) {
         if (!data) {
             return null;
         }
         let projectData = data["projects"];
-        let allInfo = new Map;
+        let allTypeInfo = new Map;
         // Loop over every project in data
-        projectData.forEach(function (project) {
-            // Loop over every feature gate within each project
-            project["feature_gates"].forEach(function (feature_gate) {
-                allInfo.set(feature_gate["name"], {
-                    "enabled": feature_gate["enabled"],
-                    "defaultValue": feature_gate["defaultValue"],
-                    "checksInPast30Days": feature_gate["checksInPast30Days"],
+        for (const project of projectData) {
+            for (const target of project[targetType]) { // Either Feature Gates or Dynamic Configs
+                allTypeInfo.set(target["name"], {
+                    "enabled": target["enabled"],
+                    "defaultValue": target["defaultValue"],
+                    "checksInPast30Days": target["checksInPast30Days"],
                 });
-            });
-        });
-        return allInfo;
+            }
+        }
+        return allTypeInfo;
     }
     ;
     // Controls the format of the gate outputs
     static outputFinalGateData(allGateData) {
+        console.log('---------- Feature Gates ----------');
         for (const gateData of allGateData) {
             console.log('File:', gateData.fileName);
             console.log('Location:', gateData.fileDir);
             for (const gate of gateData.gates) {
-                console.log(`\t Gate: ${gate.gateName}`);
-                // Print all critical gate properities
+                // Set the Gate names to display as the color Blue
+                console.log(`\t${ForegroundColor.Blue}Gate: ${gate.gateName}${exports.ColorReset}`);
+                // Print all necessary gate properities
                 for (const gateProp in gate) {
                     if (gateProp != 'gateName') { // Already printed name above, do not reprint
                         console.log(`\t\t${gateProp}: ${gate[gateProp]}`);
@@ -54,6 +93,37 @@ class Utils {
                 console.log(); // Leave a space between each Gate and file
             }
         }
+    }
+    static outputFinalConfigData(allConfigData) {
+        console.log('---------- Dynamic Configs ----------');
+        // Iterate over every file with configs
+        for (const configData of allConfigData) {
+            console.log('File:', configData.fileName);
+            console.log('Location:', configData.fileDir);
+            // Get a specific dynamic config within that file
+            for (const config of configData.dynamicConfigs) {
+                Utils.outputDynamicConfig(config);
+            }
+        }
+    }
+    // Output an individual DynamicConfig objects data
+    static outputDynamicConfig(config) {
+        console.log(`\t${ForegroundColor.Blue}Dynamic Config: ${config.configName} ${exports.ColorReset}`);
+        // Print all necessary config properities
+        for (const configProp in config) {
+            // Already printed name above, do not reprint
+            if (configProp != 'configName' && configProp != 'defaultValue') {
+                console.log(`\t\t${configProp}: ${config[configProp]}`);
+            }
+            else if (configProp == 'defaultValue') { // Default value for Dynamic Configs are objects
+                const defaultValues = config[configProp];
+                console.log(`\t\tDefaultValues:`);
+                for (const value in defaultValues) {
+                    console.log(`\t\t\t${value}: ${defaultValues[value]}`);
+                }
+            }
+        }
+        console.log(); // Leave a space between each Gate and file
     }
 }
 exports.default = Utils;

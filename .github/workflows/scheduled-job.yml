@@ -1,8 +1,6 @@
 name: 'Get Project Data'
 
 on:
-  schedule:
-    - cron: "*/30 * * * *"
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -35,3 +33,4 @@ jobs:
         uses: ./
         with:
           sdk-key: ${{ secrets.SDK_KEY }}
+          github-key: ${{ secrets.GH_ACCESS_TOKEN }}

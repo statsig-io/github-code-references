@@ -8,6 +8,10 @@ inputs:
     description: "The Statsig SDK key"
     required: true
     default: ''
+  github-key:
+    description: "A Github key that can access your repo to read pull request info"
+    required: true
+    default: ''
 
 # outputs:
   # project-data: # id of output

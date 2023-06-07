@@ -2,3 +2,7 @@
 node_modules
 
 *.code-workspace
+
+src/RegexTester.ts
+dist/RegexTester.js
+dist/RegexTester.map
