@@ -43,11 +43,13 @@ export default class Utils {
   }
 
   public static getGithubEventName() {
+    console.log(process.env.GITHUB_EVENT_NAME);
     return process.env.GITHUB_EVENT_NAME;
   }
 
   public static isGithubEventSchedule() {
-    return this.getGithubDirectory() == 'schedule';
+    
+    return this.getGithubEventName() == 'schedule';
   }
 
   
