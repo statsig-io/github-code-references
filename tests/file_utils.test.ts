@@ -33,7 +33,7 @@ describe('Test FileUtils searchGatesInFile', () => {
 
     test('searchGatesInFile with node.js', () => {
         const gateRes = searchGatesInFile(nodeTestFile);
-        const expectedRes = [ { line: '7', gateName: 'silly_gate' } ]
+        const expectedRes = [ { line: '7', gateName: 'silly_gate' }, { line: '8', gateName: 'node_js_gate' } ]
         expect(gateRes).toEqual(expectedRes);
     })
 
@@ -61,7 +61,7 @@ describe('Test FileUtils searchConfigsInFile', () => {
 
     test('searchConfigsInFile with node.js', () => {
         const gateRes = searchConfigsInFile(nodeTestFile);
-        const expectedRes = [ { line: '8', configName: 'nodejs_dynamic_config' } ]
+        const expectedRes = [ { line: '9', configName: 'nodejs_dynamic_config' } ]
         expect(gateRes).toEqual(expectedRes);
     })
 
