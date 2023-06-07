@@ -94,7 +94,7 @@ class Utils {
     static getGithubSearchURL(query) {
         const repoOwner = Utils.getRepoOwner();
         const repoName = Utils.getRepoName();
-        const searchUrl = `https://github.com/search?q=repo%3A${repoOwner}%${repoName}+${query}&type=code`;
+        const searchUrl = `https://github.com/search?q=repo%3A${repoOwner}%2F${repoName}+${query}&type=code`;
         return searchUrl;
     }
     // Controls the format of the gate outputs
@@ -133,7 +133,10 @@ class Utils {
     }
     // Output an individual DynamicConfig objects data
     static outputDynamicConfig(config) {
-        console.log(`\t${ForegroundColor.Blue}Dynamic Config: ${config.configName} ${exports.ColorReset}`);
+        const configName = config.configName;
+        const configUrl = Utils.getGithubSearchURL(configName);
+        console.log(`\t${ForegroundColor.Blue}Dynamic Config: ${configName} ${exports.ColorReset}`);
+        console.log(`\t${ForegroundColor.Blue}Url: ${configUrl} ${exports.ColorReset}`);
         // Print all necessary config properities
         for (const configProp in config) {
             // Already printed name above, do not reprint

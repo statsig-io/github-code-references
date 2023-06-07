@@ -162,9 +162,11 @@ export default class Utils {
   // Output an individual DynamicConfig objects data
   private static outputDynamicConfig(config: DynamicConfig) {
     
-    console.log(
-      `\t${ForegroundColor.Blue}Dynamic Config: ${config.configName} ${ColorReset}`
-    )
+    const configName = config.configName;
+    const configUrl = Utils.getGithubSearchURL(configName);
+
+    console.log(`\t${ForegroundColor.Blue}Dynamic Config: ${configName} ${ColorReset}`)
+    console.log(`\t${ForegroundColor.Blue}Url: ${configUrl} ${ColorReset}`)
 
     // Print all necessary config properities
     for (const configProp in config) {
