@@ -42,6 +42,16 @@ export default class Utils {
     return process.env.GITHUB_WORKSPACE;
   }
 
+  public static getGithubEventName() {
+    return process.env.GITHUB_EVENT_NAME;
+  }
+
+  public static isGithubEventSchedule() {
+    return this.getGithubDirectory() == 'schedule';
+  }
+
+  
+
   public static getRepoOwner() {
     const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
     return repo[0];

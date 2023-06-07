@@ -5,7 +5,9 @@ const fs = require("fs");
 const Utils_1 = require("./Utils");
 const axios_retry_1 = require("axios-retry");
 const axios_1 = require("axios");
-// Not worth checking files that won't have feature gates
+// Not worth checking files or folders that won't have feature gates
+const ignoreList = new Set(['.git', 'node_modules', 'README.md',
+    'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
 const extensionIgnoreList = new Set(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map']);
 // Add to these overtime
 const allowedExtensions = new Set(['ts', 'py', 'js']);
@@ -21,44 +23,72 @@ const extensionToConfigRegexMap = new Map([
 ]);
 // Leverage Github API and environment variables to access files touched by Pull Requests
 async function getFiles(githubKey) {
+    let fileList = [];
     // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references'
     const directory = Utils_1.default.getGithubDirectory();
-    const pullRequestNum = Utils_1.default.getPullRequestNum();
-    const githubOwner = Utils_1.default.getRepoOwner();
-    const repoName = Utils_1.default.getRepoName();
-    console.log(`Checking out ${githubOwner}:${repoName} on Pull Request ${pullRequestNum}`);
-    const retries = 7;
-    (0, axios_retry_1.default)(axios_1.default, {
-        retries: retries,
-    });
-    const timeout = 2000000;
-    // Do a GITHUB API Get request for the specific pull that triggered the workflow
-    // Use that to get the touched files
-    let result;
-    try {
-        result = await axios_1.default.get(`https://api.github.com/repos/${githubOwner}/${repoName}/pulls/${pullRequestNum}/files`, {
-            headers: {
-                'Authorization': `Bearer ${githubKey}`,
-                'Accept': 'application/vnd.github+json',
-                'Content-Type': 'application/json',
-            },
-            timeout: timeout,
-            data: {
-                'per_page': 100,
-                'page': 1,
-            }
+    // Only run on Pull Requests
+    if (!Utils_1.default.isGithubEventSchedule()) {
+        const pullRequestNum = Utils_1.default.getPullRequestNum();
+        const githubOwner = Utils_1.default.getRepoOwner();
+        const repoName = Utils_1.default.getRepoName();
+        console.log(`Checking out ${githubOwner}:${repoName} on Pull Request ${pullRequestNum}`);
+        const retries = 7;
+        (0, axios_retry_1.default)(axios_1.default, {
+            retries: retries,
         });
+        const timeout = 2000000;
+        // Do a GITHUB API Get request for the specific pull that triggered the workflow
+        // Use that to get the touched files
+        let result;
+        try {
+            result = await axios_1.default.get(`https://api.github.com/repos/${githubOwner}/${repoName}/pulls/${pullRequestNum}/files`, {
+                headers: {
+                    'Authorization': `Bearer ${githubKey}`,
+                    'Accept': 'application/vnd.github+json',
+                    'Content-Type': 'application/json',
+                },
+                timeout: timeout,
+                data: {
+                    'per_page': 100,
+                    'page': 1,
+                }
+            });
+        }
+        catch (e) {
+            result = e?.response;
+            throw Error(`Error Requesting after ${retries} attempts`);
+        }
+        console.log('Picking up Files ☺');
+        fileList = parsePullRequestData(result?.data, directory);
+        console.log('Finished picking up Files ☺\n');
     }
-    catch (e) {
-        result = e?.response;
-        throw Error(`Error Requesting after ${retries} attempts`);
+    else {
+        fileList = await scanFiles(directory); // No need to do a Get request, just check locally
     }
-    console.log('Picking up Files ☺');
-    const fileList = parsePullRequestData(result?.data, directory);
-    console.log('Finished picking up Files ☺\n');
     return fileList;
 }
 exports.default = getFiles;
+// BFS search through all files
+async function scanFiles(dir) {
+    let fileList = [];
+    let queue = [dir]; // queue of directories
+    while (queue.length > 0) {
+        let currFileDir = queue.pop();
+        if (fs.lstatSync(currFileDir).isDirectory()) { // Get all sub-directories
+            fs.readdirSync(currFileDir).forEach(subFile => {
+                // Certain directories should be ignored, like node_modules
+                if (!ignoreList.has(subFile)) {
+                    queue.push(`${currFileDir}/${subFile}`);
+                }
+            });
+        }
+        else {
+            fileList.push(currFileDir);
+        }
+    }
+    return fileList;
+}
+;
 // Get the file locations based on the pull request data from the Github API
 function parsePullRequestData(data, mainDirectory) {
     let fileLocations = [];

@@ -34,6 +34,12 @@ class Utils {
     static getGithubDirectory() {
         return process.env.GITHUB_WORKSPACE;
     }
+    static getGithubEventName() {
+        return process.env.GITHUB_EVENT_NAME;
+    }
+    static isGithubEventSchedule() {
+        return this.getGithubDirectory() == 'schedule';
+    }
     static getRepoOwner() {
         const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
         return repo[0];
