@@ -99,6 +99,8 @@ async function getProjectData() {
     }
     Utils_1.default.outputFinalGateData(finalGates);
     Utils_1.default.outputFinalConfigData(finalConfigs);
+    // Create a Pull Request using GITHUB API
+    Utils_1.default.createGithubPullRequest(githubKey);
 }
 exports.default = getProjectData;
 getProjectData();
