@@ -57,6 +57,54 @@ export default class Utils {
     return githubRef[2];
   }
 
+  public static getPullRefName() {
+    const githubRefName = process.env.GITHUB_REF_NAME;
+    return githubRefName;
+  }
+
+  public static async createGithubPullRequest(gitubToken: string) {
+    const retries = 7;
+    const timeout = 200000;
+    axiosRetry(axios, {
+      retries: retries,
+    });
+
+    const githubOwner = Utils.getRepoOwner();
+    const repoName = Utils.getRepoName();
+
+    const pullRequestData = {
+      "title": "Clean stale Gates and Configs",
+
+    }
+
+    console.log('GITHUB_HEAD_REF:', process.env.GITHUB_HEAD_REF)
+    console.log('GITHUB_BASE_REF:', process.env.GITHUB_BASE_REF)
+    console.log('GITHUB_REF:', process.env.GITHUB_REF)
+    console.log('GITHUB_REF_NAME:', process.env.GITHUB_REF_NAME)
+
+
+    // Post request can fail occassionally, catch this and throw the error if so
+    // let result: AxiosResponse | undefined;
+    // try {
+    //   result = await axios.post(
+    //       `https://api.github.com/repos/${githubOwner}/${repoName}/pulls`,
+    //       pullRequestData,
+    //       {
+    //           headers: {
+    //               'Authorization': `Bearer ${gitubToken}`,
+    //               'Accept': 'application/vnd.github+json',
+    //           },
+    //           timeout: timeout, // Sometimes the delay is greater than the speed GH workflows can get the data
+    //       }
+    //   )
+    // } catch (e: unknown) {
+    //     result = (e as AxiosError)?.response;
+    //     throw Error(`Error Requesting after ${retries} attempts`);
+    // }
+
+    // return result;
+  }
+
   public static async requestProjectData(sdkKey: string, timeout: number): Promise<AxiosResponse | undefined> {
     const retries = 7;
     axiosRetry(axios, {
