@@ -10,5 +10,3 @@ It presents the gate or config with their:
 - enabled
 - Default Values
 - Checksin30Days
-
-## Why is it?
