@@ -21,14 +21,12 @@ const extensionToConfigRegexMap = new Map([
 ]);
 // Leverage Github API and environment variables to access files touched by Pull Requests
 async function getFiles(githubKey) {
-    const directory = process.env.GITHUB_WORKSPACE;
-    const githubRepo = process.env.GITHUB_REPOSITORY.split('/'); // refs/pulls/pr_num/merge
-    const githubRef = process.env.GITHUB_REF.split('/'); // owner/repo
     // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references'
-    const pullRequestNum = githubRef[2];
-    const githubOwner = githubRepo[0];
-    const repoName = githubRepo[1];
-    console.log(`Checking out ${githubRepo} on Pull Request ${pullRequestNum}`);
+    const directory = Utils_1.default.getGithubDirectory();
+    const pullRequestNum = Utils_1.default.getPullRequestNum();
+    const githubOwner = Utils_1.default.getRepoOwner();
+    const repoName = Utils_1.default.getRepoName();
+    console.log(`Checking out ${githubOwner}:${repoName} on Pull Request ${pullRequestNum}`);
     const retries = 7;
     (0, axios_retry_1.default)(axios_1.default, {
         retries: retries,

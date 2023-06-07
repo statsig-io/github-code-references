@@ -31,6 +31,21 @@ class Utils {
         }
         return defaultValue;
     }
+    static getGithubDirectory() {
+        return process.env.GITHUB_WORKSPACE;
+    }
+    static getRepoOwner() {
+        const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
+        return repo[0];
+    }
+    static getRepoName() {
+        const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
+        return repo[1];
+    }
+    static getPullRequestNum() {
+        const githubRef = process.env.GITHUB_REF.split('/'); // refs/pulls/pr_num/merge
+        return githubRef[2];
+    }
     static async requestProjectData(sdkKey, timeout) {
         const retries = 7;
         (0, axios_retry_1.default)(axios_1.default, {
@@ -75,6 +90,13 @@ class Utils {
         return allTypeInfo;
     }
     ;
+    // Uses local variables to get repo owner and repo name
+    static getGithubSearchURL(query) {
+        const repoOwner = Utils.getRepoOwner();
+        const repoName = Utils.getRepoName();
+        const searchUrl = `https://github.com/search?q=repo%3A${repoOwner}%${repoName}+${query}&type=code`;
+        return searchUrl;
+    }
     // Controls the format of the gate outputs
     static outputFinalGateData(allGateData) {
         console.log('---------- Feature Gates ----------');
@@ -83,7 +105,10 @@ class Utils {
             console.log('Location:', gateData.fileDir);
             for (const gate of gateData.gates) {
                 // Set the Gate names to display as the color Blue
-                console.log(`\t${ForegroundColor.Blue}Gate: ${gate.gateName}${exports.ColorReset}`);
+                const gateName = gate.gateName;
+                const gateUrl = Utils.getGithubSearchURL(gateName);
+                console.log(`\t${ForegroundColor.Blue}Gate: ${gateName}${exports.ColorReset}`);
+                console.log(`\t${ForegroundColor.Blue}Url: ${gateUrl}${exports.ColorReset}`);
                 // Print all necessary gate properities
                 for (const gateProp in gate) {
                     if (gateProp != 'gateName') { // Already printed name above, do not reprint

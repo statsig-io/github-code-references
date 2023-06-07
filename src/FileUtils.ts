@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import { ForegroundColor, ColorReset } from './Utils';
+import Utils, { ForegroundColor, ColorReset } from './Utils';
 import axiosRetry from 'axios-retry';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
@@ -22,16 +22,13 @@ const extensionToConfigRegexMap = new Map<string, RegExp>([
 // Leverage Github API and environment variables to access files touched by Pull Requests
 export default async function getFiles(githubKey: string): Promise<string[]> {
 
-    const directory = process.env.GITHUB_WORKSPACE;
-    const githubRepo = process.env.GITHUB_REPOSITORY.split('/'); // refs/pulls/pr_num/merge
-    const githubRef = process.env.GITHUB_REF.split('/'); // owner/repo
-
     // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references'
-    const pullRequestNum = githubRef[2];
-    const githubOwner = githubRepo[0];
-    const repoName = githubRepo[1];
+    const directory = Utils.getGithubDirectory();
+    const pullRequestNum = Utils.getPullRequestNum();
+    const githubOwner = Utils.getRepoOwner();
+    const repoName = Utils.getRepoName();
 
-    console.log(`Checking out ${githubRepo} on Pull Request ${pullRequestNum}`);
+    console.log(`Checking out ${githubOwner}:${repoName} on Pull Request ${pullRequestNum}`);
 
     const retries = 7;
     axiosRetry(axios, {

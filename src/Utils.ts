@@ -38,6 +38,25 @@ export default class Utils {
     return defaultValue;
   }
 
+  public static getGithubDirectory() {
+    return process.env.GITHUB_WORKSPACE;
+  }
+
+  public static getRepoOwner() {
+    const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
+    return repo[0];
+  }
+
+  public static getRepoName() {
+    const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
+    return repo[1];
+  }
+
+  public static getPullRequestNum() {
+    const githubRef = process.env.GITHUB_REF.split('/'); // refs/pulls/pr_num/merge
+    return githubRef[2];
+  }
+
   public static async requestProjectData(sdkKey: string, timeout: number): Promise<AxiosResponse | undefined> {
     const retries = 7;
     axiosRetry(axios, {
@@ -92,6 +111,14 @@ export default class Utils {
     return allTypeInfo;
   };
 
+  // Uses local variables to get repo owner and repo name
+  public static getGithubSearchURL(query: string) {
+    const repoOwner = Utils.getRepoOwner();
+    const repoName = Utils.getRepoName();
+    const searchUrl = `https://github.com/search?q=repo%3A${repoOwner}%2F${repoName}+${query}&type=code`;
+    return searchUrl;
+  }
+
   // Controls the format of the gate outputs
   public static outputFinalGateData(allGateData: GateData[]) {
     console.log('---------- Feature Gates ----------')
@@ -101,7 +128,11 @@ export default class Utils {
 
       for (const gate of gateData.gates) {
         // Set the Gate names to display as the color Blue
-        console.log(`\t${ForegroundColor.Blue}Gate: ${gate.gateName}${ColorReset}`)
+        const gateName = gate.gateName;
+        const gateUrl = Utils.getGithubSearchURL(gateName);
+
+        console.log(`\t${ForegroundColor.Blue}Gate: ${gateName}${ColorReset}`)
+        console.log(`\t${ForegroundColor.Blue}Url: ${gateUrl}${ColorReset}`)
 
         // Print all necessary gate properities
         for (const gateProp in gate) {
