@@ -1,13 +1,13 @@
-name: 'Get Project Data'
+name: FileUtils Tests
 
 on:
+  push:
+    branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch:
 
 jobs:
-  get-project-data:
-
+  set-up:
     runs-on: ubuntu-latest
 
     strategy:
@@ -23,14 +23,13 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: NPM Install
         run: npm install
 
-      - name: Get Project Data and file names
-        id: data
-        uses: ./
-        with:
-          sdk-key: ${{ secrets.SDK_KEY }}
-          github-key: ${{ secrets.GH_ACCESS_TOKEN }}
+      - name: Get Packages
+        run: npm ci
+
+      - name: Run Tests
+        run: npm test

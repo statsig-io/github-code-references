@@ -31,6 +31,66 @@ class Utils {
         }
         return defaultValue;
     }
+    static getGithubDirectory() {
+        return process.env.GITHUB_WORKSPACE;
+    }
+    static getGithubEventName() {
+        return process.env.GITHUB_EVENT_NAME;
+    }
+    static isGithubEventSchedule() {
+        return this.getGithubDirectory() == 'schedule';
+    }
+    static getRepoOwner() {
+        const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
+        return repo[0];
+    }
+    static getRepoName() {
+        const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
+        return repo[1];
+    }
+    static getPullRequestNum() {
+        const githubRef = process.env.GITHUB_REF.split('/'); // refs/pulls/pr_num/merge
+        return githubRef[2];
+    }
+    static getPullRefName() {
+        const githubRefName = process.env.GITHUB_REF_NAME;
+        return githubRefName;
+    }
+    static async createGithubPullRequest(gitubToken) {
+        const retries = 7;
+        const timeout = 200000;
+        (0, axios_retry_1.default)(axios_1.default, {
+            retries: retries,
+        });
+        const githubOwner = Utils.getRepoOwner();
+        const repoName = Utils.getRepoName();
+        const pullRequestData = {
+            "title": "Clean stale Gates and Configs",
+        };
+        console.log('GITHUB_HEAD_REF:', process.env.GITHUB_HEAD_REF);
+        console.log('GITHUB_BASE_REF:', process.env.GITHUB_BASE_REF);
+        console.log('GITHUB_REF:', process.env.GITHUB_REF);
+        console.log('GITHUB_REF_NAME:', process.env.GITHUB_REF_NAME);
+        // Post request can fail occassionally, catch this and throw the error if so
+        // let result: AxiosResponse | undefined;
+        // try {
+        //   result = await axios.post(
+        //       `https://api.github.com/repos/${githubOwner}/${repoName}/pulls`,
+        //       pullRequestData,
+        //       {
+        //           headers: {
+        //               'Authorization': `Bearer ${gitubToken}`,
+        //               'Accept': 'application/vnd.github+json',
+        //           },
+        //           timeout: timeout, // Sometimes the delay is greater than the speed GH workflows can get the data
+        //       }
+        //   )
+        // } catch (e: unknown) {
+        //     result = (e as AxiosError)?.response;
+        //     throw Error(`Error Requesting after ${retries} attempts`);
+        // }
+        // return result;
+    }
     static async requestProjectData(sdkKey, timeout) {
         const retries = 7;
         (0, axios_retry_1.default)(axios_1.default, {
@@ -75,6 +135,13 @@ class Utils {
         return allTypeInfo;
     }
     ;
+    // Uses local variables to get repo owner and repo name
+    static getGithubSearchURL(query) {
+        const repoOwner = Utils.getRepoOwner();
+        const repoName = Utils.getRepoName();
+        const searchUrl = `https://github.com/search?q=repo%3A${repoOwner}%2F${repoName}+${query}&type=code`;
+        return searchUrl;
+    }
     // Controls the format of the gate outputs
     static outputFinalGateData(allGateData) {
         console.log('---------- Feature Gates ----------');
@@ -83,7 +150,10 @@ class Utils {
             console.log('Location:', gateData.fileDir);
             for (const gate of gateData.gates) {
                 // Set the Gate names to display as the color Blue
-                console.log(`\t${ForegroundColor.Blue}Gate: ${gate.gateName}${exports.ColorReset}`);
+                const gateName = gate.gateName;
+                const gateUrl = Utils.getGithubSearchURL(gateName);
+                console.log(`\t${ForegroundColor.Blue}Gate: ${gateName}${exports.ColorReset}`);
+                console.log(`\t${ForegroundColor.Blue}Url: ${gateUrl}${exports.ColorReset}`);
                 // Print all necessary gate properities
                 for (const gateProp in gate) {
                     if (gateProp != 'gateName') { // Already printed name above, do not reprint
@@ -108,7 +178,10 @@ class Utils {
     }
     // Output an individual DynamicConfig objects data
     static outputDynamicConfig(config) {
-        console.log(`\t${ForegroundColor.Blue}Dynamic Config: ${config.configName} ${exports.ColorReset}`);
+        const configName = config.configName;
+        const configUrl = Utils.getGithubSearchURL(configName);
+        console.log(`\t${ForegroundColor.Blue}Dynamic Config: ${configName} ${exports.ColorReset}`);
+        console.log(`\t${ForegroundColor.Blue}Url: ${configUrl} ${exports.ColorReset}`);
         // Print all necessary config properities
         for (const configProp in config) {
             // Already printed name above, do not reprint

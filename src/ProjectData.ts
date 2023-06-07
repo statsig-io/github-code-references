@@ -118,6 +118,9 @@ export default async function getProjectData() {
 
     Utils.outputFinalGateData(finalGates);
     Utils.outputFinalConfigData(finalConfigs);
+
+    // Create a Pull Request using GITHUB API
+    Utils.createGithubPullRequest(githubKey);
 }
 
 getProjectData();

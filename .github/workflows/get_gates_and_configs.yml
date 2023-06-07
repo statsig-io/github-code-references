@@ -1,0 +1,36 @@
+name: "Get Gates and Configs"
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  pull_request:
+    branches: [main]
+
+jobs:
+  get-project-data:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [16.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: NPM Install
+        run: npm install
+
+      - name: Find Feature Gates and Dynamic Configs
+        id: data
+        uses: ./ # Put in location to Github-Code-References/action.yml here
+        with:
+          sdk-key: ${{ secrets.SDK_KEY }}
+          github-key: ${{ secrets.GH_ACCESS_TOKEN }}
