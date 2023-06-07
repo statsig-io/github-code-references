@@ -71,8 +71,8 @@ export default async function getFiles(githubKey: string): Promise<string[]> {
 }
 
 // Get the file locations based on the pull request data from the Github API
-function parsePullRequestData(data, mainDirectory: string) {
-    let fileLocations = [];
+export function parsePullRequestData(data, mainDirectory: string): string[] {
+    let fileLocations: string[] = [];
 
     for (const pullRequestFile of data) {
         const fileName = pullRequestFile['filename'];
@@ -88,7 +88,7 @@ function parsePullRequestData(data, mainDirectory: string) {
             console.log(`\t${ForegroundColor.Green}${completeFileDir}${ColorReset}`)
         }
     }
-
+    
     return fileLocations;
 }
 

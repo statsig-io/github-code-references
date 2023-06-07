@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchConfigsInFile = exports.searchGatesInFile = void 0;
+exports.searchConfigsInFile = exports.searchGatesInFile = exports.parsePullRequestData = void 0;
 const fs = require("fs");
 const Utils_1 = require("./Utils");
 const axios_retry_1 = require("axios-retry");
@@ -78,6 +78,7 @@ function parsePullRequestData(data, mainDirectory) {
     }
     return fileLocations;
 }
+exports.parsePullRequestData = parsePullRequestData;
 // Searched solely for Feature Gates
 function searchGatesInFile(fileDir) {
     // Assume in typescript or Python only for now
