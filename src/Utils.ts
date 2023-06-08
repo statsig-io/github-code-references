@@ -91,8 +91,7 @@ export default class Utils {
     console.log('GITHUB_REF:', process.env.GITHUB_REF)
     console.log('GITHUB_REF_NAME:', process.env.GITHUB_REF_NAME)
 
-
-    // let result: AxiosResponse | undefined;
+    let result: AxiosResponse | undefined;
     // try {
     //   result = await axios.post(
     //       `https://api.github.com/repos/${githubOwner}/${repoName}/pulls`,
