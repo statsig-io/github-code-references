@@ -92,7 +92,6 @@ export default class Utils {
     console.log('GITHUB_REF_NAME:', process.env.GITHUB_REF_NAME)
 
 
-    // Post request can fail occassionally, catch this and throw the error if so
     // let result: AxiosResponse | undefined;
     // try {
     //   result = await axios.post(
