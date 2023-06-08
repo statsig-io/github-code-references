@@ -43,7 +43,7 @@ async function testGithubApi() {
         const commitSha = latestCommit.data.sha;
         console.log('latestcommit:', commitSha);
         // Now create the branch based off of the latest sha
-        octokit.rest.git.createRef({
+        await octokit.rest.git.createRef({
             owner: owner,
             repo: repo,
             ref: statsig_clean_branch,
@@ -51,7 +51,7 @@ async function testGithubApi() {
         });
     }
     // Step 2: Checkout the branch!
-    git.checkout(statsig_clean_branch);
+    await git.checkout(statsig_clean_branch);
     const branch = await git.branch();
     const currentBranch = branch.current;
     console.log(currentBranch);
