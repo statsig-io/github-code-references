@@ -9,7 +9,7 @@ const ignoreList = new Set<string>(['.git', 'node_modules', 'README.md',
 const extensionIgnoreList = new Set<string>(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map'])
 
 // Add to these overtime
-const allowedExtensions = new Set<string>(['ts', 'py', 'js'])
+const SUPPORTED_EXTENSIONS = new Set<string>(['ts', 'py', 'js'])
 const extensionToGateRegexMap = new Map<string, RegExp>([
     ["ts", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["js", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
@@ -138,7 +138,7 @@ export function searchGatesInFile(fileDir: string) {
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
 
-    if (allowedExtensions.has(extension)) {
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
         
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8')
@@ -179,7 +179,7 @@ export function searchConfigsInFile(fileDir: string) {
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
 
-    if (allowedExtensions.has(extension)) {
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
         
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8')
