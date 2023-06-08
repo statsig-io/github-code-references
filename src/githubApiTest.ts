@@ -7,7 +7,8 @@ const octokit = new Octokit({
 
 const owner = 'statsig-io';
 const repo = 'github-code-references';
-const statsig_clean_branch = 'refs/heads/Clean-Statsig-Gate';
+const statsig_clean_branch_ref = 'refs/heads/Clean-Statsig-Gate';
+const statsig_clean_branch = 'Clean-Statsig-Gate';
 const main_branch = 'main' // This will be an environment variable given by the gitub workflow
 const git = simpleGit('')
 
@@ -21,7 +22,7 @@ async function testGithubApi() {
             {
                 owner: owner,
                 repo: repo,
-                branch: statsig_clean_branch,
+                branch: statsig_clean_branch_ref,
             }
         );
     } catch (errorStatus) {
@@ -52,16 +53,16 @@ async function testGithubApi() {
         console.log('latestcommit:', commitSha);
 
         // Now create the branch based off of the latest sha
-        octokit.rest.git.createRef({
+        await octokit.rest.git.createRef({
             owner: owner,
             repo: repo,
-            ref: statsig_clean_branch,
+            ref: statsig_clean_branch_ref,
             sha: commitSha,
           });
     }
     
     // Step 2: Checkout the branch!
-    git.checkout(main_branch);
+    await git.checkout(statsig_clean_branch);
     const branch = await git.branch();
     const currentBranch = branch.current;
     console.log(currentBranch);
