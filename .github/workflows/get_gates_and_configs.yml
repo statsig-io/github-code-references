@@ -2,7 +2,7 @@ name: "Get Gates and Configs"
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/30 * * * *"
   pull_request:
     branches: [main]
 
