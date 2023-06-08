@@ -72,8 +72,7 @@ class Utils {
         console.log('GITHUB_BASE_REF:', process.env.GITHUB_BASE_REF);
         console.log('GITHUB_REF:', process.env.GITHUB_REF);
         console.log('GITHUB_REF_NAME:', process.env.GITHUB_REF_NAME);
-        // Post request can fail occassionally, catch this and throw the error if so
-        // let result: AxiosResponse | undefined;
+        let result;
         // try {
         //   result = await axios.post(
         //       `https://api.github.com/repos/${githubOwner}/${repoName}/pulls`,

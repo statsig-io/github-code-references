@@ -1,9 +1,12 @@
 {
   "dependencies": {
     "@actions/core": "^1.10.0",
+    "@octokit/rest": "^19.0.11",
     "axios": "^1.4.0",
     "axios-retry": "^3.5.0",
+    "octokit": "^2.0.19",
     "process": "^0.11.10",
+    "simple-git": "^3.19.0",
     "statsig-node": "^5.7.0"
   },
   "devDependencies": {
