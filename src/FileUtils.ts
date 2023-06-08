@@ -76,10 +76,15 @@ export default async function getFiles(githubKey: string): Promise<string[]> {
         fileList = await scanFiles(directory); // No need to do a Get request, just check locally
     }
 
+    for (const fileDir of fileList) {
+        // Output a valid file found, wrap it with ANSI Green
+        console.log(`\t${ForegroundColor.Green}${fileDir}${ColorReset}`)
+    }
+
     return fileList;
 }
 
-// BFS search through all files
+// BFS search through local files
 async function scanFiles(dir: string): Promise<string[]> {
     let fileList: string[] = [];
     let queue: string[] = [dir]; // queue of directories
@@ -99,6 +104,7 @@ async function scanFiles(dir: string): Promise<string[]> {
             fileList.push(currFileDir);
         }
     }
+
     return fileList;
 };
 
@@ -115,9 +121,6 @@ export function parsePullRequestData(data, mainDirectory: string): string[] {
         if (!extensionIgnoreList.has(fileExtension) && fileStatus != 'removed') {
             const completeFileDir = `${mainDirectory}/${fileName}`;
             fileLocations.push(completeFileDir);
-
-            // Output a valid file found, wrap it with ANSI Green
-            console.log(`\t${ForegroundColor.Green}${completeFileDir}${ColorReset}`)
         }
     }
     
