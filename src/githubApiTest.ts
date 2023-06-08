@@ -65,6 +65,9 @@ async function testGithubApi() {
     const branch = await git.branch();
     const currentBranch = branch.current;
     console.log(currentBranch);
+
+    // Step 3: Make changes, commit, and push
+    
 }
 
 testGithubApi();
