@@ -51,7 +51,7 @@ async function testGithubApi() {
         });
     }
     // Step 2: Checkout the branch!
-    git.checkout(main_branch);
+    git.checkout(statsig_clean_branch);
     const branch = await git.branch();
     const currentBranch = branch.current;
     console.log(currentBranch);
