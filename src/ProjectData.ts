@@ -120,6 +120,7 @@ export default async function getProjectData() {
     Utils.outputFinalConfigData(finalConfigs);
 
     // Create a Pull Request using GITHUB API only when scheduled, test for now to get info
+    
     Utils.createGithubPullRequest(githubKey);
 }
 
