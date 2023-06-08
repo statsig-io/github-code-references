@@ -48,11 +48,8 @@ export default class Utils {
   }
 
   public static isGithubEventSchedule() {
-    
     return this.getGithubEventName() == 'schedule';
   }
-
-  
 
   public static getRepoOwner() {
     const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
