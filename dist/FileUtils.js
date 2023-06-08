@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchConfigsInFile = exports.searchGatesInFile = exports.parsePullRequestData = void 0;
+exports.searchConfigsInFile = exports.scanAndReplaceStaleGates = exports.searchGatesInFile = exports.parsePullRequestData = exports.scanFiles = void 0;
 const fs = require("fs");
 const Utils_1 = require("./Utils");
 const axios_retry_1 = require("axios-retry");
@@ -14,12 +14,17 @@ const SUPPORTED_EXTENSIONS = new Set(['ts', 'py', 'js']);
 const extensionToGateRegexMap = new Map([
     ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["py", /check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
 ]);
 const extensionToConfigRegexMap = new Map([
     ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
     ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
-    ["py", /get_config\(.*, ['"]?(?<configName>.*)['"]\)/i],
+    ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
+]);
+const extensionToGateReplace = new Map([
+    ["ts", " false"],
+    ["js", " false"],
+    ["py", " False"],
 ]);
 // Leverage Github API and environment variables to access files touched by Pull Requests
 async function getFiles(githubKey) {
@@ -92,6 +97,7 @@ async function scanFiles(dir) {
     }
     return fileList;
 }
+exports.scanFiles = scanFiles;
 ;
 // Get the file locations based on the pull request data from the Github API
 function parsePullRequestData(data, mainDirectory) {
@@ -109,11 +115,9 @@ function parsePullRequestData(data, mainDirectory) {
     return fileLocations;
 }
 exports.parsePullRequestData = parsePullRequestData;
-// Searched solely for Feature Gates
+// Searched solely for Feature Gates, 
 function searchGatesInFile(fileDir) {
-    // Assume in typescript or Python only for now
     let gatesFound = [];
-    const regex = '';
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
@@ -141,11 +145,31 @@ function searchGatesInFile(fileDir) {
     return gatesFound;
 }
 exports.searchGatesInFile = searchGatesInFile;
+// Decided to seperate this from the regular search to avoid coupling and because
+// at it's core it doesn't want to do anything with the files besides substitute them.
+function scanAndReplaceStaleGates(fileDir) {
+    // Split current directory based on .
+    const splitDir = fileDir.split('.');
+    const extension = splitDir.at(-1);
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
+        // Read within the file for the target string
+        const fileData = fs.readFileSync(fileDir, 'utf-8');
+        const lineDividedData = fileData.split('\n');
+        // Different languages, clients, servers have differentw ways of creating gates
+        // Different regex target each instead of using one big regex blob
+        const regex = extensionToGateRegexMap.get(extension);
+        // Loop over each line, regex search for the 
+        for (let line = 0; line < lineDividedData.length; line++) {
+            const currLine = lineDividedData[line];
+            currLine.replace(regex, extensionToGateReplace[extension]);
+        }
+    }
+}
+exports.scanAndReplaceStaleGates = scanAndReplaceStaleGates;
 // Searched solely for Feature Gates
 function searchConfigsInFile(fileDir) {
     // Assume in typescript or Python only for now
     let configsFound = [];
-    const regex = '';
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);

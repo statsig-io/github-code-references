@@ -24,6 +24,12 @@ const extensionToConfigRegexMap = new Map<string, RegExp>([
     ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
 ]);
 
+const extensionToGateReplace = new Map<string, any>([
+    ["ts", " false"], // Space before each for formatting when it gets replaced in
+    ["js", " false"],
+    ["py", " False"],
+])
+
 // Leverage Github API and environment variables to access files touched by Pull Requests
 export default async function getFiles(githubKey: string): Promise<string[]> {
 
@@ -88,7 +94,7 @@ export default async function getFiles(githubKey: string): Promise<string[]> {
 }
 
 // BFS search through local files
-async function scanFiles(dir: string): Promise<string[]> {
+export async function scanFiles(dir: string): Promise<string[]> {
     let fileList: string[] = [];
     let queue: string[] = [dir]; // queue of directories
 
@@ -130,12 +136,9 @@ export function parsePullRequestData(data, mainDirectory: string): string[] {
     return fileLocations;
 }
 
-// Searched solely for Feature Gates
+// Searched solely for Feature Gates, 
 export function searchGatesInFile(fileDir: string) {
-    // Assume in typescript or Python only for now
-    
     let gatesFound = [];
-    const regex = '';
 
     // Split current directory based on .
     const splitDir = fileDir.split('.');
@@ -171,12 +174,36 @@ export function searchGatesInFile(fileDir: string) {
     return gatesFound;
 }
 
+// Decided to seperate this from the regular search to avoid coupling and because
+// at it's core it doesn't want to do anything with the files besides substitute them.
+export function scanAndReplaceStaleGates(fileDir: string) {
+    // Split current directory based on .
+    const splitDir = fileDir.split('.');
+    const extension = splitDir.at(-1);
+
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
+        
+        // Read within the file for the target string
+        const fileData = fs.readFileSync(fileDir, 'utf-8')
+        const lineDividedData = fileData.split('\n')
+
+        // Different languages, clients, servers have differentw ways of creating gates
+        // Different regex target each instead of using one big regex blob
+        const regex = extensionToGateRegexMap.get(extension);
+
+        // Loop over each line, regex search for the 
+        for (let line = 0; line < lineDividedData.length; line++) {
+            const currLine = lineDividedData[line];
+            currLine.replace(regex, extensionToGateReplace[extension])
+        }
+    }
+}
+
 // Searched solely for Feature Gates
 export function searchConfigsInFile(fileDir: string) {
     // Assume in typescript or Python only for now
     
     let configsFound = [];
-    const regex = '';
 
     // Split current directory based on .
     const splitDir = fileDir.split('.');

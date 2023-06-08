@@ -1,5 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import simpleGit from "simple-git";
+import scanAndReplaceStaleGates from "./FileUtils";
 
 const octokit = new Octokit({
     auth: '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'
@@ -68,6 +69,10 @@ async function testGithubApi() {
     console.log(currentBranch);
 
     // Step 3: Make changes, commit, and push
+    // Step 3a: Match and substitute a test gate /tests/stale_gates.ts
+    const test_file_loc = "/tests/stale_gates.ts"
+    scanAndReplaceStaleGates(test_file_loc);
+
     
 }
 
