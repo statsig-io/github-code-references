@@ -6,19 +6,22 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 // Not worth checking files or folders that won't have feature gates
 const ignoreList = new Set<string>(['.git', 'node_modules', 'README.md', 
     'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
+
 const extensionIgnoreList = new Set<string>(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map'])
 
 // Add to these overtime
 const SUPPORTED_EXTENSIONS = new Set<string>(['ts', 'py', 'js'])
+
 const extensionToGateRegexMap = new Map<string, RegExp>([
-    ["ts", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["js", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["py", /check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
 ]);
+
 const extensionToConfigRegexMap = new Map<string, RegExp>([
-    ["ts", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
-    ["js", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
-    ["py", /get_config\(.*, ['"]?(?<configName>.*)['"]\)/i],
+    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
+    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
+    ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
 ]);
 
 // Leverage Github API and environment variables to access files touched by Pull Requests

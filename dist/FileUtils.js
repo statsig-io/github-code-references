@@ -10,15 +10,15 @@ const ignoreList = new Set(['.git', 'node_modules', 'README.md',
     'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
 const extensionIgnoreList = new Set(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map']);
 // Add to these overtime
-const allowedExtensions = new Set(['ts', 'py', 'js']);
+const SUPPORTED_EXTENSIONS = new Set(['ts', 'py', 'js']);
 const extensionToGateRegexMap = new Map([
-    ["ts", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["js", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["py", /check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
 ]);
 const extensionToConfigRegexMap = new Map([
-    ["ts", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
-    ["js", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
+    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
+    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
     ["py", /get_config\(.*, ['"]?(?<configName>.*)['"]\)/i],
 ]);
 // Leverage Github API and environment variables to access files touched by Pull Requests
@@ -117,7 +117,7 @@ function searchGatesInFile(fileDir) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
-    if (allowedExtensions.has(extension)) {
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8');
         const lineDividedData = fileData.split('\n');
@@ -149,7 +149,7 @@ function searchConfigsInFile(fileDir) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
-    if (allowedExtensions.has(extension)) {
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8');
         const lineDividedData = fileData.split('\n');
