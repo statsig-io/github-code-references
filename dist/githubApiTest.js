@@ -67,9 +67,11 @@ async function testGithubApi() {
     (0, FileUtils_1.replaceStaleConfigs)(test_file_loc);
     // Step 3b: Make a commit
     const commitMessage = "Replaced stale gates and configs";
-    git.commit(commitMessage);
+    await git.add('*'); // Add all changed files
+    git.commit(commitMessage); // Commit the changed files
     // Step 3c: Push the changes to the checked out branch -> Clean-Statsig-Gates
     git.push();
+    console.log('Push + test some stuff out');
 }
 testGithubApi();
 //# sourceMappingURL=githubApiTest.js.map
