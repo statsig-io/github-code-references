@@ -112,19 +112,19 @@ async function testGithubApi() {
             });
             console.log('Created a Pull Request');
         } else { // PR exists, try updating
-            // await octokit.rest.pulls.update({
-            //     owner: owner,
-            //     repo: repo,
-            //     pull_number: 1,
-            // });
-            // console.log('Updated a Pull Request')
+            const prNumber = prList[0].number // There sould only be 1 pr here
+            await octokit.rest.pulls.update({
+                owner: owner,
+                repo: repo,
+                pull_number: prNumber,
+            });
+            console.log('Updated a Pull Request')
         }
     } catch(pullError) {
         console.log('Pull Request not created or updated, no new changes');
         console.log(pullError);
     }
 
-    console.log(prList);
 }
 
 testGithubApi();
