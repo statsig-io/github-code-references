@@ -1,9 +1,9 @@
 import { AxiosResponse } from 'axios';
-import GateData from './GateData'
-import DynamicConfigData from './DynamicConfigData';
-import getFiles, { searchConfigs } from './FileUtils'
-import { searchGates } from './FileUtils';
-import Utils from './Utils'
+import GateData from './data_classes/GateData'
+import DynamicConfigData from './data_classes/DynamicConfigData';
+import getFiles, { searchConfigs } from './utils/FileUtils'
+import { searchGates } from './utils/FileUtils';
+import Utils from './utils/Utils'
 
 export const FeatureGate = 'feature_gates'
 export const DynamicConfig = 'dynamic_configs'

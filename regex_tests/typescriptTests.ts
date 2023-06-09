@@ -1,5 +1,5 @@
 import statsig from 'statsig-node';
-import Utils from '../src/Utils'
+import Utils from '../src/utils/Utils'
 
 async function useDummyGates() {
     // Put a gate here so we can search for it later

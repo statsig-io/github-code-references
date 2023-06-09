@@ -1,5 +1,5 @@
 import { pullRequestData, invalidPullRequestData } from "./PullRequestData";
-import { parsePullRequestData, searchConfigsInFile, searchGatesInFile } from "../src/FileUtils"
+import { parsePullRequestData, searchConfigsInFile, searchGatesInFile } from "../src/utils/FileUtils"
 
 const nodeTestFile = "regex_tests/nodejsTests.js"
 const pythonTestFile = "regex_tests/pythonTests.py"

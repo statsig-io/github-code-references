@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const rest_1 = require("@octokit/rest");
 const simple_git_1 = require("simple-git");
-const FileUtils_1 = require("./FileUtils");
+const FileUtils_1 = require("./utils/FileUtils");
 const octokit = new rest_1.Octokit({
     auth: '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'
 });

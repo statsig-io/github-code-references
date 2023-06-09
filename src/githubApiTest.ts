@@ -1,6 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import simpleGit from "simple-git";
-import { replaceStaleGates, replaceStaleConfigs } from "./FileUtils";
+import { replaceStaleGates, replaceStaleConfigs } from "./utils/FileUtils";
 
 const octokit = new Octokit({
     auth: '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'

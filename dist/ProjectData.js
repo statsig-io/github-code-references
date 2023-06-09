@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DynamicConfig = exports.FeatureGate = void 0;
-const GateData_1 = require("./GateData");
-const DynamicConfigData_1 = require("./DynamicConfigData");
-const FileUtils_1 = require("./FileUtils");
-const FileUtils_2 = require("./FileUtils");
-const Utils_1 = require("./Utils");
+const GateData_1 = require("./data_classes/GateData");
+const DynamicConfigData_1 = require("./data_classes/DynamicConfigData");
+const FileUtils_1 = require("./utils/FileUtils");
+const FileUtils_2 = require("./utils/FileUtils");
+const Utils_1 = require("./utils/Utils");
 exports.FeatureGate = 'feature_gates';
 exports.DynamicConfig = 'dynamic_configs';
 // Calls the endpoint using the API key and gets the projects info

@@ -1,8 +1,8 @@
 import * as core from "@actions/core";
 import axios, { AxiosError, AxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry';
-import GateData from "./GateData";
-import DynamicConfigData, { DynamicConfig } from "./DynamicConfigData";
+import GateData from "../data_classes/GateData";
+import DynamicConfigData, { DynamicConfig } from "../data_classes/DynamicConfigData";
 
 export const ColorReset = "\x1b[0m"
 export enum ForegroundColor {
