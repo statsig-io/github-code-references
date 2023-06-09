@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.searchConfigsInFile = exports.searchGatesInFile = exports.parsePullRequestData = void 0;
+exports.replaceStaleConfigs = exports.searchConfigs = exports.replaceStaleGates = exports.searchGates = exports.parsePullRequestData = exports.scanFiles = void 0;
 const fs = require("fs");
 const Utils_1 = require("./Utils");
 const axios_retry_1 = require("axios-retry");
@@ -10,16 +10,29 @@ const ignoreList = new Set(['.git', 'node_modules', 'README.md',
     'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
 const extensionIgnoreList = new Set(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map']);
 // Add to these overtime
-const allowedExtensions = new Set(['ts', 'py', 'js']);
+const SUPPORTED_EXTENSIONS = new Set(['ts', 'py', 'js']);
+// Regex match all found
+const GLOBAL_FLAG = 'g';
 const extensionToGateRegexMap = new Map([
-    ["ts", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["js", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["py", /check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
 ]);
 const extensionToConfigRegexMap = new Map([
-    ["ts", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
-    ["js", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
-    ["py", /get_config\(.*, ['"]?(?<configName>.*)['"]\)/i],
+    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
+    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
+    ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
+]);
+// The values that replace stale gates or configs
+const extensionToGateReplace = new Map([
+    ["ts", " false"],
+    ["js", " false"],
+    ["py", " False"],
+]);
+const extensionToConfigReplace = new Map([
+    ["ts", " {}"],
+    ["js", " {}"],
+    ["py", " {}"],
 ]);
 // Leverage Github API and environment variables to access files touched by Pull Requests
 async function getFiles(githubKey) {
@@ -92,6 +105,7 @@ async function scanFiles(dir) {
     }
     return fileList;
 }
+exports.scanFiles = scanFiles;
 ;
 // Get the file locations based on the pull request data from the Github API
 function parsePullRequestData(data, mainDirectory) {
@@ -109,15 +123,13 @@ function parsePullRequestData(data, mainDirectory) {
     return fileLocations;
 }
 exports.parsePullRequestData = parsePullRequestData;
-// Searched solely for Feature Gates
-function searchGatesInFile(fileDir) {
-    // Assume in typescript or Python only for now
+// Searched solely for Feature Gates, 
+function searchGates(fileDir) {
     let gatesFound = [];
-    const regex = '';
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
-    if (allowedExtensions.has(extension)) {
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8');
         const lineDividedData = fileData.split('\n');
@@ -140,16 +152,35 @@ function searchGatesInFile(fileDir) {
     }
     return gatesFound;
 }
-exports.searchGatesInFile = searchGatesInFile;
-// Searched solely for Feature Gates
-function searchConfigsInFile(fileDir) {
-    // Assume in typescript or Python only for now
-    let configsFound = [];
-    const regex = '';
+exports.searchGates = searchGates;
+// Decided to seperate this from the regular search to avoid coupling and because
+// at it's core it doesn't want to do anything with the files besides substitute them.
+function replaceStaleGates(fileDir) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
-    if (allowedExtensions.has(extension)) {
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
+        // Read within the file for the target string
+        const fileData = fs.readFileSync(fileDir, 'utf-8');
+        // Different languages, clients, servers have differentw ways of creating gates
+        // Different regex target each instead of using one big regex blob
+        const newString = extensionToGateReplace.get(extension);
+        const regex = new RegExp(extensionToGateRegexMap.get(extension), GLOBAL_FLAG);
+        const replacedFile = fileData.replace(regex, newString);
+        // Write into the old file with the gates cleaned out
+        fs.writeFileSync(fileDir, replacedFile, 'utf-8');
+        console.log('Done writing to file');
+    }
+}
+exports.replaceStaleGates = replaceStaleGates;
+// Searched solely for Feature Gates
+function searchConfigs(fileDir) {
+    // Assume in typescript or Python only for now
+    let configsFound = [];
+    // Split current directory based on .
+    const splitDir = fileDir.split('.');
+    const extension = splitDir.at(-1);
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8');
         const lineDividedData = fileData.split('\n');
@@ -172,5 +203,23 @@ function searchConfigsInFile(fileDir) {
     }
     return configsFound;
 }
-exports.searchConfigsInFile = searchConfigsInFile;
+exports.searchConfigs = searchConfigs;
+function replaceStaleConfigs(fileDir) {
+    // Split current directory based on .
+    const splitDir = fileDir.split('.');
+    const extension = splitDir.at(-1);
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
+        // Read within the file for the target string
+        const fileData = fs.readFileSync(fileDir, 'utf-8');
+        // Different languages, clients, servers have differentw ways of creating gates
+        // Different regex target each instead of using one big regex blob
+        const newString = extensionToConfigReplace.get(extension);
+        const regex = new RegExp(extensionToConfigRegexMap.get(extension), GLOBAL_FLAG);
+        const replacedFile = fileData.replace(regex, newString);
+        // Write into the old file with the gates cleaned out
+        fs.writeFileSync(fileDir, replacedFile, 'utf-8');
+        console.log('Done writing to file');
+    }
+}
+exports.replaceStaleConfigs = replaceStaleConfigs;
 //# sourceMappingURL=FileUtils.js.map

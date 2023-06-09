@@ -6,20 +6,39 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 // Not worth checking files or folders that won't have feature gates
 const ignoreList = new Set<string>(['.git', 'node_modules', 'README.md', 
     'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
+
 const extensionIgnoreList = new Set<string>(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map'])
 
 // Add to these overtime
 const SUPPORTED_EXTENSIONS = new Set<string>(['ts', 'py', 'js'])
+
+// Regex match all found
+const GLOBAL_FLAG = 'g';
 const extensionToGateRegexMap = new Map<string, RegExp>([
-    ["ts", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["js", /checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["py", /check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
 ]);
+
 const extensionToConfigRegexMap = new Map<string, RegExp>([
-    ["ts", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
-    ["js", /getConfig\(.*, ?['"]?(?<configName>.*)['"]\)/i],
-    ["py", /get_config\(.*, ['"]?(?<configName>.*)['"]\)/i],
+    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
+    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
+    ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
 ]);
+
+// The values that replace stale gates or configs
+const extensionToGateReplace = new Map<string, string>([
+    ["ts", " false"], // Space before each for formatting when it gets replaced in
+    ["js", " false"],
+    ["py", " False"],
+])
+
+const extensionToConfigReplace = new Map<string, string>([
+    ["ts", " {}"], // Space before each for formatting when it gets replaced in
+    ["js", " {}"],
+    ["py", " {}"],
+])
+
 
 // Leverage Github API and environment variables to access files touched by Pull Requests
 export default async function getFiles(githubKey: string): Promise<string[]> {
@@ -85,7 +104,7 @@ export default async function getFiles(githubKey: string): Promise<string[]> {
 }
 
 // BFS search through local files
-async function scanFiles(dir: string): Promise<string[]> {
+export async function scanFiles(dir: string): Promise<string[]> {
     let fileList: string[] = [];
     let queue: string[] = [dir]; // queue of directories
 
@@ -127,12 +146,9 @@ export function parsePullRequestData(data, mainDirectory: string): string[] {
     return fileLocations;
 }
 
-// Searched solely for Feature Gates
-export function searchGatesInFile(fileDir: string) {
-    // Assume in typescript or Python only for now
-    
+// Searched solely for Feature Gates, 
+export function searchGates(fileDir: string) {
     let gatesFound = [];
-    const regex = '';
 
     // Split current directory based on .
     const splitDir = fileDir.split('.');
@@ -168,12 +184,37 @@ export function searchGatesInFile(fileDir: string) {
     return gatesFound;
 }
 
+// Decided to seperate this from the regular search to avoid coupling and because
+// at it's core it doesn't want to do anything with the files besides substitute them.
+export function replaceStaleGates(fileDir: string) {
+    // Split current directory based on .
+    const splitDir = fileDir.split('.');
+    const extension = splitDir.at(-1);
+
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
+        
+        // Read within the file for the target string
+        const fileData = fs.readFileSync(fileDir, 'utf-8')
+
+        // Different languages, clients, servers have differentw ways of creating gates
+        // Different regex target each instead of using one big regex blob
+        const newString = extensionToGateReplace.get(extension);
+        const regex = new RegExp(extensionToGateRegexMap.get(extension), GLOBAL_FLAG);
+
+        const replacedFile = fileData.replace(regex, newString);
+
+        // Write into the old file with the gates cleaned out
+        fs.writeFileSync(fileDir, replacedFile, 'utf-8');
+        console.log('Done writing to file');
+        
+    }
+}
+
 // Searched solely for Feature Gates
-export function searchConfigsInFile(fileDir: string) {
+export function searchConfigs(fileDir: string) {
     // Assume in typescript or Python only for now
     
     let configsFound = [];
-    const regex = '';
 
     // Split current directory based on .
     const splitDir = fileDir.split('.');
@@ -206,4 +247,28 @@ export function searchConfigsInFile(fileDir: string) {
     }
 
     return configsFound;
+}
+
+export function replaceStaleConfigs(fileDir: string) {
+    // Split current directory based on .
+    const splitDir = fileDir.split('.');
+    const extension = splitDir.at(-1);
+
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
+        
+        // Read within the file for the target string
+        const fileData = fs.readFileSync(fileDir, 'utf-8')
+
+        // Different languages, clients, servers have differentw ways of creating gates
+        // Different regex target each instead of using one big regex blob
+        const newString = extensionToConfigReplace.get(extension);
+        const regex = new RegExp(extensionToConfigRegexMap.get(extension), GLOBAL_FLAG);
+
+        const replacedFile = fileData.replace(regex, newString);
+
+        // Write into the old file with the gates cleaned out
+        fs.writeFileSync(fileDir, replacedFile, 'utf-8');
+        console.log('Done writing to file');
+        
+    }
 }
