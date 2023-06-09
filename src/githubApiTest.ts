@@ -60,6 +60,24 @@ async function testGithubApi() {
             ref: statsig_clean_branch_ref,
             sha: commitSha,
           });
+
+    } else { 
+        // If the branch does already exist, update it if it has a pull request
+        let pullRequestData = await octokit.rest.pulls.list({
+            owner,
+            repo,
+        });
+
+        const prList = pullRequestData.data;
+        
+        if (prList.length > 0) {
+            const prNumber = prList[0].number // There sould only be 1 pr here
+            octokit.rest.pulls.updateBranch({
+                owner: owner,
+                repo: repo,
+                pull_number: prNumber,
+              });
+        }
     }
     
     // Step 2: Checkout the branch!
@@ -87,11 +105,11 @@ async function testGithubApi() {
     await git.push()
     console.log('Push + test some stuff out')
 
-    // Step 4: Check if PR exists
+    // Step 4: Create/Update PR
     // Only one PR should exist on the Clean-Statsig-Gates branch
 
     // List all pulls to get the one we want
-    const pullRequestData = await octokit.rest.pulls.list({
+    let pullRequestData = await octokit.rest.pulls.list({
         owner,
         repo,
     });
@@ -100,7 +118,6 @@ async function testGithubApi() {
     console.log(prList);
 
     const pullRequestTitle = "Clean Stale Gates and Configs";
-    const body = "Updated the pull request";
     try {
         // If empty make a new pr
         if (prList.length == 0) {
@@ -118,8 +135,6 @@ async function testGithubApi() {
                 owner: owner,
                 repo: repo,
                 pull_number: prNumber,
-                title: pullRequestTitle,
-                body: body,
             });
             console.log('Updated a Pull Request')
         }
