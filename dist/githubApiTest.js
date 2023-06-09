@@ -10,7 +10,7 @@ const owner = 'statsig-io';
 const repo = 'github-code-references';
 const statsig_clean_branch_ref = 'refs/heads/Clean-Statsig-Gate';
 const statsig_clean_branch = 'Clean-Statsig-Gate';
-const main_branch = 'main'; // This will be an environment variable given by the gitub workflow
+const main_branch = 'github-code-refs'; // This will be an environment variable given by the gitub workflow
 const git = (0, simple_git_1.default)('');
 async function testGithubApi() {
     // Step 1: Check if Clean-Statsiog-Gates exists
@@ -57,6 +57,9 @@ async function testGithubApi() {
     const branch = await git.branch();
     const currentBranch = branch.current;
     console.log(currentBranch);
+    // Ensure recent changes exist locally
+    await git.fetch();
+    await git.pull();
     // Step 3: Make changes, commit, and push
     // Step 3a: Match and substitute a test gate /tests/stale_gates.ts
     const test_file_loc = "./tests/stale_gates.ts";
