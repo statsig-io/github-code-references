@@ -53,14 +53,14 @@ async function testGithubApi() {
         });
     }
     // Step 2: Checkout the branch!
-    await git.checkout(statsig_clean_branch);
-    const branch = await git.branch();
-    const currentBranch = branch.current;
-    console.log(currentBranch);
+    // await git.checkout(statsig_clean_branch);
+    // const branch = await git.branch();
+    // const currentBranch = branch.current;
+    // console.log(currentBranch);
     // Step 3: Make changes, commit, and push
     // Step 3a: Match and substitute a test gate /tests/stale_gates.ts
-    const test_file_loc = "/tests/stale_gates.ts";
-    (0, FileUtils_1.default)(test_file_loc);
+    const test_file_loc = "./tests/stale_gates.ts";
+    (0, FileUtils_1.scanAndReplaceStaleGates)(test_file_loc);
 }
 testGithubApi();
 //# sourceMappingURL=githubApiTest.js.map

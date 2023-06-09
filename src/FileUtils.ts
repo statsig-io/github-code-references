@@ -12,6 +12,8 @@ const extensionIgnoreList = new Set<string>(['git', 'yaml', 'yml', 'json', 'gith
 // Add to these overtime
 const SUPPORTED_EXTENSIONS = new Set<string>(['ts', 'py', 'js'])
 
+// Regex match all found
+const GLOBAL_FLAG = 'g';
 const extensionToGateRegexMap = new Map<string, RegExp>([
     ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
@@ -24,11 +26,19 @@ const extensionToConfigRegexMap = new Map<string, RegExp>([
     ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
 ]);
 
-const extensionToGateReplace = new Map<string, any>([
+// The values that replace stale gates or configs
+const extensionToGateReplace = new Map<string, string>([
     ["ts", " false"], // Space before each for formatting when it gets replaced in
     ["js", " false"],
     ["py", " False"],
 ])
+
+const extensionToConfigReplace = new Map<string, string>([
+    ["ts", " {}"], // Space before each for formatting when it gets replaced in
+    ["js", " {}"],
+    ["py", " {}"],
+])
+
 
 // Leverage Github API and environment variables to access files touched by Pull Requests
 export default async function getFiles(githubKey: string): Promise<string[]> {
@@ -185,17 +195,18 @@ export function scanAndReplaceStaleGates(fileDir: string) {
         
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8')
-        const lineDividedData = fileData.split('\n')
 
         // Different languages, clients, servers have differentw ways of creating gates
         // Different regex target each instead of using one big regex blob
-        const regex = extensionToGateRegexMap.get(extension);
+        const newString = extensionToGateReplace.get(extension);
+        const regex = new RegExp(extensionToGateRegexMap.get(extension), GLOBAL_FLAG);
 
-        // Loop over each line, regex search for the 
-        for (let line = 0; line < lineDividedData.length; line++) {
-            const currLine = lineDividedData[line];
-            currLine.replace(regex, extensionToGateReplace[extension])
-        }
+        const replacedFile = fileData.replace(regex, newString);
+
+        // Write into the old file with the gates cleaned out
+        fs.writeFileSync(fileDir, replacedFile, 'utf-8');
+        console.log('Done writing to file');
+        
     }
 }
 
@@ -236,4 +247,28 @@ export function searchConfigsInFile(fileDir: string) {
     }
 
     return configsFound;
+}
+
+export function scanAndReplaceStaleConfigs(fileDir: string) {
+    // Split current directory based on .
+    const splitDir = fileDir.split('.');
+    const extension = splitDir.at(-1);
+
+    if (SUPPORTED_EXTENSIONS.has(extension)) {
+        
+        // Read within the file for the target string
+        const fileData = fs.readFileSync(fileDir, 'utf-8')
+
+        // Different languages, clients, servers have differentw ways of creating gates
+        // Different regex target each instead of using one big regex blob
+        const newString = extensionToConfigReplace.get(extension);
+        const regex = new RegExp(extensionToConfigRegexMap.get(extension), GLOBAL_FLAG);
+
+        const replacedFile = fileData.replace(regex, newString);
+
+        // Write into the old file with the gates cleaned out
+        fs.writeFileSync(fileDir, replacedFile, 'utf-8');
+        console.log('Done writing to file');
+        
+    }
 }
