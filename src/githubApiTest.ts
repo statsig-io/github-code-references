@@ -106,7 +106,7 @@ async function testGithubApi() {
             await octokit.rest.pulls.create({
                 owner: owner,
                 repo: repo,
-                title: "Clean stale Gates and Configs",
+                title: pullRequestTitle,
                 head: statsig_clean_branch,
                 base: main_branch,
             });
