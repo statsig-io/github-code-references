@@ -97,6 +97,7 @@ async function testGithubApi() {
     });
 
     const prList = pullRequestData.data;
+    console.log(prList);
 
     try {
         // If empty make a new pr

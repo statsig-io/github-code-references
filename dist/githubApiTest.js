@@ -80,6 +80,7 @@ async function testGithubApi() {
         repo,
     });
     const prList = pullRequestData.data;
+    console.log(prList);
     try {
         // If empty make a new pr
         if (prList.length == 0) {
