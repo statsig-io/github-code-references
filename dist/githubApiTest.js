@@ -81,12 +81,14 @@ async function testGithubApi() {
     });
     const prList = pullRequestData.data;
     console.log(prList);
+    const pullRequestTitle = "Clean Stale Gates and Configs";
     try {
         // If empty make a new pr
         if (prList.length == 0) {
             await octokit.rest.pulls.create({
                 owner: owner,
                 repo: repo,
+                title: "Clean stale Gates and Configs",
                 head: statsig_clean_branch,
                 base: main_branch,
             });
