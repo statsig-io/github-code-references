@@ -98,22 +98,26 @@ async function testGithubApi() {
 
     const prList = pullRequestData.data;
 
-    // If empty make a new pr
-    if (prList.length == 0) {
-        octokit.rest.pulls.create({
-            owner: owner,
-            repo: repo,
-            head: statsig_clean_branch,
-            base: main_branch,
-        });
-        console.log('Created a Pull Request');
-    } else { // PR exists, try updating
-        octokit.rest.pulls.update({
-            owner: owner,
-            repo: repo,
-            pull_number: 1,
-          });
-          console.log('Updated a Pull Request')
+    try {
+        // If empty make a new pr
+        if (prList.length == 0) {
+            octokit.rest.pulls.create({
+                owner: owner,
+                repo: repo,
+                head: statsig_clean_branch,
+                base: main_branch,
+            });
+            console.log('Created a Pull Request');
+        } else { // PR exists, try updating
+            octokit.rest.pulls.update({
+                owner: owner,
+                repo: repo,
+                pull_number: 1,
+            });
+            console.log('Updated a Pull Request')
+        }
+    } catch {
+        console.log('Pull Request not created or updated, no new changes');
     }
 
     console.log(prList);
