@@ -115,9 +115,8 @@ async function testGithubApi() {
     });
 
     const prList = pullRequestData.data;
-    console.log(prList);
-
     const pullRequestTitle = "Clean Stale Gates and Configs";
+    const pullBody = "Cleaned out some stale gates and configs";
     try {
         // If empty make a new pr
         if (prList.length == 0) {
@@ -135,6 +134,8 @@ async function testGithubApi() {
                 owner: owner,
                 repo: repo,
                 pull_number: prNumber,
+                title: pullRequestTitle,
+                body: pullBody, // Kept getting errors without a body?
             });
             console.log('Updated a Pull Request')
         }
