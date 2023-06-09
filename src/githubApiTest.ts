@@ -81,10 +81,10 @@ async function testGithubApi() {
     // Step 3b: Make a commit
     const commitMessage = "Replaced stale gates and configs";
     await git.add('*'); // Add all changed files
-    git.commit(commitMessage); // Commit the changed files
+    await git.commit(commitMessage); // Commit the changed files
 
     // Step 3c: Push the changes to the checked out branch -> Clean-Statsig-Gates
-    git.push()
+    await git.push()
     console.log('Push + test some stuff out')
 
     // Step 4: Check if PR exists
@@ -102,7 +102,7 @@ async function testGithubApi() {
     try {
         // If empty make a new pr
         if (prList.length == 0) {
-            octokit.rest.pulls.create({
+            await octokit.rest.pulls.create({
                 owner: owner,
                 repo: repo,
                 head: statsig_clean_branch,
@@ -110,7 +110,7 @@ async function testGithubApi() {
             });
             console.log('Created a Pull Request');
         } else { // PR exists, try updating
-            octokit.rest.pulls.update({
+            await octokit.rest.pulls.update({
                 owner: owner,
                 repo: repo,
                 pull_number: 1,
