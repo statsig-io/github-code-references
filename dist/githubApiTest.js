@@ -8,9 +8,9 @@ const octokit = new rest_1.Octokit({
 });
 const owner = 'statsig-io';
 const repo = 'github-code-references';
-const statsig_clean_branch_ref = 'refs/heads/Clean-Statsig-Gate';
-const statsig_clean_branch = 'Clean-Statsig-Gate';
-const main_branch = 'main'; // This will be an environment variable given by the gitub workflow
+const statsig_clean_branch_ref = 'refs/heads/Clean-Statsig-Gates';
+const statsig_clean_branch = 'Clean-Statsig-Gates';
+const main_branch = 'github-code-refs'; // This will be an environment variable given by the gitub workflow
 const git = (0, simple_git_1.default)('');
 async function testGithubApi() {
     // Step 1: Check if Clean-Statsiog-Gates exists
@@ -57,6 +57,9 @@ async function testGithubApi() {
     const branch = await git.branch();
     const currentBranch = branch.current;
     console.log(currentBranch);
+    // Ensure recent changes exist locally
+    await git.fetch();
+    await git.pull();
     // Step 3: Make changes, commit, and push
     // Step 3a: Match and substitute a test gate /tests/stale_gates.ts
     const test_file_loc = "./tests/stale_gates.ts";
@@ -64,9 +67,38 @@ async function testGithubApi() {
     (0, FileUtils_1.replaceStaleConfigs)(test_file_loc);
     // Step 3b: Make a commit
     const commitMessage = "Replaced stale gates and configs";
-    git.commit(commitMessage);
+    await git.add('*'); // Add all changed files
+    git.commit(commitMessage); // Commit the changed files
     // Step 3c: Push the changes to the checked out branch -> Clean-Statsig-Gates
     git.push();
+    console.log('Push + test some stuff out');
+    // Step 4: Check if PR exists
+    // Only one PR should exist on the Clean-Statsig-Gates branch
+    // List all pulls to get the one we want
+    const pullRequestData = await octokit.rest.pulls.list({
+        owner,
+        repo,
+    });
+    const prList = pullRequestData.data;
+    // If empty make a new pr
+    if (prList.length == 0) {
+        octokit.rest.pulls.create({
+            owner: owner,
+            repo: repo,
+            head: statsig_clean_branch,
+            base: main_branch,
+        });
+        console.log('Created a Pull Request');
+    }
+    else { // PR exists, try updating
+        octokit.rest.pulls.update({
+            owner: owner,
+            repo: repo,
+            pull_number: 1,
+        });
+        console.log('Updated a Pull Request');
+    }
+    console.log(prList);
 }
 testGithubApi();
 //# sourceMappingURL=githubApiTest.js.map
