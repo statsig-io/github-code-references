@@ -95,12 +95,12 @@ async function testGithubApi() {
             console.log('Created a Pull Request');
         }
         else { // PR exists, try updating
-            await octokit.rest.pulls.update({
-                owner: owner,
-                repo: repo,
-                pull_number: 1,
-            });
-            console.log('Updated a Pull Request');
+            // await octokit.rest.pulls.update({
+            //     owner: owner,
+            //     repo: repo,
+            //     pull_number: 1,
+            // });
+            // console.log('Updated a Pull Request')
         }
     }
     catch (pullError) {
