@@ -100,6 +100,7 @@ async function testGithubApi() {
     console.log(prList);
 
     const pullRequestTitle = "Clean Stale Gates and Configs";
+    const body = "Updated the pull request";
     try {
         // If empty make a new pr
         if (prList.length == 0) {
@@ -117,6 +118,8 @@ async function testGithubApi() {
                 owner: owner,
                 repo: repo,
                 pull_number: prNumber,
+                title: pullRequestTitle,
+                body: body,
             });
             console.log('Updated a Pull Request')
         }
