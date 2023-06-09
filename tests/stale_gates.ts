@@ -9,10 +9,10 @@ async function useDummyGates() {
         email: '12345@gmail.com',
     };
 
-    const dummyGate = await statsig.checkGate(dummyUser, 'dummy_gate');
-    const sillyGate = await statsig.checkGate(dummyUser, 'silly_gate');
-    const hmm = await statsig.checkGate(dummyUser, 'dummy_gate');
-    const uhh = await statsig.checkGate(dummyUser, 'silly_gate');
+    const dummyGate = false;
+    const sillyGate = false;
+    const hmm = false;
+    const uhh = false;
 
     const typescriptDC = await statsig.getConfig(dummyUser, 'typescript_dynamic_config');
 }
