@@ -117,8 +117,9 @@ async function testGithubApi() {
             });
             console.log('Updated a Pull Request')
         }
-    } catch {
+    } catch(pullError) {
         console.log('Pull Request not created or updated, no new changes');
+        console.log(pullError);
     }
 
     console.log(prList);
