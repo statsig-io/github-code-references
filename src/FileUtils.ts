@@ -147,7 +147,7 @@ export function parsePullRequestData(data, mainDirectory: string): string[] {
 }
 
 // Searched solely for Feature Gates, 
-export function searchGatesInFile(fileDir: string) {
+export function searchGates(fileDir: string) {
     let gatesFound = [];
 
     // Split current directory based on .
@@ -186,7 +186,7 @@ export function searchGatesInFile(fileDir: string) {
 
 // Decided to seperate this from the regular search to avoid coupling and because
 // at it's core it doesn't want to do anything with the files besides substitute them.
-export function scanAndReplaceStaleGates(fileDir: string) {
+export function replaceStaleGates(fileDir: string) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
@@ -211,7 +211,7 @@ export function scanAndReplaceStaleGates(fileDir: string) {
 }
 
 // Searched solely for Feature Gates
-export function searchConfigsInFile(fileDir: string) {
+export function searchConfigs(fileDir: string) {
     // Assume in typescript or Python only for now
     
     let configsFound = [];
@@ -249,7 +249,7 @@ export function searchConfigsInFile(fileDir: string) {
     return configsFound;
 }
 
-export function scanAndReplaceStaleConfigs(fileDir: string) {
+export function replaceStaleConfigs(fileDir: string) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);

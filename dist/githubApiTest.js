@@ -53,14 +53,20 @@ async function testGithubApi() {
         });
     }
     // Step 2: Checkout the branch!
-    // await git.checkout(statsig_clean_branch);
-    // const branch = await git.branch();
-    // const currentBranch = branch.current;
-    // console.log(currentBranch);
+    await git.checkout(statsig_clean_branch);
+    const branch = await git.branch();
+    const currentBranch = branch.current;
+    console.log(currentBranch);
     // Step 3: Make changes, commit, and push
     // Step 3a: Match and substitute a test gate /tests/stale_gates.ts
     const test_file_loc = "./tests/stale_gates.ts";
-    (0, FileUtils_1.scanAndReplaceStaleGates)(test_file_loc);
+    (0, FileUtils_1.replaceStaleGates)(test_file_loc);
+    (0, FileUtils_1.replaceStaleConfigs)(test_file_loc);
+    // Step 3b: Make a commit
+    const commitMessage = "Replaced stale gates and configs";
+    git.commit(commitMessage);
+    // Step 3c: Push the changes to the checked out branch -> Clean-Statsig-Gates
+    git.push();
 }
 testGithubApi();
 //# sourceMappingURL=githubApiTest.js.map

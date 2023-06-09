@@ -1,8 +1,8 @@
 import { AxiosResponse } from 'axios';
 import GateData from './GateData'
 import DynamicConfigData from './DynamicConfigData';
-import getFiles, { searchConfigsInFile } from './FileUtils'
-import { searchGatesInFile } from './FileUtils';
+import getFiles, { searchConfigs } from './FileUtils'
+import { searchGates } from './FileUtils';
 import Utils from './Utils'
 
 export const FeatureGate = 'feature_gates'
@@ -20,7 +20,7 @@ export default async function getProjectData() {
     let fileNames = await getFiles(githubKey);
     let allGates: GateData[] = [];
     for (const file of fileNames) {
-        const gatesFound = searchGatesInFile(file);
+        const gatesFound = searchGates(file);
         const fileName = file.split('/').at(-1);
         const gateData = new GateData(file, fileName, gatesFound);
 
@@ -31,7 +31,7 @@ export default async function getProjectData() {
 
     let allConfigs: DynamicConfigData[] = [];
     for (const file of fileNames) {
-        const configsFound = searchConfigsInFile(file);
+        const configsFound = searchConfigs(file);
         const fileName = file.split('/').at(-1);
         const configData = new DynamicConfigData(file, fileName, configsFound);
 

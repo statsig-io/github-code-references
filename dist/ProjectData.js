@@ -18,7 +18,7 @@ async function getProjectData() {
     let fileNames = await (0, FileUtils_1.default)(githubKey);
     let allGates = [];
     for (const file of fileNames) {
-        const gatesFound = (0, FileUtils_2.searchGatesInFile)(file);
+        const gatesFound = (0, FileUtils_2.searchGates)(file);
         const fileName = file.split('/').at(-1);
         const gateData = new GateData_1.default(file, fileName, gatesFound);
         if (gatesFound.length >= 1) {
@@ -27,7 +27,7 @@ async function getProjectData() {
     }
     let allConfigs = [];
     for (const file of fileNames) {
-        const configsFound = (0, FileUtils_1.searchConfigsInFile)(file);
+        const configsFound = (0, FileUtils_1.searchConfigs)(file);
         const fileName = file.split('/').at(-1);
         const configData = new DynamicConfigData_1.default(file, fileName, configsFound);
         if (configsFound.length >= 1) {
