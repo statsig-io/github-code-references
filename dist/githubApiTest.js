@@ -52,6 +52,22 @@ async function testGithubApi() {
             sha: commitSha,
         });
     }
+    else {
+        // If the branch does already exist, update it if it has a pull request
+        let pullRequestData = await octokit.rest.pulls.list({
+            owner,
+            repo,
+        });
+        const prList = pullRequestData.data;
+        if (prList.length > 0) {
+            const prNumber = prList[0].number; // There sould only be 1 pr here
+            octokit.rest.pulls.updateBranch({
+                owner: owner,
+                repo: repo,
+                pull_number: prNumber,
+            });
+        }
+    }
     // Step 2: Checkout the branch!
     await git.checkout(statsig_clean_branch);
     const branch = await git.branch();
@@ -68,37 +84,48 @@ async function testGithubApi() {
     // Step 3b: Make a commit
     const commitMessage = "Replaced stale gates and configs";
     await git.add('*'); // Add all changed files
-    git.commit(commitMessage); // Commit the changed files
+    await git.commit(commitMessage); // Commit the changed files
     // Step 3c: Push the changes to the checked out branch -> Clean-Statsig-Gates
-    git.push();
+    await git.push();
     console.log('Push + test some stuff out');
-    // Step 4: Check if PR exists
+    // Step 4: Create/Update PR
     // Only one PR should exist on the Clean-Statsig-Gates branch
     // List all pulls to get the one we want
-    const pullRequestData = await octokit.rest.pulls.list({
+    let pullRequestData = await octokit.rest.pulls.list({
         owner,
         repo,
     });
     const prList = pullRequestData.data;
-    // If empty make a new pr
-    if (prList.length == 0) {
-        octokit.rest.pulls.create({
-            owner: owner,
-            repo: repo,
-            head: statsig_clean_branch,
-            base: main_branch,
-        });
-        console.log('Created a Pull Request');
+    const pullRequestTitle = "Clean Stale Gates and Configs";
+    const pullBody = "Cleaned out some stale gates and configs";
+    try {
+        // If empty make a new pr
+        if (prList.length == 0) {
+            await octokit.rest.pulls.create({
+                owner: owner,
+                repo: repo,
+                title: pullRequestTitle,
+                head: statsig_clean_branch,
+                base: main_branch,
+            });
+            console.log('Created a Pull Request');
+        }
+        else { // PR exists, try updating
+            const prNumber = prList[0].number; // There sould only be 1 pr here
+            await octokit.rest.pulls.update({
+                owner: owner,
+                repo: repo,
+                pull_number: prNumber,
+                title: pullRequestTitle,
+                body: pullBody, // Kept getting errors without a body?
+            });
+            console.log('Updated a Pull Request');
+        }
     }
-    else { // PR exists, try updating
-        octokit.rest.pulls.update({
-            owner: owner,
-            repo: repo,
-            pull_number: 1,
-        });
-        console.log('Updated a Pull Request');
+    catch (pullError) {
+        console.log('Pull Request not created or updated, no new changes');
+        console.log(pullError);
     }
-    console.log(prList);
 }
 testGithubApi();
 //# sourceMappingURL=githubApiTest.js.map
