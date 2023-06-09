@@ -21,9 +21,9 @@ const extensionToGateRegexMap = new Map<string, RegExp>([
 ]);
 
 const extensionToConfigRegexMap = new Map<string, RegExp>([
-    ["ts", /[a-zA-Z_ .]*checkConfig\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
-    ["js", /[a-zA-Z_ .]*checkConfig\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
-    ["py", /[a-zA-Z _.]*check_config\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
+    ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
+    ["js", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
+    ["py", /[a-zA-Z _.]*get_config\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
 ]);
 
 // The values that replace stale gates or configs
