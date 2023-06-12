@@ -1,8 +1,7 @@
 import { AxiosResponse } from 'axios';
 import GateData from './data_classes/GateData'
 import DynamicConfigData from './data_classes/DynamicConfigData';
-import  { searchConfigs } from './utils/FileUtils'
-import { searchGates } from './utils/FileUtils';
+import { getDynamicConfigsInFiles, getFeatureGatesInFiles } from './utils/FileUtils'
 import Utils from './utils/Utils'
 import GithubUtils from './utils/GithubUtils'
 
@@ -19,27 +18,8 @@ export default async function getProjectData() {
     // Scan files for all gates that could be in them
     // Get the file, the line, and the gate name for each gate and dynamic config
     let fileNames = await GithubUtils.getFiles(githubKey);
-    let allGates: GateData[] = [];
-    for (const file of fileNames) {
-        const gatesFound = searchGates(file);
-        const fileName = file.split('/').at(-1);
-        const gateData = new GateData(file, fileName, gatesFound);
-
-        if (gatesFound.length >= 1) {
-            allGates.push(gateData);
-        }
-    }
-
-    let allConfigs: DynamicConfigData[] = [];
-    for (const file of fileNames) {
-        const configsFound = searchConfigs(file);
-        const fileName = file.split('/').at(-1);
-        const configData = new DynamicConfigData(file, fileName, configsFound);
-
-        if (configsFound.length >= 1) {
-            allConfigs.push(configData);
-        }
-    }
+    let allGates: GateData[] = getFeatureGatesInFiles(fileNames)
+    let allConfigs: DynamicConfigData[] = getDynamicConfigsInFiles(fileNames);
     
     // Post request to the project with the input API key
     // Collect gates into map where the key is the gate name
@@ -53,6 +33,7 @@ export default async function getProjectData() {
 
     // Get data only on the feature gates found within the local files
     let finalGates: GateData[] = [];
+    let staleGates: Map<string, string[]>; // fileName, gateName
     for (let fileWithGates of allGates) {
         let updatedGates = [];
 
@@ -71,9 +52,21 @@ export default async function getProjectData() {
                     'enabled': projectGate['enabled'],
                     'defaultValue': projectGate['defaultValue'],
                     'checksInPast30Days': projectGate['checksInPast30Days'],
+                    'gateType': projectGate['gateType'],
                 }
-                // Only push gate is valid, invalid gates can be caught because of my regex :)
-                updatedGates.push(gate) // Add to the new list of gates for this specific file
+
+                updatedGates.push(gate) 
+
+                // Create the map
+                if (isGateStale(gate.gateType.reason)) {
+                    const fileDir = fileWithGates.fileDir;
+
+                    if (staleGates.has(fileDir)) {
+                        staleGates.get(fileDir).push(gate.gateName);
+                    } else {
+                        staleGates.set(fileDir, [gate.gateName])
+                    }
+                }
             }
         }
 
@@ -137,6 +130,12 @@ export default async function getProjectData() {
 
         // Checkout the branch
         await githubUtil.setupBranchLocally(cleanBranchName);
+        
+        // Scan and clean stale gates
+        staleGates.forEach((staleGates, fileDir) => {
+            console.log(staleGates, fileDir);
+            
+        })
 
         // Commit and update the local branch
         const message = "Clean stale gates and configs"
@@ -151,3 +150,9 @@ export default async function getProjectData() {
 }
 
 getProjectData();
+
+function isGateStale(gateType: string) {
+    const types = new Set<string>(['STALE_PROBABLY_LAUNCHED', 'STALE_PROBABLY_UNLAUNCHED',
+                                    'STALE_NO_RULES', 'STALE_PROBABLY_DEAD'])
+    return types.has(gateType);
+}

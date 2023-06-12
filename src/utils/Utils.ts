@@ -4,6 +4,8 @@ import axiosRetry from 'axios-retry';
 import GateData from "../data_classes/GateData";
 import DynamicConfigData, { DynamicConfig } from "../data_classes/DynamicConfigData";
 import GithubUtils from "./GithubUtils"
+import  { searchConfigs } from './FileUtils'
+import { searchGates } from './FileUtils';
 
 export const ColorReset = "\x1b[0m"
 export enum ForegroundColor {
@@ -85,6 +87,8 @@ export default class Utils {
             "enabled": target["enabled"],
             "defaultValue": target["defaultValue"],
             "checksInPast30Days": target["checksInPast30Days"],
+            // Only feature gates have a gateType value
+            "type": targetType === "feature_gate" ? target["gateType"] : undefined,
           }
         )
       }

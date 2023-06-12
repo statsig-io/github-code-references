@@ -3,6 +3,8 @@ import Utils, { ForegroundColor, ColorReset } from './Utils';
 import GithubUtils from './GithubUtils';
 import axiosRetry from 'axios-retry';
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import GateData from '../data_classes/GateData';
+import DynamicConfigData from '../data_classes/DynamicConfigData';
 
 // Not worth checking files or folders that won't have feature gates
 const ignoreList = new Set<string>(['.git', 'node_modules', 'README.md', 
@@ -40,9 +42,6 @@ const extensionToConfigReplace = new Map<string, string>([
     ["py", " {}"],
 ])
 
-
-
-
 // BFS search through local files
 export async function scanFiles(dir: string): Promise<string[]> {
     let fileList: string[] = [];
@@ -66,6 +65,34 @@ export async function scanFiles(dir: string): Promise<string[]> {
 
     return fileList;
 };
+
+export function getFeatureGatesInFiles(fileNames: string[]) {
+    let allGates: GateData[] = [];
+    for (const file of fileNames) {
+        const gatesFound = searchGates(file);
+        const fileName = file.split('/').at(-1);
+        const gateData = new GateData(file, fileName, gatesFound);
+
+        if (gatesFound.length >= 1) {
+            allGates.push(gateData);
+        }
+    }
+    return allGates;
+}
+
+export function getDynamicConfigsInFiles(fileNames: string[]) {
+    let foundConfigs = []
+    for (const file of fileNames) {
+        const configsFound = searchConfigs(file);
+        const fileName = file.split('/').at(-1);
+        const configData = new DynamicConfigData(file, fileName, configsFound);
+
+        if (configsFound.length >= 1) {
+          foundConfigs.push(configData);
+        }
+    }
+    return foundConfigs;
+  }
 
 // Get the file locations based on the pull request data from the Github API
 export function parsePullRequestData(data, mainDirectory: string): string[] {
@@ -126,7 +153,7 @@ export function searchGates(fileDir: string) {
 
 // Decided to seperate this from the regular search to avoid coupling and because
 // at it's core it doesn't want to do anything with the files besides substitute them.
-export function replaceStaleGates(fileDir: string) {
+export function replaceStaleGates(staleGates: string[], fileDir: string) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
@@ -145,8 +172,6 @@ export function replaceStaleGates(fileDir: string) {
 
         // Write into the old file with the gates cleaned out
         fs.writeFileSync(fileDir, replacedFile, 'utf-8');
-        console.log('Done writing to file');
-        
     }
 }
 
@@ -208,7 +233,5 @@ export function replaceStaleConfigs(fileDir: string) {
 
         // Write into the old file with the gates cleaned out
         fs.writeFileSync(fileDir, replacedFile, 'utf-8');
-        console.log('Done writing to file');
-        
     }
 }
