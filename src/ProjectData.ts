@@ -1,9 +1,10 @@
 import { AxiosResponse } from 'axios';
 import GateData from './data_classes/GateData'
 import DynamicConfigData from './data_classes/DynamicConfigData';
-import getFiles, { searchConfigs } from './utils/FileUtils'
+import  { searchConfigs } from './utils/FileUtils'
 import { searchGates } from './utils/FileUtils';
 import Utils from './utils/Utils'
+import GithubUtils from './utils/GithubUtils'
 
 export const FeatureGate = 'feature_gates'
 export const DynamicConfig = 'dynamic_configs'
@@ -17,7 +18,7 @@ export default async function getProjectData() {
 
     // Scan files for all gates that could be in them
     // Get the file, the line, and the gate name for each gate and dynamic config
-    let fileNames = await getFiles(githubKey);
+    let fileNames = await GithubUtils.getFiles(githubKey);
     let allGates: GateData[] = [];
     for (const file of fileNames) {
         const gatesFound = searchGates(file);
@@ -119,9 +120,34 @@ export default async function getProjectData() {
     Utils.outputFinalGateData(finalGates);
     Utils.outputFinalConfigData(finalConfigs);
 
-    // Create a Pull Request using GITHUB API only when scheduled, test for now to get info
-    
-    Utils.createGithubPullRequest(githubKey);
+    // Create a Pull Request using GITHUB API only when scheduled
+    if (GithubUtils.isGithubEventSchedule()) {
+        console.log(`\n Creating a Pull Request`)
+
+        const repoOwner = GithubUtils.getRepoOwner();
+        const repoName = GithubUtils.getRepoName();
+        const mainBranch = GithubUtils.getRefName();
+        const cleanBranchName = `Statsig-Cleaned-Gates`
+
+        let githubUtil = new GithubUtils(githubKey, repoOwner, repoName, mainBranch);
+
+        // Set up the branch
+        const cleanBranchRef = `refs/heads/${cleanBranchName}`
+        await githubUtil.configureBranch(cleanBranchRef);
+
+        // Checkout the branch
+        await githubUtil.setupBranchLocally(cleanBranchName);
+
+        // Commit and update the local branch
+        const message = "Clean stale gates and configs"
+        await githubUtil.commitLocal(message);
+
+        // Create the Pull Request or Update it
+        const currDate = new Date().toISOString().slice(0, 10); // Creates date in 2023-06-09 format
+        const pullRequestTitle = `${cleanBranchName} ${currDate}`;
+        const pullRequestBody = "Replace stale gates and configs with corresponding flags or empty objects";
+        await githubUtil.createPullRequest(cleanBranchName, pullRequestTitle, pullRequestBody);
+    }
 }
 
 getProjectData();

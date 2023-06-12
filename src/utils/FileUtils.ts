@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import Utils, { ForegroundColor, ColorReset } from './Utils';
+import GithubUtils from './GithubUtils';
 import axiosRetry from 'axios-retry';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
@@ -40,68 +41,7 @@ const extensionToConfigReplace = new Map<string, string>([
 ])
 
 
-// Leverage Github API and environment variables to access files touched by Pull Requests
-export default async function getFiles(githubKey: string): Promise<string[]> {
 
-    let fileList = [];
-
-    // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references'
-    const directory = Utils.getGithubDirectory();
-
-    // Only run on Pull Requests
-    if (!Utils.isGithubEventSchedule()) {
-
-        const pullRequestNum = Utils.getPullRequestNum();
-        const githubOwner = Utils.getRepoOwner();
-        const repoName = Utils.getRepoName();
-
-        console.log(`Checking out ${githubOwner}:${repoName} on Pull Request ${pullRequestNum}`);
-
-        const retries = 7;
-        axiosRetry(axios, {
-        retries: retries,
-        });
-        const timeout = 2000000;
-
-        // Do a GITHUB API Get request for the specific pull that triggered the workflow
-        // Use that to get the touched files
-        let result: AxiosResponse | undefined;
-        try {
-        result = await axios.get(
-            `https://api.github.com/repos/${githubOwner}/${repoName}/pulls/${pullRequestNum}/files`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${githubKey}`,
-                    'Accept': 'application/vnd.github+json',
-                    'Content-Type': 'application/json',
-                },
-                timeout: timeout, // Sometimes the delay is greater than the speed GH workflows can get the data
-                data: {
-                    'per_page': 100,
-                    'page': 1,
-                }
-            }
-        )
-        } catch (e: unknown) {
-            result = (e as AxiosError)?.response;
-            throw Error(`Error Requesting after ${retries} attempts`);
-        }
-        
-        console.log('Picking up Files ☺');
-        fileList = parsePullRequestData(result?.data, directory);
-        console.log('Finished picking up Files ☺\n');
-
-    } else {
-        fileList = await scanFiles(directory); // No need to do a Get request, just check locally
-    }
-
-    for (const fileDir of fileList) {
-        // Output a valid file found, wrap it with ANSI Green
-        console.log(`\t${ForegroundColor.Green}${fileDir}${ColorReset}`)
-    }
-
-    return fileList;
-}
 
 // BFS search through local files
 export async function scanFiles(dir: string): Promise<string[]> {

@@ -3,7 +3,7 @@ import simpleGit from "simple-git";
 import { replaceStaleGates, replaceStaleConfigs } from "./utils/FileUtils";
 
 const octokit = new Octokit({
-    auth: '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'
+    auth: '***',
 })
 
 const owner = 'statsig-io';
@@ -15,7 +15,7 @@ const git = simpleGit('')
 
 async function testGithubApi() {
 
-    // Step 1: Check if Clean-Statsiog-Gates exists
+    // Step 1: Check if Clean-Statsig-Gates exists
     // Create it if it doesn't exist
     let status;
     try {
