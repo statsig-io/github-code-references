@@ -1,11 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DynamicConfig = exports.FeatureGate = void 0;
-const GateData_1 = require("./data_classes/GateData");
-const DynamicConfigData_1 = require("./data_classes/DynamicConfigData");
 const FileUtils_1 = require("./utils/FileUtils");
-const FileUtils_2 = require("./utils/FileUtils");
 const Utils_1 = require("./utils/Utils");
+const GithubUtils_1 = require("./utils/GithubUtils");
 exports.FeatureGate = 'feature_gates';
 exports.DynamicConfig = 'dynamic_configs';
 // Calls the endpoint using the API key and gets the projects info
@@ -15,25 +13,9 @@ async function getProjectData() {
     const githubKey = Utils_1.default.getGithubKey();
     // Scan files for all gates that could be in them
     // Get the file, the line, and the gate name for each gate and dynamic config
-    let fileNames = await (0, FileUtils_1.default)(githubKey);
-    let allGates = [];
-    for (const file of fileNames) {
-        const gatesFound = (0, FileUtils_2.searchGates)(file);
-        const fileName = file.split('/').at(-1);
-        const gateData = new GateData_1.default(file, fileName, gatesFound);
-        if (gatesFound.length >= 1) {
-            allGates.push(gateData);
-        }
-    }
-    let allConfigs = [];
-    for (const file of fileNames) {
-        const configsFound = (0, FileUtils_1.searchConfigs)(file);
-        const fileName = file.split('/').at(-1);
-        const configData = new DynamicConfigData_1.default(file, fileName, configsFound);
-        if (configsFound.length >= 1) {
-            allConfigs.push(configData);
-        }
-    }
+    let fileNames = await GithubUtils_1.default.getFiles(githubKey);
+    let allGates = (0, FileUtils_1.getFeatureGatesInFiles)(fileNames);
+    let allConfigs = (0, FileUtils_1.getDynamicConfigsInFiles)(fileNames);
     // Post request to the project with the input API key
     // Collect gates into map where the key is the gate name
     const timeout = 250000;
@@ -44,6 +26,7 @@ async function getProjectData() {
     const parsedConfigData = Utils_1.default.parseProjectData(data, exports.DynamicConfig);
     // Get data only on the feature gates found within the local files
     let finalGates = [];
+    let staleGates; // fileName, gateName
     for (let fileWithGates of allGates) {
         let updatedGates = [];
         for (let gate of fileWithGates.gates) {
@@ -59,9 +42,19 @@ async function getProjectData() {
                     'enabled': projectGate['enabled'],
                     'defaultValue': projectGate['defaultValue'],
                     'checksInPast30Days': projectGate['checksInPast30Days'],
+                    'gateType': projectGate['gateType'],
                 };
-                // Only push gate is valid, invalid gates can be caught because of my regex :)
-                updatedGates.push(gate); // Add to the new list of gates for this specific file
+                updatedGates.push(gate);
+                // Create the map
+                if (isGateStale(gate.gateType.reason)) {
+                    const fileDir = fileWithGates.fileDir;
+                    if (staleGates.has(fileDir)) {
+                        staleGates.get(fileDir).push(gate.gateName);
+                    }
+                    else {
+                        staleGates.set(fileDir, [gate.gateName]);
+                    }
+                }
             }
         }
         // In the case a file had no good gates (regex caught something wrong) don't include it
@@ -99,9 +92,38 @@ async function getProjectData() {
     }
     Utils_1.default.outputFinalGateData(finalGates);
     Utils_1.default.outputFinalConfigData(finalConfigs);
-    // Create a Pull Request using GITHUB API only when scheduled, test for now to get info
-    Utils_1.default.createGithubPullRequest(githubKey);
+    // Create a Pull Request using GITHUB API only when scheduled
+    if (GithubUtils_1.default.isGithubEventSchedule()) {
+        console.log(`\n Creating a Pull Request`);
+        const repoOwner = GithubUtils_1.default.getRepoOwner();
+        const repoName = GithubUtils_1.default.getRepoName();
+        const mainBranch = GithubUtils_1.default.getRefName();
+        const cleanBranchName = `Statsig-Cleaned-Gates`;
+        let githubUtil = new GithubUtils_1.default(githubKey, repoOwner, repoName, mainBranch);
+        // Set up the branch
+        const cleanBranchRef = `refs/heads/${cleanBranchName}`;
+        await githubUtil.configureBranch(cleanBranchRef);
+        // Checkout the branch
+        await githubUtil.setupBranchLocally(cleanBranchName);
+        // Scan and clean stale gates
+        staleGates.forEach((staleGates, fileDir) => {
+            console.log(staleGates, fileDir);
+        });
+        // Commit and update the local branch
+        const message = "Clean stale gates and configs";
+        await githubUtil.commitLocal(message);
+        // Create the Pull Request or Update it
+        const currDate = new Date().toISOString().slice(0, 10); // Creates date in 2023-06-09 format
+        const pullRequestTitle = `${cleanBranchName} ${currDate}`;
+        const pullRequestBody = "Replace stale gates and configs with corresponding flags or empty objects";
+        await githubUtil.createPullRequest(cleanBranchName, pullRequestTitle, pullRequestBody);
+    }
 }
 exports.default = getProjectData;
 getProjectData();
+function isGateStale(gateType) {
+    const types = new Set(['STALE_PROBABLY_LAUNCHED', 'STALE_PROBABLY_UNLAUNCHED',
+        'STALE_NO_RULES', 'STALE_PROBABLY_DEAD']);
+    return types.has(gateType);
+}
 //# sourceMappingURL=ProjectData.js.map

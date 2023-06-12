@@ -16,14 +16,14 @@ const extensionIgnoreList = new Set<string>(['git', 'yaml', 'yml', 'json', 'gith
 const SUPPORTED_EXTENSIONS = new Set<string>(['ts', 'py', 'js'])
 
 // Regex match all found
-const GLOBAL_FLAG = 'g';
-const extensionToGateRegexMap = new Map<string, RegExp>([
+const GLOBAL_FLAG = 'gi';
+export const extensionToGateRegexMap = new Map<string, RegExp>([
     ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
 ]);
 
-const extensionToConfigRegexMap = new Map<string, RegExp>([
+export const extensionToConfigRegexMap = new Map<string, RegExp>([
     ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
     ["js", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
     ["py", /[a-zA-Z _.]*get_config\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
@@ -41,6 +41,19 @@ const extensionToConfigReplace = new Map<string, string>([
     ["js", " {}"],
     ["py", " {}"],
 ])
+
+export function getGeneralGateRegex(extension: string) {
+    const baseRegex = extensionToGateRegexMap.get(extension);
+    return new RegExp(baseRegex, GLOBAL_FLAG);
+}
+
+// Creates a new regex object that searches specifically for the targetGate
+export function getSpecificGateRegex(targetGate: string, extension: string) {
+    const gateCatchingGroup = '(?<gateName>[\\w _-]*)';
+    const regexSource = extensionToGateRegexMap.get(extension).source;
+    const specificRegex = regexSource.replace(gateCatchingGroup, targetGate);
+    return new RegExp(specificRegex, GLOBAL_FLAG);
+}
 
 // BFS search through local files
 export async function scanFiles(dir: string): Promise<string[]> {
@@ -129,7 +142,7 @@ export function searchGates(fileDir: string) {
 
         // Different languages, clients, servers have differentw ways of creating gates
         // Different regex target each instead of using one big regex blob
-        const regex = extensionToGateRegexMap.get(extension);
+        const regex = getGeneralGateRegex(extension);
 
         // Loop over each line, regex search for the 
         for (let line = 0; line < lineDividedData.length; line++) {
@@ -163,12 +176,16 @@ export function replaceStaleGates(staleGates: string[], fileDir: string) {
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8')
 
-        // Different languages, clients, servers have differentw ways of creating gates
-        // Different regex target each instead of using one big regex blob
-        const newString = extensionToGateReplace.get(extension);
-        const regex = new RegExp(extensionToGateRegexMap.get(extension), GLOBAL_FLAG);
+        let replacedFile = fileData;
 
-        const replacedFile = fileData.replace(regex, newString);
+        for (const staleGate of staleGates) {
+            // Different languages, clients, servers have differentw ways of creating gates
+            // Different regex target each instead of using one big regex blob
+            const newString = extensionToGateReplace.get(extension);
+            const regex = getSpecificGateRegex(staleGate, extension);
+
+            replacedFile = fileData.replace(regex, newString);
+        }
 
         // Write into the old file with the gates cleaned out
         fs.writeFileSync(fileDir, replacedFile, 'utf-8');

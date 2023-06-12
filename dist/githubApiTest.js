@@ -2,9 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const rest_1 = require("@octokit/rest");
 const simple_git_1 = require("simple-git");
-const FileUtils_1 = require("./utils/FileUtils");
 const octokit = new rest_1.Octokit({
-    auth: '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'
+    auth: '***',
 });
 const owner = 'statsig-io';
 const repo = 'github-code-references';
@@ -13,7 +12,7 @@ const statsig_clean_branch = 'Clean-Statsig-Gates';
 const main_branch = 'github-code-refs'; // This will be an environment variable given by the gitub workflow
 const git = (0, simple_git_1.default)('');
 async function testGithubApi() {
-    // Step 1: Check if Clean-Statsiog-Gates exists
+    // Step 1: Check if Clean-Statsig-Gates exists
     // Create it if it doesn't exist
     let status;
     try {
@@ -79,8 +78,7 @@ async function testGithubApi() {
     // Step 3: Make changes, commit, and push
     // Step 3a: Match and substitute a test gate /tests/stale_gates.ts
     const test_file_loc = "./tests/stale_gates.ts";
-    (0, FileUtils_1.replaceStaleGates)(test_file_loc);
-    (0, FileUtils_1.replaceStaleConfigs)(test_file_loc);
+    // replaceStaleGates(['dummy_gate', 'silly_gate'], test_file_loc);
     // Step 3b: Make a commit
     const commitMessage = "Replaced stale gates and configs";
     await git.add('*'); // Add all changed files

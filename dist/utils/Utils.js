@@ -4,6 +4,7 @@ exports.ForegroundColor = exports.ColorReset = void 0;
 const core = require("@actions/core");
 const axios_1 = require("axios");
 const axios_retry_1 = require("axios-retry");
+const GithubUtils_1 = require("./GithubUtils");
 exports.ColorReset = "\x1b[0m";
 var ForegroundColor;
 (function (ForegroundColor) {
@@ -30,66 +31,6 @@ class Utils {
             core.setFailed(`Invalid Input (${key}): ${e.message}`);
         }
         return defaultValue;
-    }
-    static getGithubDirectory() {
-        return process.env.GITHUB_WORKSPACE;
-    }
-    static getGithubEventName() {
-        console.log(process.env.GITHUB_EVENT_NAME);
-        return process.env.GITHUB_EVENT_NAME;
-    }
-    static isGithubEventSchedule() {
-        return this.getGithubEventName() == 'schedule';
-    }
-    static getRepoOwner() {
-        const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
-        return repo[0];
-    }
-    static getRepoName() {
-        const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
-        return repo[1];
-    }
-    static getPullRequestNum() {
-        const githubRef = process.env.GITHUB_REF.split('/'); // refs/pulls/pr_num/merge
-        return githubRef[2];
-    }
-    static getPullRefName() {
-        const githubRefName = process.env.GITHUB_REF_NAME;
-        return githubRefName;
-    }
-    static async createGithubPullRequest(gitubToken) {
-        const retries = 7;
-        const timeout = 200000;
-        (0, axios_retry_1.default)(axios_1.default, {
-            retries: retries,
-        });
-        const githubOwner = Utils.getRepoOwner();
-        const repoName = Utils.getRepoName();
-        const pullRequestData = {
-            "title": "Clean stale Gates and Configs",
-        };
-        console.log('GITHUB_HEAD_REF:', process.env.GITHUB_HEAD_REF);
-        console.log('GITHUB_BASE_REF:', process.env.GITHUB_BASE_REF);
-        console.log('GITHUB_REF:', process.env.GITHUB_REF);
-        console.log('GITHUB_REF_NAME:', process.env.GITHUB_REF_NAME);
-        let result;
-        // try {
-        //   result = await axios.post(
-        //       `https://api.github.com/repos/${githubOwner}/${repoName}/pulls`,
-        //       pullRequestData,
-        //       {
-        //           headers: {
-        //               'Authorization': `Bearer ${gitubToken}`,
-        //               'Accept': 'application/vnd.github+json',
-        //           },
-        //           timeout: timeout, // Sometimes the delay is greater than the speed GH workflows can get the data
-        //       }
-        //   )
-        // } catch (e: unknown) {
-        //     result = (e as AxiosError)?.response;
-        //     throw Error(`Error Requesting after ${retries} attempts`);
-        // }
-        // return result;
     }
     static async requestProjectData(sdkKey, timeout) {
         const retries = 7;
@@ -129,6 +70,8 @@ class Utils {
                     "enabled": target["enabled"],
                     "defaultValue": target["defaultValue"],
                     "checksInPast30Days": target["checksInPast30Days"],
+                    // Only feature gates have a gateType value
+                    "type": targetType === "feature_gate" ? target["gateType"] : undefined,
                 });
             }
         }
@@ -137,8 +80,8 @@ class Utils {
     ;
     // Uses local variables to get repo owner and repo name
     static getGithubSearchURL(query) {
-        const repoOwner = Utils.getRepoOwner();
-        const repoName = Utils.getRepoName();
+        const repoOwner = GithubUtils_1.default.getRepoOwner();
+        const repoName = GithubUtils_1.default.getRepoName();
         const searchUrl = `https://github.com/search?q=repo%3A${repoOwner}%2F${repoName}+${query}&type=code`;
         return searchUrl;
     }
