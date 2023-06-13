@@ -129,6 +129,7 @@ function searchGates(fileDir) {
             const found = currLine.match(regex);
             // If a gate exists in a file, add to the list of total gates found
             if (found) {
+                console.log(found);
                 const gateName = found.groups.gateName;
                 gatesFound.push({
                     'line': line.toString(),
