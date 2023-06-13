@@ -34,7 +34,7 @@ const extensionToConfigReplace = new Map([
     ["py", " {}"],
 ]);
 function getGeneralGateRegex(extension) {
-    const baseRegex = exports.extensionToGateRegexMap.get(extension);
+    const baseRegex = exports.extensionToGateRegexMap.get(extension).source;
     return new RegExp(baseRegex, GLOBAL_FLAG);
 }
 exports.getGeneralGateRegex = getGeneralGateRegex;

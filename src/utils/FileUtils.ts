@@ -43,7 +43,7 @@ const extensionToConfigReplace = new Map<string, string>([
 ])
 
 export function getGeneralGateRegex(extension: string) {
-    const baseRegex = extensionToGateRegexMap.get(extension);
+    const baseRegex = extensionToGateRegexMap.get(extension).source;
     return new RegExp(baseRegex, GLOBAL_FLAG);
 }
 
