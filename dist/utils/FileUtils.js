@@ -116,6 +116,7 @@ function searchGates(fileDir) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
+    console.log('Curr file:', fileDir);
     if (SUPPORTED_EXTENSIONS.has(extension)) {
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8');
@@ -123,6 +124,7 @@ function searchGates(fileDir) {
         // Different languages, clients, servers have differentw ways of creating gates
         // Different regex target each instead of using one big regex blob
         const regex = getGeneralGateRegex(extension);
+        console.log('Curr Regex:', regex);
         // Loop over each line, regex search for the 
         for (let line = 0; line < lineDividedData.length; line++) {
             const currLine = lineDividedData[line];
