@@ -126,10 +126,10 @@ export default async function getProjectData() {
 
         // Set up the branch
         const cleanBranchRef = `refs/heads/${cleanBranchName}`
-        await githubUtil.configureBranch(cleanBranchRef);
+        // await githubUtil.configureBranch(cleanBranchRef);
 
         // Checkout the branch
-        await githubUtil.setupBranchLocally(cleanBranchName);
+        // await githubUtil.setupBranchLocally(cleanBranchName);
         
         // Scan and clean stale gates
         staleGates.forEach((staleGates, fileDir) => {
@@ -139,13 +139,13 @@ export default async function getProjectData() {
 
         // Commit and update the local branch
         const message = "Clean stale gates and configs"
-        await githubUtil.commitLocal(message);
+        // await githubUtil.commitLocal(message);
 
         // Create the Pull Request or Update it
         const currDate = new Date().toISOString().slice(0, 10); // Creates date in 2023-06-09 format
         const pullRequestTitle = `${cleanBranchName} ${currDate}`;
         const pullRequestBody = "Replace stale gates and configs with corresponding flags or empty objects";
-        await githubUtil.createPullRequest(cleanBranchName, pullRequestTitle, pullRequestBody);
+        // await githubUtil.createPullRequest(cleanBranchName, pullRequestTitle, pullRequestBody);
     }
 }
 
