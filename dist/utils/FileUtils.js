@@ -11,7 +11,7 @@ const extensionIgnoreList = new Set(['git', 'yaml', 'yml', 'json', 'github', 'gi
 // Add to these overtime
 const SUPPORTED_EXTENSIONS = new Set(['ts', 'py', 'js']);
 // Regex match all found
-const GLOBAL_FLAG = 'gi';
+const REGEX_FLAG = 'i';
 exports.extensionToGateRegexMap = new Map([
     ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
@@ -35,7 +35,7 @@ const extensionToConfigReplace = new Map([
 ]);
 function getGeneralGateRegex(extension) {
     const baseRegex = exports.extensionToGateRegexMap.get(extension).source;
-    return new RegExp(baseRegex, GLOBAL_FLAG);
+    return new RegExp(baseRegex, REGEX_FLAG);
 }
 exports.getGeneralGateRegex = getGeneralGateRegex;
 // Creates a new regex object that searches specifically for the targetGate
@@ -43,7 +43,7 @@ function getSpecificGateRegex(targetGate, extension) {
     const gateCatchingGroup = '(?<gateName>[\\w _-]*)';
     const regexSource = exports.extensionToGateRegexMap.get(extension).source;
     const specificRegex = regexSource.replace(gateCatchingGroup, targetGate);
-    return new RegExp(specificRegex, GLOBAL_FLAG);
+    return new RegExp(specificRegex, REGEX_FLAG);
 }
 exports.getSpecificGateRegex = getSpecificGateRegex;
 // BFS search through local files
@@ -206,7 +206,7 @@ function replaceStaleConfigs(fileDir) {
         // Different languages, clients, servers have differentw ways of creating gates
         // Different regex target each instead of using one big regex blob
         const newString = extensionToConfigReplace.get(extension);
-        const regex = new RegExp(exports.extensionToConfigRegexMap.get(extension), GLOBAL_FLAG);
+        const regex = new RegExp(exports.extensionToConfigRegexMap.get(extension), REGEX_FLAG);
         const replacedFile = fileData.replace(regex, newString);
         // Write into the old file with the gates cleaned out
         fs.writeFileSync(fileDir, replacedFile, 'utf-8');
