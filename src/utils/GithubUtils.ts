@@ -165,7 +165,7 @@ export default class GithubUtils {
         const directory = GithubUtils.getGithubDirectory();
 
         // Only run on Pull Requests
-        if (!GithubUtils.isGithubEventSchedule()) {
+        if (!GithubUtils.isGithubEventSchedule() || !(GithubUtils.getGithubEventName() == "workflow_dispatch")) {
 
             const pullRequestNum = GithubUtils.getPullRequestNum();
             const githubOwner = GithubUtils.getRepoOwner();
