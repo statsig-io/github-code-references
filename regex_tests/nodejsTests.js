@@ -6,5 +6,5 @@ const dummyUser = {
 };
 
 const test = await statsig.checkGate(dummyUser, 'silly_gate');
-const thirdDummy = await statsig.checkGate(dummyUser, 'node_js_gate')
+const thirdDummy = false
 const configTest = await statsig.getConfig(dummyUser, 'nodejs_dynamic_config');
