@@ -13,9 +13,9 @@ const SUPPORTED_EXTENSIONS = new Set(['ts', 'py', 'js']);
 // Regex match all found
 const REGEX_FLAG = 'i';
 exports.extensionToGateRegexMap = new Map([
-    ["ts", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["js", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["py", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["ts", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["js", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["py", /(?<lineStart>[\n\w _]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
 ]);
 exports.extensionToConfigRegexMap = new Map([
     ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],
@@ -24,8 +24,8 @@ exports.extensionToConfigRegexMap = new Map([
 ]);
 // The values that replace stale gates or configs
 const extensionToGateReplace = new Map([
-    ["ts", " false"],
-    ["js", " false"],
+    ["ts", " false;"],
+    ["js", " false;"],
     ["py", " False"],
 ]);
 const extensionToConfigReplace = new Map([

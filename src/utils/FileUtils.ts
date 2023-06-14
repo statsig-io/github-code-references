@@ -14,9 +14,9 @@ const SUPPORTED_EXTENSIONS = new Set<string>(['ts', 'py', 'js'])
 // Regex match all found
 const REGEX_FLAG = 'i';
 export const extensionToGateRegexMap = new Map<string, RegExp>([
-    ["ts", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["js", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["py", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["ts", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["js", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["py", /(?<lineStart>[\n\w _]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
 ]);
 
 export const extensionToConfigRegexMap = new Map<string, RegExp>([
@@ -27,8 +27,8 @@ export const extensionToConfigRegexMap = new Map<string, RegExp>([
 
 // The values that replace stale gates or configs
 const extensionToGateReplace = new Map<string, string>([
-    ["ts", " false"], // Space before each for formatting when it gets replaced in
-    ["js", " false"],
+    ["ts", " false;"], // Space before each for formatting when it gets replaced in
+    ["js", " false;"],
     ["py", " False"],
 ])
 
