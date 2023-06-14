@@ -10,6 +10,6 @@ async function useDummyGates() {
     };
 
     const dummyGate = await statsig.checkGate(dummyUser, 'dummy_gate');
-    const sillyGate = await statsig.checkGate(dummyUser, 'silly_gate');
+    const sillyGate = false;
     const typescriptDC = await statsig.getConfig(dummyUser, 'typescript_dynamic_config');
 }
