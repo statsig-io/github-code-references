@@ -59,15 +59,14 @@ export default async function getProjectData() {
                     'defaultValue': projectGate['defaultValue'],
                     'checksInPast30Days': projectGate['checksInPast30Days'],
                     'gateType': projectGate['gateType'].type,
-                    'gateTypeReason': projectGate['gateType'].type
+                    'gateTypeReason': projectGate['gateType'].reason,
                 }
 
                 updatedGates.push(gate) 
 
                 // Create the map
                 // if (isGateStale(gate.gateType.reason)) { Test on Temporary gates
-                console.log(gate.gateTypeReason);
-                if (gate.gateTypeReason == "TEMPORARY") {
+                if (gate.gateType == "TEMPORARY") {
                     const fileDir = fileWithGates.fileDir;
 
                     if (staleGates.has(fileDir)) {

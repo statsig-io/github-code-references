@@ -50,7 +50,6 @@ export default class GithubUtils {
         }
 
         status = status.status;
-        console.log(status);
 
         // If it doesn't exist, create the branch
         if (status == 404) {
@@ -103,7 +102,7 @@ export default class GithubUtils {
         
         const branch = await this.git.branch();
         const currentBranch = branch.current;
-        console.log(currentBranch);
+        console.log('On branch:', currentBranch);
 
         // Ensure recent changes exist locally
         await this.git.fetch();
@@ -118,7 +117,7 @@ export default class GithubUtils {
 
         // Push the changes to the checked out branch
         await this.git.push()
-        console.log('Push + test some stuff out')
+        console.log('Commit and push cleaned gates')
     }
 
     public async createPullRequest(targetBranch: string, title: string, body: string) {
