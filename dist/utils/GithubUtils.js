@@ -39,7 +39,6 @@ class GithubUtils {
             status = errorStatus;
         }
         status = status.status;
-        console.log(status);
         // If it doesn't exist, create the branch
         if (status == 404) {
             // First get the latest commit
@@ -84,7 +83,7 @@ class GithubUtils {
         await this.git.checkout(targetBranch);
         const branch = await this.git.branch();
         const currentBranch = branch.current;
-        console.log(currentBranch);
+        console.log('On branch:', currentBranch);
         // Ensure recent changes exist locally
         await this.git.fetch();
         await this.git.pull();
@@ -96,7 +95,7 @@ class GithubUtils {
         await this.git.commit(commitMessage); // Commit the changed files
         // Push the changes to the checked out branch
         await this.git.push();
-        console.log('Push + test some stuff out');
+        console.log('Commit and push cleaned gates');
     }
     async createPullRequest(targetBranch, title, body) {
         // Only one PR should exist on the target branch
