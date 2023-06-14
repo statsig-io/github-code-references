@@ -40,7 +40,7 @@ class Utils {
         // Post request can fail occassionally, catch this and throw the error if so
         let result;
         try {
-            result = await axios_1.default.post('https:/latest.statsigapi.net/developer/v1/projects', // This will change to prod when completed
+            result = await axios_1.default.post('https://latest.statsigapi.net/developer/v1/projects', // This will change to prod when completed
             null, {
                 headers: {
                     'statsig-api-key': sdkKey,
