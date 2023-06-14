@@ -51,7 +51,8 @@ async function getProjectData() {
                 };
                 updatedGates.push(gate);
                 // Create the map
-                if (isGateStale(gate.gateType.reason)) {
+                // if (isGateStale(gate.gateType.reason)) { Test on Temporary gates
+                if (gate.gateType.reason == "TEMPORARY") {
                     const fileDir = fileWithGates.fileDir;
                     if (staleGates.has(fileDir)) {
                         staleGates.get(fileDir).push(gate.gateName);
@@ -106,11 +107,14 @@ async function getProjectData() {
         const cleanBranchName = `Statsig-Cleaned-Gates`;
         let githubUtil = new GithubUtils_1.default(githubKey, repoOwner, repoName, mainBranch);
         // Set up the branch
+        console.log('Set up the Clean Branch');
         const cleanBranchRef = `refs/heads/${cleanBranchName}`;
         await githubUtil.configureBranch(cleanBranchRef);
         // Checkout the branch
+        console.log('Checkout the Clean Branch');
         await githubUtil.setupBranchLocally(cleanBranchName);
         // Scan and clean stale gates
+        console.log('Scan and Clean the Gates');
         staleGates.forEach((staleGates, fileDir) => {
             (0, FileUtils_1.replaceStaleGates)(staleGates, fileDir);
             console.log(staleGates);
