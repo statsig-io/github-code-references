@@ -1,7 +1,10 @@
 import * as fs from 'fs';
 import Utils, { ForegroundColor, ColorReset } from './Utils';
+import GithubUtils from './GithubUtils';
 import axiosRetry from 'axios-retry';
 import axios, { AxiosError, AxiosResponse } from 'axios';
+import GateData from '../data_classes/GateData';
+import DynamicConfigData from '../data_classes/DynamicConfigData';
 
 // Not worth checking files or folders that won't have feature gates
 const ignoreList = new Set<string>(['.git', 'node_modules', 'README.md', 
@@ -13,16 +16,16 @@ const extensionIgnoreList = new Set<string>(['git', 'yaml', 'yml', 'json', 'gith
 const SUPPORTED_EXTENSIONS = new Set<string>(['ts', 'py', 'js'])
 
 // Regex match all found
-const GLOBAL_FLAG = 'g';
-const extensionToGateRegexMap = new Map<string, RegExp>([
+const REGEX_FLAG = 'i';
+export const extensionToGateRegexMap = new Map<string, RegExp>([
     ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
     ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
 ]);
 
-const extensionToConfigRegexMap = new Map<string, RegExp>([
-    ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
-    ["js", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
+export const extensionToConfigRegexMap = new Map<string, RegExp>([
+    ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],
+    ["js", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],
     ["py", /[a-zA-Z _.]*get_config\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
 ]);
 
@@ -39,68 +42,17 @@ const extensionToConfigReplace = new Map<string, string>([
     ["py", " {}"],
 ])
 
+export function getGeneralGateRegex(extension: string) {
+    const baseRegex = extensionToGateRegexMap.get(extension).source;
+    return new RegExp(baseRegex, REGEX_FLAG);
+}
 
-// Leverage Github API and environment variables to access files touched by Pull Requests
-export default async function getFiles(githubKey: string): Promise<string[]> {
-
-    let fileList = [];
-
-    // const directory = '/Users/jairogarciga/Github-Code-References/github-code-references'
-    const directory = Utils.getGithubDirectory();
-
-    // Only run on Pull Requests
-    if (!Utils.isGithubEventSchedule()) {
-
-        const pullRequestNum = Utils.getPullRequestNum();
-        const githubOwner = Utils.getRepoOwner();
-        const repoName = Utils.getRepoName();
-
-        console.log(`Checking out ${githubOwner}:${repoName} on Pull Request ${pullRequestNum}`);
-
-        const retries = 7;
-        axiosRetry(axios, {
-        retries: retries,
-        });
-        const timeout = 2000000;
-
-        // Do a GITHUB API Get request for the specific pull that triggered the workflow
-        // Use that to get the touched files
-        let result: AxiosResponse | undefined;
-        try {
-        result = await axios.get(
-            `https://api.github.com/repos/${githubOwner}/${repoName}/pulls/${pullRequestNum}/files`,
-            {
-                headers: {
-                    'Authorization': `Bearer ${githubKey}`,
-                    'Accept': 'application/vnd.github+json',
-                    'Content-Type': 'application/json',
-                },
-                timeout: timeout, // Sometimes the delay is greater than the speed GH workflows can get the data
-                data: {
-                    'per_page': 100,
-                    'page': 1,
-                }
-            }
-        )
-        } catch (e: unknown) {
-            result = (e as AxiosError)?.response;
-            throw Error(`Error Requesting after ${retries} attempts`);
-        }
-        
-        console.log('Picking up Files ☺');
-        fileList = parsePullRequestData(result?.data, directory);
-        console.log('Finished picking up Files ☺\n');
-
-    } else {
-        fileList = await scanFiles(directory); // No need to do a Get request, just check locally
-    }
-
-    for (const fileDir of fileList) {
-        // Output a valid file found, wrap it with ANSI Green
-        console.log(`\t${ForegroundColor.Green}${fileDir}${ColorReset}`)
-    }
-
-    return fileList;
+// Creates a new regex object that searches specifically for the targetGate
+export function getSpecificGateRegex(targetGate: string, extension: string) {
+    const gateCatchingGroup = '(?<gateName>[\\w _-]*)';
+    const regexSource = extensionToGateRegexMap.get(extension).source;
+    const specificRegex = regexSource.replace(gateCatchingGroup, targetGate);
+    return new RegExp(specificRegex, REGEX_FLAG);
 }
 
 // BFS search through local files
@@ -126,6 +78,34 @@ export async function scanFiles(dir: string): Promise<string[]> {
 
     return fileList;
 };
+
+export function getFeatureGatesInFiles(fileNames: string[]) {
+    let allGates: GateData[] = [];
+    for (const file of fileNames) {
+        const gatesFound = searchGates(file);
+        const fileName = file.split('/').at(-1);
+        const gateData = new GateData(file, fileName, gatesFound);
+
+        if (gatesFound.length >= 1) {
+            allGates.push(gateData);
+        }
+    }
+    return allGates;
+}
+
+export function getDynamicConfigsInFiles(fileNames: string[]) {
+    let foundConfigs = []
+    for (const file of fileNames) {
+        const configsFound = searchConfigs(file);
+        const fileName = file.split('/').at(-1);
+        const configData = new DynamicConfigData(file, fileName, configsFound);
+
+        if (configsFound.length >= 1) {
+          foundConfigs.push(configData);
+        }
+    }
+    return foundConfigs;
+  }
 
 // Get the file locations based on the pull request data from the Github API
 export function parsePullRequestData(data, mainDirectory: string): string[] {
@@ -162,7 +142,7 @@ export function searchGates(fileDir: string) {
 
         // Different languages, clients, servers have differentw ways of creating gates
         // Different regex target each instead of using one big regex blob
-        const regex = extensionToGateRegexMap.get(extension);
+        const regex = getGeneralGateRegex(extension);
 
         // Loop over each line, regex search for the 
         for (let line = 0; line < lineDividedData.length; line++) {
@@ -186,7 +166,7 @@ export function searchGates(fileDir: string) {
 
 // Decided to seperate this from the regular search to avoid coupling and because
 // at it's core it doesn't want to do anything with the files besides substitute them.
-export function replaceStaleGates(fileDir: string) {
+export function replaceStaleGates(staleGates: string[], fileDir: string) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
@@ -196,17 +176,19 @@ export function replaceStaleGates(fileDir: string) {
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8')
 
-        // Different languages, clients, servers have differentw ways of creating gates
-        // Different regex target each instead of using one big regex blob
-        const newString = extensionToGateReplace.get(extension);
-        const regex = new RegExp(extensionToGateRegexMap.get(extension), GLOBAL_FLAG);
+        let replacedFile = fileData;
 
-        const replacedFile = fileData.replace(regex, newString);
+        for (const staleGate of staleGates) {
+            // Different languages, clients, servers have differentw ways of creating gates
+            // Different regex target each instead of using one big regex blob
+            const newString = extensionToGateReplace.get(extension);
+            const regex = getSpecificGateRegex(staleGate, extension);
+
+            replacedFile = fileData.replace(regex, newString);
+        }
 
         // Write into the old file with the gates cleaned out
         fs.writeFileSync(fileDir, replacedFile, 'utf-8');
-        console.log('Done writing to file');
-        
     }
 }
 
@@ -262,13 +244,11 @@ export function replaceStaleConfigs(fileDir: string) {
         // Different languages, clients, servers have differentw ways of creating gates
         // Different regex target each instead of using one big regex blob
         const newString = extensionToConfigReplace.get(extension);
-        const regex = new RegExp(extensionToConfigRegexMap.get(extension), GLOBAL_FLAG);
+        const regex = new RegExp(extensionToConfigRegexMap.get(extension), REGEX_FLAG);
 
         const replacedFile = fileData.replace(regex, newString);
 
         // Write into the old file with the gates cleaned out
         fs.writeFileSync(fileDir, replacedFile, 'utf-8');
-        console.log('Done writing to file');
-        
     }
 }

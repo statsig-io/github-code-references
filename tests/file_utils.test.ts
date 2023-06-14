@@ -1,5 +1,5 @@
 import { pullRequestData, invalidPullRequestData } from "./PullRequestData";
-import { parsePullRequestData, searchConfigsInFile, searchGatesInFile } from "../src/FileUtils"
+import { parsePullRequestData, searchConfigs, searchGates } from "../src/utils/FileUtils"
 
 const nodeTestFile = "regex_tests/nodejsTests.js"
 const pythonTestFile = "regex_tests/pythonTests.py"
@@ -32,26 +32,26 @@ describe('Test FileUtils.ts parsePullRequest', () => {
 describe('Test FileUtils searchGatesInFile', () => {
 
     test('searchGatesInFile with node.js', () => {
-        const gateRes = searchGatesInFile(nodeTestFile);
+        const gateRes = searchGates(nodeTestFile);
         const expectedRes = [ { line: '7', gateName: 'silly_gate' }, { line: '8', gateName: 'node_js_gate' } ]
         expect(gateRes).toEqual(expectedRes);
     })
 
     test('searchGatesInFile with python', () => {
-        const gateRes = searchGatesInFile(pythonTestFile);
+        const gateRes = searchGates(pythonTestFile);
         const expectedRes = [ { line: '2', gateName: 'silly_gate' } ]
         expect(gateRes).toEqual(expectedRes);
     })
 
     test('searchGatesInFile with typescript', () => {
-        const gateRes = searchGatesInFile(typescriptTestFile);
+        const gateRes = searchGates(typescriptTestFile);
         const expectedRes = 
         [ { line: '11', gateName: 'dummy_gate' }, { line: '12', gateName: 'silly_gate' } ]
         expect(gateRes).toEqual(expectedRes);
     })
 
     test('searchGatesInFile with empty file', () => {
-        const emptyRes = searchGatesInFile("");
+        const emptyRes = searchGates("");
         expect(emptyRes).toEqual([]);
     })
 })
@@ -60,26 +60,26 @@ describe('Test FileUtils searchGatesInFile', () => {
 describe('Test FileUtils searchConfigsInFile', () => {
 
     test('searchConfigsInFile with node.js', () => {
-        const gateRes = searchConfigsInFile(nodeTestFile);
+        const gateRes = searchConfigs(nodeTestFile);
         const expectedRes = [ { line: '9', configName: 'nodejs_dynamic_config' } ]
         expect(gateRes).toEqual(expectedRes);
     })
 
     test('searchConfigsInFile with python', () => {
-        const gateRes = searchConfigsInFile(pythonTestFile);
+        const gateRes = searchConfigs(pythonTestFile);
         const expectedRes = [ { line: '3', configName: 'dynamic_config' } ]
         expect(gateRes).toEqual(expectedRes);
     })
 
     test('searchConfigsInFile with typescript', () => {
-        const gateRes = searchConfigsInFile(typescriptTestFile);
+        const gateRes = searchConfigs(typescriptTestFile);
         const expectedRes = 
         [ {line: "13", configName: "typescript_dynamic_config"} ]
         expect(gateRes).toEqual(expectedRes);
     })
 
     test('scanConfigsInFile with empty file', () => {
-        const emptyRes = searchConfigsInFile("");
+        const emptyRes = searchConfigs("");
         expect(emptyRes).toEqual([]);
     })
 })

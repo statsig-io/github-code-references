@@ -1,9 +1,9 @@
 import { Octokit } from "@octokit/rest";
 import simpleGit from "simple-git";
-import { replaceStaleGates, replaceStaleConfigs } from "./FileUtils";
+import { replaceStaleGates, replaceStaleConfigs } from "./utils/FileUtils";
 
 const octokit = new Octokit({
-    auth: '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'
+    auth: '***',
 })
 
 const owner = 'statsig-io';
@@ -15,7 +15,7 @@ const git = simpleGit('')
 
 async function testGithubApi() {
 
-    // Step 1: Check if Clean-Statsiog-Gates exists
+    // Step 1: Check if Clean-Statsig-Gates exists
     // Create it if it doesn't exist
     let status;
     try {
@@ -93,8 +93,7 @@ async function testGithubApi() {
     // Step 3: Make changes, commit, and push
     // Step 3a: Match and substitute a test gate /tests/stale_gates.ts
     const test_file_loc = "./tests/stale_gates.ts"
-    replaceStaleGates(test_file_loc);
-    replaceStaleConfigs(test_file_loc);
+    // replaceStaleGates(['dummy_gate', 'silly_gate'], test_file_loc);
 
     // Step 3b: Make a commit
     const commitMessage = "Replaced stale gates and configs";
