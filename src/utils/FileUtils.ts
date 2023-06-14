@@ -1,8 +1,4 @@
 import * as fs from 'fs';
-import Utils, { ForegroundColor, ColorReset } from './Utils';
-import GithubUtils from './GithubUtils';
-import axiosRetry from 'axios-retry';
-import axios, { AxiosError, AxiosResponse } from 'axios';
 import GateData from '../data_classes/GateData';
 import DynamicConfigData from '../data_classes/DynamicConfigData';
 
@@ -18,9 +14,9 @@ const SUPPORTED_EXTENSIONS = new Set<string>(['ts', 'py', 'js'])
 // Regex match all found
 const REGEX_FLAG = 'i';
 export const extensionToGateRegexMap = new Map<string, RegExp>([
-    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["ts", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["js", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["py", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
 ]);
 
 export const extensionToConfigRegexMap = new Map<string, RegExp>([
@@ -183,8 +179,14 @@ export function replaceStaleGates(staleGates: string[], fileDir: string) {
             // Different regex target each instead of using one big regex blob
             const newString = extensionToGateReplace.get(extension);
             const regex = getSpecificGateRegex(staleGate, extension);
+            const gateMatch = fileData.match(regex);
+            const matchedGroups = gateMatch.groups;
 
-            replacedFile = fileData.replace(regex, newString);
+            if (!matchedGroups.lineStart) {// if there is no start of the line, remove the entire line
+                replacedFile = fileData.replace(regex, "");
+            } else {
+                replacedFile = fileData.replace(regex, newString);
+            }
         }
 
         // Write into the old file with the gates cleaned out
