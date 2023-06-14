@@ -142,7 +142,7 @@ function searchGates(fileDir) {
 exports.searchGates = searchGates;
 // Decided to seperate this from the regular search to avoid coupling and because
 // at it's core it doesn't want to do anything with the files besides substitute them.
-function replaceStaleGates(staleGates, fileDir) {
+function replaceStaleGates(fileDir, staleGates) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);

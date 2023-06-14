@@ -1,12 +1,18 @@
 import { AxiosResponse } from 'axios';
 import GateData from './data_classes/GateData'
 import DynamicConfigData from './data_classes/DynamicConfigData';
-import { getDynamicConfigsInFiles, getFeatureGatesInFiles } from './utils/FileUtils'
+import { getDynamicConfigsInFiles, getFeatureGatesInFiles, replaceStaleGates } from './utils/FileUtils'
 import Utils from './utils/Utils'
 import GithubUtils from './utils/GithubUtils'
 
 export const FeatureGate = 'feature_gates'
 export const DynamicConfig = 'dynamic_configs'
+
+function isGateStale(gateType: string) {
+    const types = new Set<string>(['STALE_PROBABLY_LAUNCHED', 'STALE_PROBABLY_UNLAUNCHED',
+                                    'STALE_NO_RULES', 'STALE_PROBABLY_DEAD'])
+    return types.has(gateType);
+}
 
 // Calls the endpoint using the API key and gets the projects info
 export default async function getProjectData() {
@@ -33,7 +39,7 @@ export default async function getProjectData() {
 
     // Get data only on the feature gates found within the local files
     let finalGates: GateData[] = [];
-    let staleGates: Map<string, string[]>; // fileName, gateName
+    let staleGates = new Map<string, string[]>; // fileName, gateName
     for (let fileWithGates of allGates) {
         let updatedGates = [];
 
@@ -58,7 +64,8 @@ export default async function getProjectData() {
                 updatedGates.push(gate) 
 
                 // Create the map
-                if (isGateStale(gate.gateType.reason)) {
+                // if (isGateStale(gate.gateType.reason)) { Temporarily use temporary typed gates because my local gates are not stale
+                if (gate.gateType.reason == 'TEMPORARY') {
                     const fileDir = fileWithGates.fileDir;
 
                     if (staleGates.has(fileDir)) {
@@ -126,33 +133,27 @@ export default async function getProjectData() {
 
         // Set up the branch
         const cleanBranchRef = `refs/heads/${cleanBranchName}`
-        // await githubUtil.configureBranch(cleanBranchRef);
+        await githubUtil.configureBranch(cleanBranchRef);
 
         // Checkout the branch
-        // await githubUtil.setupBranchLocally(cleanBranchName);
+        await githubUtil.setupBranchLocally(cleanBranchName);
         
         // Scan and clean stale gates
         staleGates.forEach((staleGates, fileDir) => {
-            console.log(staleGates, fileDir);
-            
+            // console.log(staleGates, fileDir);
+            replaceStaleGates(fileDir, staleGates);
         })
 
         // Commit and update the local branch
         const message = "Clean stale gates and configs"
-        // await githubUtil.commitLocal(message);
+        await githubUtil.commitLocal(message);
 
         // Create the Pull Request or Update it
         const currDate = new Date().toISOString().slice(0, 10); // Creates date in 2023-06-09 format
         const pullRequestTitle = `${cleanBranchName} ${currDate}`;
         const pullRequestBody = "Replace stale gates and configs with corresponding flags or empty objects";
-        // await githubUtil.createPullRequest(cleanBranchName, pullRequestTitle, pullRequestBody);
+        await githubUtil.createPullRequest(cleanBranchName, pullRequestTitle, pullRequestBody);
     }
 }
 
 getProjectData();
-
-function isGateStale(gateType: string) {
-    const types = new Set<string>(['STALE_PROBABLY_LAUNCHED', 'STALE_PROBABLY_UNLAUNCHED',
-                                    'STALE_NO_RULES', 'STALE_PROBABLY_DEAD'])
-    return types.has(gateType);
-}

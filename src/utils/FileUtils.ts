@@ -166,7 +166,7 @@ export function searchGates(fileDir: string) {
 
 // Decided to seperate this from the regular search to avoid coupling and because
 // at it's core it doesn't want to do anything with the files besides substitute them.
-export function replaceStaleGates(staleGates: string[], fileDir: string) {
+export function replaceStaleGates(fileDir: string, staleGates: string[]) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
