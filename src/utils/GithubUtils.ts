@@ -7,7 +7,7 @@ Purposes:
 import { Octokit } from "@octokit/rest";
 import axios, { AxiosResponse, AxiosError } from "axios";
 import axiosRetry from "axios-retry";
-import simpleGit from "simple-git";
+import { simpleGit, SimpleGit, CleanOptions } from 'simple-git';
 import { parsePullRequestData, scanFiles } from "./FileUtils";
 import { ForegroundColor, ColorReset } from "./Utils";
 
@@ -26,7 +26,7 @@ export default class GithubUtils {
         this.octokit = new Octokit({
             auth: this.apiKey,
         });
-        this.git = simpleGit('');
+        this.git = simpleGit().clean(CleanOptions.FORCE);
         this.owner = owner;
         this.repo = repo;
         this.mainBranch = mainBranch;
@@ -96,7 +96,7 @@ export default class GithubUtils {
     // Checkout the branch, fetch, and pull
     public async setupBranchLocally(targetBranch: string) {
         // Checkout the branch!
-        await this.git.switch(targetBranch)
+        await this.git.checkoutBranch(targetBranch);
         const branch = await this.git.branch();
         const currentBranch = branch.current;
         console.log(currentBranch);
