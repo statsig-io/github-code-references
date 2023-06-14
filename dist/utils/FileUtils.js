@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.replaceStaleConfigs = exports.searchConfigs = exports.replaceStaleGates = exports.searchGates = exports.parsePullRequestData = exports.getDynamicConfigsInFiles = exports.getFeatureGatesInFiles = exports.scanFiles = exports.getSpecificGateRegex = exports.getGeneralGateRegex = exports.extensionToConfigRegexMap = exports.extensionToGateRegexMap = void 0;
+exports.replaceStaleConfigs = exports.searchConfigs = exports.replaceStaleGates = exports.searchGates = exports.parsePullRequestData = exports.getDynamicConfigsInFiles = exports.getFeatureGatesInFiles = exports.scanFiles = exports.getSpecificPartialGateRegex = exports.getSpecificFullGateRegex = exports.getGeneralGateRegex = exports.extensionToConfigRegexMap = exports.extensionToGatePartialRegexMap = exports.extensionToGateFullRegexMap = void 0;
 const fs = require("fs");
 const GateData_1 = require("../data_classes/GateData");
 const DynamicConfigData_1 = require("../data_classes/DynamicConfigData");
@@ -12,10 +12,17 @@ const extensionIgnoreList = new Set(['git', 'yaml', 'yml', 'json', 'github', 'gi
 const SUPPORTED_EXTENSIONS = new Set(['ts', 'py', 'js']);
 // Regex match all found
 const REGEX_FLAG = 'i';
-exports.extensionToGateRegexMap = new Map([
-    ["ts", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
-    ["js", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+// Used to find all gates and for replacing unexpected gate usages
+exports.extensionToGateFullRegexMap = new Map([
+    ["ts", /(?<lineStart>[\n\w_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["js", /(?<lineStart>[\n\w_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
     ["py", /(?<lineStart>[\n\w _]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
+]);
+// Used to replace gates as expected to be used
+exports.extensionToGatePartialRegexMap = new Map([
+    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
 ]);
 exports.extensionToConfigRegexMap = new Map([
     ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],
@@ -34,18 +41,25 @@ const extensionToConfigReplace = new Map([
     ["py", " {}"],
 ]);
 function getGeneralGateRegex(extension) {
-    const baseRegex = exports.extensionToGateRegexMap.get(extension).source;
+    const baseRegex = exports.extensionToGateFullRegexMap.get(extension).source;
     return new RegExp(baseRegex, REGEX_FLAG);
 }
 exports.getGeneralGateRegex = getGeneralGateRegex;
 // Creates a new regex object that searches specifically for the targetGate
-function getSpecificGateRegex(targetGate, extension) {
+function getSpecificFullGateRegex(targetGate, extension) {
     const gateCatchingGroup = '(?<gateName>[\\w _-]*)';
-    const regexSource = exports.extensionToGateRegexMap.get(extension).source;
+    const regexSource = exports.extensionToGateFullRegexMap.get(extension).source;
     const specificRegex = regexSource.replace(gateCatchingGroup, targetGate);
     return new RegExp(specificRegex, REGEX_FLAG);
 }
-exports.getSpecificGateRegex = getSpecificGateRegex;
+exports.getSpecificFullGateRegex = getSpecificFullGateRegex;
+function getSpecificPartialGateRegex(targetGate, extension) {
+    const gateCatchingGroup = '(?<gateName>[\\w _-]*)';
+    const regexSource = exports.extensionToGateFullRegexMap.get(extension).source;
+    const specificRegex = regexSource.replace(gateCatchingGroup, targetGate);
+    return new RegExp(specificRegex, REGEX_FLAG);
+}
+exports.getSpecificPartialGateRegex = getSpecificPartialGateRegex;
 // BFS search through local files
 async function scanFiles(dir) {
     let fileList = [];
@@ -154,14 +168,15 @@ function replaceStaleGates(staleGates, fileDir) {
             // Different languages, clients, servers have differentw ways of creating gates
             // Different regex target each instead of using one big regex blob
             const newString = extensionToGateReplace.get(extension);
-            const regex = getSpecificGateRegex(staleGate, extension);
-            const gateMatch = fileData.match(regex);
+            const fullRegex = getSpecificFullGateRegex(staleGate, extension);
+            const partialRegex = getSpecificPartialGateRegex(staleGate, extension);
+            const gateMatch = replacedFile.match(fullRegex);
             const matchedGroups = gateMatch.groups;
             if (!matchedGroups.lineStart) { // if there is no start of the line, remove the entire line
-                replacedFile = fileData.replace(regex, "");
+                replacedFile = replacedFile.replace(fullRegex, ""); // Remove the entire line
             }
             else {
-                replacedFile = fileData.replace(regex, newString);
+                replacedFile = replacedFile.replace(partialRegex, newString); // If the gate is used as expected, clean it normally
             }
         }
         // Write into the old file with the gates cleaned out
