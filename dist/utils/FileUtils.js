@@ -183,6 +183,7 @@ function searchConfigs(fileDir) {
             // If a gate exists in a file, add to the list of total gates found
             if (found) {
                 const configName = found.groups.configName;
+                console.log(found, configName);
                 configsFound.push({
                     'line': line.toString(),
                     'configName': configName,

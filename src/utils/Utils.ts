@@ -90,7 +90,7 @@ export default class Utils {
             "defaultValue": target["defaultValue"],
             "checksInPast30Days": target["checksInPast30Days"],
             // Only feature gates have a gateType value
-            "type": targetType === ParseTargetType.FEATURE_GATES ? target["gateType"] : undefined,
+            "gateType": targetType === ParseTargetType.FEATURE_GATES ? target["gateType"] : undefined,
           }
         )
       }
