@@ -50,7 +50,6 @@ class GithubUtils {
                 }
             });
             const commitSha = latestCommit.data.sha;
-            console.log('latestcommit:', commitSha);
             // Now create the branch based off of the latest sha
             await this.octokit.rest.git.createRef({
                 owner: this.owner,
