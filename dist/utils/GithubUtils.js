@@ -18,7 +18,7 @@ class GithubUtils {
         this.octokit = new rest_1.Octokit({
             auth: this.apiKey,
         });
-        this.git = (0, simple_git_1.default)('');
+        this.git = (0, simple_git_1.simpleGit)().clean(simple_git_1.CleanOptions.FORCE);
         this.owner = owner;
         this.repo = repo;
         this.mainBranch = mainBranch;
@@ -78,7 +78,7 @@ class GithubUtils {
     // Checkout the branch, fetch, and pull
     async setupBranchLocally(targetBranch) {
         // Checkout the branch!
-        await this.git.switch(targetBranch);
+        await this.git.checkoutBranch(targetBranch);
         const branch = await this.git.branch();
         const currentBranch = branch.current;
         console.log(currentBranch);
