@@ -51,11 +51,11 @@ export default class Utils {
     let result: AxiosResponse | undefined;
     try {
       result = await axios.post(
-          'https:/latest.statsigapi.net/developer/v1/projects', // This will change to prod when completed
+          'https://latest.statsigapi.net/developer/v1/projects', // This will change to prod when completed
           null,
           {
               headers: {
-                  'statsig-api-key': sdkKey, // 'secret-08Bqk5wabXasJhcw5fVVIQ1JUfwBI8IXnAPMqbvaBkS',// sdkKey,
+                  'statsig-api-key': sdkKey, // sdkKey,
                   'Content-Type': 'application/json',
               },
               timeout: timeout, // Sometimes the delay is greater than the speed GH workflows can get the data
