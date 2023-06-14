@@ -120,7 +120,6 @@ async function getProjectData() {
         console.log('Scan and Clean the Gates');
         staleGates.forEach((staleGates, fileDir) => {
             (0, FileUtils_1.replaceStaleGates)(staleGates, fileDir);
-            console.log(staleGates);
         });
         // Commit and update the local branch
         const message = "Clean stale gates and configs";

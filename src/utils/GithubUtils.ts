@@ -27,6 +27,8 @@ export default class GithubUtils {
             auth: this.apiKey,
         });
         this.git = simpleGit().clean(CleanOptions.FORCE);
+        this.git.addConfig('user.name', 'Statsig-GithubCodeRefs')
+        this.git.addConfig('user.email', 'githubcoderefs@statsig.com')
         this.owner = owner;
         this.repo = repo;
         this.mainBranch = mainBranch;
