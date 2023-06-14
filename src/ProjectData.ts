@@ -132,13 +132,16 @@ export default async function getProjectData() {
         let githubUtil = new GithubUtils(githubKey, repoOwner, repoName, mainBranch);
 
         // Set up the branch
+        console.log('Set up the Clean Branch');
         const cleanBranchRef = `refs/heads/${cleanBranchName}`
         await githubUtil.configureBranch(cleanBranchRef);
 
         // Checkout the branch
+        console.log('Checkout the Clean Branch')
         await githubUtil.setupBranchLocally(cleanBranchName);
         
         // Scan and clean stale gates
+        console.log('Scan and Clean the Gates');
         staleGates.forEach((staleGates, fileDir) => {
             replaceStaleGates(staleGates, fileDir);
             console.log(staleGates)

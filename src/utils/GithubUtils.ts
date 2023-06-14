@@ -96,7 +96,7 @@ export default class GithubUtils {
     // Checkout the branch, fetch, and pull
     public async setupBranchLocally(targetBranch: string) {
         // Checkout the branch!
-        await this.git.checkout(targetBranch);
+        await this.git.switch(targetBranch)
         const branch = await this.git.branch();
         const currentBranch = branch.current;
         console.log(currentBranch);
