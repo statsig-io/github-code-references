@@ -24,8 +24,8 @@ export const extensionToGateRegexMap = new Map<string, RegExp>([
 ]);
 
 export const extensionToConfigRegexMap = new Map<string, RegExp>([
-    ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
-    ["js", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configname>[\w _-]*)['"]?\)/i],
+    ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],
+    ["js", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],
     ["py", /[a-zA-Z _.]*get_config\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
 ]);
 

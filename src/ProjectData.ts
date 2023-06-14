@@ -46,14 +46,13 @@ export default async function getProjectData() {
             
                 // gate is of type Gate, defined in GateData.ts
                 // To add more properties change the Gate object
-                console.log(projectGate);
                 gate = {
                     'line': gate.line,
                     'gateName': gate.gateName,
                     'enabled': projectGate['enabled'],
                     'defaultValue': projectGate['defaultValue'],
                     'checksInPast30Days': projectGate['checksInPast30Days'],
-                    'gateType': projectGate['gateType'],
+                    'gateType': projectGate['gateType'].type,
                 }
 
                 updatedGates.push(gate) 
