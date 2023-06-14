@@ -139,7 +139,7 @@ class GithubUtils {
         let fileList = [];
         const directory = GithubUtils.getGithubDirectory();
         // Only run on Pull Requests
-        if (!GithubUtils.isGithubEventSchedule() || !(GithubUtils.getGithubEventName() == "workflow_dispatch")) {
+        if (!GithubUtils.isGithubEventSchedule() && !(GithubUtils.getGithubEventName() == "workflow_dispatch")) {
             const pullRequestNum = GithubUtils.getPullRequestNum();
             const githubOwner = GithubUtils.getRepoOwner();
             const repoName = GithubUtils.getRepoName();
