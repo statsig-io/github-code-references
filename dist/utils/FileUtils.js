@@ -13,9 +13,9 @@ const SUPPORTED_EXTENSIONS = new Set(['ts', 'py', 'js']);
 // Regex match all found
 const REGEX_FLAG = 'i';
 exports.extensionToGateRegexMap = new Map([
-    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
-    ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["ts", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["js", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\)/i],
+    ["py", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\)/i],
 ]);
 exports.extensionToConfigRegexMap = new Map([
     ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],
@@ -155,7 +155,14 @@ function replaceStaleGates(staleGates, fileDir) {
             // Different regex target each instead of using one big regex blob
             const newString = extensionToGateReplace.get(extension);
             const regex = getSpecificGateRegex(staleGate, extension);
-            replacedFile = fileData.replace(regex, newString);
+            const gateMatch = fileData.match(regex);
+            const matchedGroups = gateMatch.groups;
+            if (!matchedGroups.lineStart) { // if there is no start of the line, remove the entire line
+                replacedFile = fileData.replace(regex, "");
+            }
+            else {
+                replacedFile = fileData.replace(regex, newString);
+            }
         }
         // Write into the old file with the gates cleaned out
         fs.writeFileSync(fileDir, replacedFile, 'utf-8');
