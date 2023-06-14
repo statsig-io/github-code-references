@@ -65,6 +65,7 @@ export default async function getProjectData() {
 
                 // Create the map
                 // if (isGateStale(gate.gateType.reason)) { Test on Temporary gates
+                console.log(gate.gateType.reason);
                 if (gate.gateType.reason == "TEMPORARY") {
                     const fileDir = fileWithGates.fileDir;
 
