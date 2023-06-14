@@ -55,7 +55,7 @@ function getSpecificFullGateRegex(targetGate, extension) {
 exports.getSpecificFullGateRegex = getSpecificFullGateRegex;
 function getSpecificPartialGateRegex(targetGate, extension) {
     const gateCatchingGroup = '(?<gateName>[\\w _-]*)';
-    const regexSource = exports.extensionToGateFullRegexMap.get(extension).source;
+    const regexSource = exports.extensionToGatePartialRegexMap.get(extension).source;
     const specificRegex = regexSource.replace(gateCatchingGroup, targetGate);
     return new RegExp(specificRegex, REGEX_FLAG);
 }
