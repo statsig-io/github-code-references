@@ -11,6 +11,11 @@ var ForegroundColor;
     ForegroundColor["Blue"] = "\u001B[34m";
     ForegroundColor["Green"] = "\u001B[32m";
 })(ForegroundColor || (exports.ForegroundColor = ForegroundColor = {}));
+var ParseTargetType;
+(function (ParseTargetType) {
+    ParseTargetType["FEATURE_GATES"] = "feature_gates";
+    ParseTargetType["DYNAMIC_CONFIGS"] = "dynamic_configs";
+})(ParseTargetType || (ParseTargetType = {}));
 class Utils {
     static getKey() {
         const sdkKey = this.parseInputKey("sdk-key", true);
@@ -63,17 +68,14 @@ class Utils {
         }
         let projectData = data["projects"];
         let allTypeInfo = new Map;
-        // Loop over every project in data
         for (const project of projectData) {
             for (const target of project[targetType]) { // Either Feature Gates or Dynamic Configs
-                console.log('abc', data);
-                console.log('targetType', targetType);
                 allTypeInfo.set(target["name"], {
                     "enabled": target["enabled"],
                     "defaultValue": target["defaultValue"],
                     "checksInPast30Days": target["checksInPast30Days"],
                     // Only feature gates have a gateType value
-                    "type": targetType === "feature_gate" ? target["gateType"] : undefined,
+                    "type": targetType === ParseTargetType.FEATURE_GATES ? target["gateType"] : undefined,
                 });
             }
         }

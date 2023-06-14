@@ -3,14 +3,17 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 import axiosRetry from 'axios-retry';
 import GateData from "../data_classes/GateData";
 import DynamicConfigData, { DynamicConfig } from "../data_classes/DynamicConfigData";
-import GithubUtils from "./GithubUtils"
-import  { searchConfigs } from './FileUtils'
-import { searchGates } from './FileUtils';
+import GithubUtils from "./GithubUtils";
 
 export const ColorReset = "\x1b[0m"
 export enum ForegroundColor {
   Blue = "\x1b[34m",
   Green = "\x1b[32m",
+}
+
+enum ParseTargetType {
+  FEATURE_GATES = 'feature_gates',
+  DYNAMIC_CONFIGS = 'dynamic_configs',
 }
 
 
@@ -79,18 +82,15 @@ export default class Utils {
     let projectData = data["projects"];
     let allTypeInfo = new Map<string, {}>;
 
-    // Loop over every project in data
     for (const project of projectData) {
       for (const target of project[targetType]) { // Either Feature Gates or Dynamic Configs
-        console.log('abc', data);
-        console.log('targetType', targetType);
         allTypeInfo.set(target["name"],
           {
             "enabled": target["enabled"],
             "defaultValue": target["defaultValue"],
             "checksInPast30Days": target["checksInPast30Days"],
             // Only feature gates have a gateType value
-            "type": targetType === "feature_gate" ? target["gateType"] : undefined,
+            "type": targetType === ParseTargetType.FEATURE_GATES ? target["gateType"] : undefined,
           }
         )
       }
