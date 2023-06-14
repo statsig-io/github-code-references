@@ -31,7 +31,7 @@ async function getProjectData() {
     const parsedConfigData = Utils_1.default.parseProjectData(data, exports.DynamicConfig);
     // Get data only on the feature gates found within the local files
     let finalGates = [];
-    let staleGates; // fileName, gateName
+    let staleGates = new Map; // fileName, gateName
     for (let fileWithGates of allGates) {
         let updatedGates = [];
         ``;

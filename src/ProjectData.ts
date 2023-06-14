@@ -39,7 +39,7 @@ export default async function getProjectData() {
 
     // Get data only on the feature gates found within the local files
     let finalGates: GateData[] = [];
-    let staleGates: Map<string, string[]>; // fileName, gateName
+    let staleGates = new Map<string, string[]>; // fileName, gateName
     for (let fileWithGates of allGates) {
         let updatedGates = [];
 ``
