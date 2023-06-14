@@ -28,7 +28,6 @@ export default async function getProjectData() {
 
     const data = projectRes?.data; // Axios response returns a data object
     const parsedGateData = Utils.parseProjectData(data, FeatureGate); // Map of gate names to gate info
-    console.log(parsedGateData);
     // Map of dynamic config names to config info
     const parsedConfigData = Utils.parseProjectData(data, DynamicConfig);
 

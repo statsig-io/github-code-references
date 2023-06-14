@@ -82,6 +82,8 @@ export default class Utils {
     // Loop over every project in data
     for (const project of projectData) {
       for (const target of project[targetType]) { // Either Feature Gates or Dynamic Configs
+        console.log('abc', data);
+        console.log('targetType', targetType);
         allTypeInfo.set(target["name"],
           {
             "enabled": target["enabled"],

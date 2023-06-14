@@ -22,7 +22,6 @@ async function getProjectData() {
     projectRes = await Utils_1.default.requestProjectData(sdkKey, timeout);
     const data = projectRes?.data; // Axios response returns a data object
     const parsedGateData = Utils_1.default.parseProjectData(data, exports.FeatureGate); // Map of gate names to gate info
-    console.log(parsedGateData);
     // Map of dynamic config names to config info
     const parsedConfigData = Utils_1.default.parseProjectData(data, exports.DynamicConfig);
     // Get data only on the feature gates found within the local files
