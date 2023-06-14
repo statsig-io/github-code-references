@@ -13,10 +13,19 @@ const SUPPORTED_EXTENSIONS = new Set<string>(['ts', 'py', 'js'])
 
 // Regex match all found
 const REGEX_FLAG = 'i';
-export const extensionToGateRegexMap = new Map<string, RegExp>([
-    ["ts", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
-    ["js", /(?<lineStart>[\na-zA-Z_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+
+// Used to find all gates and for replacing unexpected gate usages
+export const extensionToGateFullRegexMap = new Map<string, RegExp>([
+    ["ts", /(?<lineStart>[\n\w_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["js", /(?<lineStart>[\n\w_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
     ["py", /(?<lineStart>[\n\w _]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
+]);
+
+// Used to replace gates as expected to be used
+export const extensionToGatePartialRegexMap = new Map<string, RegExp>([
+    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
 ]);
 
 export const extensionToConfigRegexMap = new Map<string, RegExp>([
@@ -39,14 +48,21 @@ const extensionToConfigReplace = new Map<string, string>([
 ])
 
 export function getGeneralGateRegex(extension: string) {
-    const baseRegex = extensionToGateRegexMap.get(extension).source;
+    const baseRegex = extensionToGateFullRegexMap.get(extension).source;
     return new RegExp(baseRegex, REGEX_FLAG);
 }
 
 // Creates a new regex object that searches specifically for the targetGate
-export function getSpecificGateRegex(targetGate: string, extension: string) {
+export function getSpecificFullGateRegex(targetGate: string, extension: string) {
     const gateCatchingGroup = '(?<gateName>[\\w _-]*)';
-    const regexSource = extensionToGateRegexMap.get(extension).source;
+    const regexSource = extensionToGateFullRegexMap.get(extension).source;
+    const specificRegex = regexSource.replace(gateCatchingGroup, targetGate);
+    return new RegExp(specificRegex, REGEX_FLAG);
+}
+
+export function getSpecificPartialGateRegex(targetGate: string, extension: string) {
+    const gateCatchingGroup = '(?<gateName>[\\w _-]*)';
+    const regexSource = extensionToGateFullRegexMap.get(extension).source;
     const specificRegex = regexSource.replace(gateCatchingGroup, targetGate);
     return new RegExp(specificRegex, REGEX_FLAG);
 }
@@ -171,21 +187,22 @@ export function replaceStaleGates(staleGates: string[], fileDir: string) {
         
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8')
-
         let replacedFile = fileData;
 
         for (const staleGate of staleGates) {
             // Different languages, clients, servers have differentw ways of creating gates
             // Different regex target each instead of using one big regex blob
             const newString = extensionToGateReplace.get(extension);
-            const regex = getSpecificGateRegex(staleGate, extension);
-            const gateMatch = fileData.match(regex);
+            const fullRegex = getSpecificFullGateRegex(staleGate, extension);
+            const partialRegex = getSpecificPartialGateRegex(staleGate, extension);
+            
+            const gateMatch = replacedFile.match(fullRegex);
             const matchedGroups = gateMatch.groups;
 
             if (!matchedGroups.lineStart) {// if there is no start of the line, remove the entire line
-                replacedFile = fileData.replace(regex, "");
+                replacedFile = replacedFile.replace(fullRegex, ""); // Remove the entire line
             } else {
-                replacedFile = fileData.replace(regex, newString);
+                replacedFile = replacedFile.replace(partialRegex, newString); // If the gate is used as expected, clean it normally
             }
         }
 

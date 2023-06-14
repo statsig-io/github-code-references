@@ -5,6 +5,6 @@ const dummyUser = {
     email: '12345@gmail.com',
 };
 
-statsig.checkGate(dummyUser, 'silly_gate');
+await statsig.checkGate(dummyUser, 'silly_gate')
 const thirdDummy = await statsig.checkGate(dummyUser, 'node_js_gate')
 const configTest = await statsig.getConfig(dummyUser, 'nodejs_dynamic_config');
