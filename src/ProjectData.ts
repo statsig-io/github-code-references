@@ -42,7 +42,7 @@ export default async function getProjectData() {
     let staleGates: Map<string, string[]>; // fileName, gateName
     for (let fileWithGates of allGates) {
         let updatedGates = [];
-
+``
         for (let gate of fileWithGates.gates) {
             // The gates found on local files should match gates existing on statsig api
             
@@ -59,14 +59,15 @@ export default async function getProjectData() {
                     'defaultValue': projectGate['defaultValue'],
                     'checksInPast30Days': projectGate['checksInPast30Days'],
                     'gateType': projectGate['gateType'].type,
+                    'gateTypeReason': projectGate['gateType'].type
                 }
 
                 updatedGates.push(gate) 
 
                 // Create the map
                 // if (isGateStale(gate.gateType.reason)) { Test on Temporary gates
-                console.log(gate.gateType.reason);
-                if (gate.gateType.reason == "TEMPORARY") {
+                console.log(gate.gateTypeReason);
+                if (gate.gateTypeReason == "TEMPORARY") {
                     const fileDir = fileWithGates.fileDir;
 
                     if (staleGates.has(fileDir)) {

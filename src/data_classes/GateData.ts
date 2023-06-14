@@ -4,10 +4,8 @@ export interface Gate {
     enabled: boolean;
     defaultValue: string;
     checksInPast30Days: string;
-    gateType: { 
-        'type': string,
-        'reason': string,
-    };
+    gateType: string;
+    gateTypeReason: string;
 }
 
 export default class GateData {
