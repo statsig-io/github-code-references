@@ -146,7 +146,6 @@ export default async function getProjectData() {
         console.log('Scan and Clean the Gates');
         staleGates.forEach((staleGates, fileDir) => {
             replaceStaleGates(staleGates, fileDir);
-            console.log(staleGates)
         })
 
         // Commit and update the local branch

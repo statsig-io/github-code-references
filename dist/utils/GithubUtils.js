@@ -19,6 +19,8 @@ class GithubUtils {
             auth: this.apiKey,
         });
         this.git = (0, simple_git_1.simpleGit)().clean(simple_git_1.CleanOptions.FORCE);
+        this.git.addConfig('user.name', 'Statsig-GithubCodeRefs');
+        this.git.addConfig('user.email', 'githubcoderefs@statsig.com');
         this.owner = owner;
         this.repo = repo;
         this.mainBranch = mainBranch;
