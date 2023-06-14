@@ -79,7 +79,8 @@ class GithubUtils {
     async setupBranchLocally(targetBranch) {
         // Checkout the branch!
         await this.git.fetch();
-        await this.git.checkoutLocalBranch(targetBranch);
+        console.log(this.git.branch(['-r']));
+        await this.git.checkout(targetBranch);
         const branch = await this.git.branch();
         const currentBranch = branch.current;
         console.log(currentBranch);
