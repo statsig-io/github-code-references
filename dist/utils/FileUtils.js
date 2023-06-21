@@ -172,13 +172,14 @@ function replaceStaleGates(staleGates, fileDir) {
             const fullRegex = getSpecificFullGateRegex(staleGate, extension);
             const partialRegex = getSpecificPartialGateRegex(staleGate, extension);
             const gateMatch = replacedFile.match(fullRegex);
-            console.log(gateMatch);
-            const matchedGroups = gateMatch.groups;
-            if (!matchedGroups.lineStart) { // if there is no start of the line, remove the entire line
-                replacedFile = replacedFile.replace(fullRegex, ""); // Remove the entire line
-            }
-            else {
-                replacedFile = replacedFile.replace(partialRegex, newString); // If the gate is used as expected, clean it normally
+            if (gateMatch) { // If the stale gate has already been modified on the cleaned branch, then it should not match
+                const matchedGroups = gateMatch.groups;
+                if (!matchedGroups.lineStart) { // if there is no start of the line, remove the entire line
+                    replacedFile = replacedFile.replace(fullRegex, ""); // Remove the entire line
+                }
+                else {
+                    replacedFile = replacedFile.replace(partialRegex, newString); // If the gate is used as expected, clean it normally
+                }
             }
         }
         // Write into the old file with the gates cleaned out
