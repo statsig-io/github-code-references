@@ -2,7 +2,7 @@ name: "Get Gates and Configs"
 
 on:
   schedule:
-    - cron: "*/6 * * * *"
+    - cron: "* */2 * * *"
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -25,9 +25,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
-
-      - name: NPM Install
-        run: npm install
+          
+      - name: Setup pnpm
+        run: npm install -g pnpm@^7.0
+        
+      - name: Install Dependencies
+        run: pnpm install
 
       - name: Find Feature Gates and Dynamic Configs
         id: data
