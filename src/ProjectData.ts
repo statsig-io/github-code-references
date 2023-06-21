@@ -131,6 +131,8 @@ export default async function getProjectData() {
         const mainBranch = GithubUtils.getRefName();
         const cleanBranchName = `Statsig-Cleaned-Gates`
 
+        console.log('mainBranch', mainBranch)
+
         let githubUtil = new GithubUtils(githubKey, repoOwner, repoName, mainBranch);
 
         // Set up the branch
@@ -140,6 +142,9 @@ export default async function getProjectData() {
 
         // Checkout the branch
         console.log('Checkout the Clean Branch')
+        // commit anything that currently exits (module updates)
+        console.log("Module shenanigans")
+        await githubUtil.commitLocal("Dummy update");
         await githubUtil.setupBranchLocally(cleanBranchName);
         
         // Scan and clean stale gates

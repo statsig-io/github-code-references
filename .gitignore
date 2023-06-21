@@ -1,5 +1,4 @@
 # Ignore all of node_modules
-
 *.code-workspace
 
 src/RegexTester.ts
