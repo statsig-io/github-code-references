@@ -182,6 +182,7 @@ export function replaceStaleGates(staleGates: string[], fileDir: string) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
+    console.log(staleGates, fileDir);
 
     if (SUPPORTED_EXTENSIONS.has(extension)) {
         

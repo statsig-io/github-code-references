@@ -160,6 +160,7 @@ function replaceStaleGates(staleGates, fileDir) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
+    console.log(staleGates, fileDir);
     if (SUPPORTED_EXTENSIONS.has(extension)) {
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8');
