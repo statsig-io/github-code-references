@@ -182,6 +182,7 @@ export function replaceStaleGates(staleGates: string[], fileDir: string) {
     // Split current directory based on .
     const splitDir = fileDir.split('.');
     const extension = splitDir.at(-1);
+    console.log(staleGates, fileDir);
 
     if (SUPPORTED_EXTENSIONS.has(extension)) {
         
@@ -197,12 +198,15 @@ export function replaceStaleGates(staleGates: string[], fileDir: string) {
             const partialRegex = getSpecificPartialGateRegex(staleGate, extension);
             
             const gateMatch = replacedFile.match(fullRegex);
-            const matchedGroups = gateMatch.groups;
 
-            if (!matchedGroups.lineStart) {// if there is no start of the line, remove the entire line
-                replacedFile = replacedFile.replace(fullRegex, ""); // Remove the entire line
-            } else {
-                replacedFile = replacedFile.replace(partialRegex, newString); // If the gate is used as expected, clean it normally
+            if (gateMatch) { // If the stale gate has already been modified on the cleaned branch, then it should not match
+                const matchedGroups = gateMatch.groups;
+
+                if (!matchedGroups.lineStart) {// if there is no start of the line, remove the entire line
+                    replacedFile = replacedFile.replace(fullRegex, ""); // Remove the entire line
+                } else {
+                    replacedFile = replacedFile.replace(partialRegex, newString); // If the gate is used as expected, clean it normally
+                }
             }
         }
 
