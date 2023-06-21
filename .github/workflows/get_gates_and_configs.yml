@@ -28,6 +28,9 @@ jobs:
           
       - name: Setup pnpm
         run: npm install -g pnpm@^7.0
+        
+      - name: Install Dependencies
+        run: pnpm install
 
       - name: Find Feature Gates and Dynamic Configs
         id: data
