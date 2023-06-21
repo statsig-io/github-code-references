@@ -197,6 +197,7 @@ export function replaceStaleGates(staleGates: string[], fileDir: string) {
             const partialRegex = getSpecificPartialGateRegex(staleGate, extension);
             
             const gateMatch = replacedFile.match(fullRegex);
+            console.log(gateMatch)
             const matchedGroups = gateMatch.groups;
 
             if (!matchedGroups.lineStart) {// if there is no start of the line, remove the entire line

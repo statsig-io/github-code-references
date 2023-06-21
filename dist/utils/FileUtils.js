@@ -171,6 +171,7 @@ function replaceStaleGates(staleGates, fileDir) {
             const fullRegex = getSpecificFullGateRegex(staleGate, extension);
             const partialRegex = getSpecificPartialGateRegex(staleGate, extension);
             const gateMatch = replacedFile.match(fullRegex);
+            console.log(gateMatch);
             const matchedGroups = gateMatch.groups;
             if (!matchedGroups.lineStart) { // if there is no start of the line, remove the entire line
                 replacedFile = replacedFile.replace(fullRegex, ""); // Remove the entire line
