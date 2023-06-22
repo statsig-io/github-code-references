@@ -21,10 +21,10 @@ exports.extensionToGateFullRegexMap = new Map([
 ]);
 // Used to replace gates as expected to be used
 exports.extensionToGatePartialRegexMap = new Map([
-    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
-    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
+    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
     ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
-    ["tsx", /[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["tsx", /[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
 ]);
 exports.extensionToConfigRegexMap = new Map([
     ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],

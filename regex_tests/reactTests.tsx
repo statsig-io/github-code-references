@@ -3,7 +3,7 @@
 import { useGate, useConfig } from "statsig-react";
 
 function MyComponent() {
-    const { value, isLoading } = useGate("react_gate");
+    const { value, isLoading } = useGate("react_gate").value;
     useGate("react_gate");
     const { config, isLoading } = useConfig("react_config");
   
