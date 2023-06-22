@@ -33,6 +33,7 @@ async function getProjectData() {
     // Get data only on the feature gates found within the local files
     let finalGates = [];
     let staleGates = new Map; // fileName, gateName
+    console.log('parsed gate Data', parsedGateData);
     for (let fileWithGates of allGates) {
         let updatedGates = [];
         for (let gate of fileWithGates.gates) {
@@ -40,6 +41,7 @@ async function getProjectData() {
             if (parsedGateData.has(gate.gateName)) {
                 // Get the respective gate from project data
                 let projectGate = parsedGateData.get(gate.gateName);
+                console.log("Found a gate both on api and in files");
                 // gate is of type Gate, defined in GateData.ts
                 // To add more properties change the Gate object
                 gate = {
