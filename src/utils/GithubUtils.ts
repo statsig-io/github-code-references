@@ -80,9 +80,11 @@ export default class GithubUtils {
 
         } else { 
             // If the branch does already exist, update it if it has a pull request
+            const head = `${this.owner}:${newBranchRef}`
             let pullRequestData = await this.octokit.rest.pulls.list({
                 owner: this.owner,
                 repo: this.repo,
+                head: head,
             });
 
             console.log("Get pull request data")
