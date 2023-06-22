@@ -16,9 +16,10 @@ const REGEX_FLAG = 'i';
 
 // Used to find all gates and for replacing unexpected gate usages
 export const extensionToGateFullRegexMap = new Map<string, RegExp>([
-    ["ts", /(?<lineStart>[\n\w_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
-    ["js", /(?<lineStart>[\n\w_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
-    ["py", /(?<lineStart>[\n\w _]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
+    ["ts", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["js", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["py", /(?<lineStart>[\w _]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
+    ["tsx", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
 ]);
 
 // Used to replace gates as expected to be used
@@ -26,12 +27,14 @@ export const extensionToGatePartialRegexMap = new Map<string, RegExp>([
     ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
     ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
     ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
+    ["tsx", /[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
 ]);
 
 export const extensionToConfigRegexMap = new Map<string, RegExp>([
     ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],
     ["js", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],
     ["py", /[a-zA-Z _.]*get_config\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
+    ["tsx", /[a-zA-Z_ .]*[use]*Config\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\) *;?/i],
 ]);
 
 // The values that replace stale gates or configs
@@ -39,12 +42,14 @@ const extensionToGateReplace = new Map<string, string>([
     ["ts", " false;"], // Space before each for formatting when it gets replaced in
     ["js", " false;"],
     ["py", " False"],
+    ["tsx", " false;"]
 ])
 
 const extensionToConfigReplace = new Map<string, string>([
     ["ts", " {}"], // Space before each for formatting when it gets replaced in
     ["js", " {}"],
     ["py", " {}"],
+    ["tsx", ""],
 ])
 
 export function getGeneralGateRegex(extension: string) {

@@ -4,6 +4,7 @@ import { useGate, useConfig } from "statsig-react";
 
 function MyComponent() {
     const { value, isLoading } = useGate("react_gate");
+    useGate("react_gate");
     const { config, isLoading } = useConfig("react_config");
   
     // Only required if you have not set waitForInitialization to true
