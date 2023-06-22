@@ -6,10 +6,10 @@ const Utils_1 = require("./utils/Utils");
 const GithubUtils_1 = require("./utils/GithubUtils");
 exports.FeatureGate = 'feature_gates';
 exports.DynamicConfig = 'dynamic_configs';
-function isGateStale(gateType) {
+function isGateStale(gateType, gateTypeReason) {
     const types = new Set(['STALE_PROBABLY_LAUNCHED', 'STALE_PROBABLY_UNLAUNCHED',
         'STALE_NO_RULES', 'STALE_PROBABLY_DEAD']);
-    return types.has(gateType);
+    return gateType == 'STALE' && types.has(gateTypeReason);
 }
 // Calls the endpoint using the API key and gets the projects info
 async function getProjectData() {
@@ -52,7 +52,7 @@ async function getProjectData() {
                 };
                 updatedGates.push(gate);
                 // Create the map
-                if (isGateStale(gate.gateType)) {
+                if (isGateStale(gate.gateType, gate.gateTypeReason)) {
                     const fileDir = fileWithGates.fileDir;
                     if (staleGates.has(fileDir)) {
                         staleGates.get(fileDir).push(gate.gateName);
