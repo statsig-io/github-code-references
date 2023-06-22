@@ -155,7 +155,6 @@ export function searchGates(fileDir: string) {
         // Different languages, clients, servers have differentw ways of creating gates
         // Different regex target each instead of using one big regex blob
         const regex = getGeneralGateRegex(extension);
-        console.log(`regex used:`, regex)
 
         // Loop over each line, regex search for the 
         for (let line = 0; line < lineDividedData.length; line++) {
@@ -165,7 +164,7 @@ export function searchGates(fileDir: string) {
             // If a gate exists in a file, add to the list of total gates found
             if (found) {
                 const gateName = found.groups.gateName
-
+                console.log("Gate Match Found!", found)
                 gatesFound.push({
                     'line': line.toString(), 
                     'gateName': gateName,
