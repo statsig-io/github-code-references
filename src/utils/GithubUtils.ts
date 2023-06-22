@@ -76,13 +76,16 @@ export default class GithubUtils {
 
         } else { 
             // If the branch does already exist, update it if it has a pull request
+            const head = `${this.owner}:${newBranchRef}`
             let pullRequestData = await this.octokit.rest.pulls.list({
                 owner: this.owner,
                 repo: this.repo,
+                head: head,
             });
 
+            console.log("Get pr on", head)
+
             const prList = pullRequestData.data;
-            
             if (prList.length > 0) {
                 const prNumber = prList[0].number // There sould only be 1 pr here
                 this.octokit.rest.pulls.updateBranch({
@@ -123,10 +126,12 @@ export default class GithubUtils {
     public async createPullRequest(targetBranch: string, title: string, body: string) {
         // Only one PR should exist on the target branch
 
-        // List all pulls to get the one we want
+        // List all pulls on clean branch to get the one we want
+        const head = `${this.owner}:${targetBranch}`
         let pullRequestData = await this.octokit.rest.pulls.list({
             owner: this.owner,
             repo: this.repo,
+            head: head,
         });
 
         const prList = pullRequestData.data;
