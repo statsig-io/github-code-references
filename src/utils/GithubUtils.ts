@@ -50,6 +50,8 @@ export default class GithubUtils {
         }
 
         status = status.status;
+        console.log("Try getting branch", newBranchRef);
+        console.log(status)
 
         // If it doesn't exist, create the branch
         if (status == 404) {
@@ -63,6 +65,7 @@ export default class GithubUtils {
                     Accept: 'sha',
                 }
             });
+            console.log("Grab last commit")
 
             const commitSha = latestCommit.data.sha
 
@@ -73,6 +76,7 @@ export default class GithubUtils {
                 ref: newBranchRef,
                 sha: commitSha,
             });
+            console.log("Create a new branch")
 
         } else { 
             // If the branch does already exist, update it if it has a pull request
@@ -81,8 +85,10 @@ export default class GithubUtils {
                 repo: this.repo,
             });
 
+            console.log("Get pull request data")
+
             const prList = pullRequestData.data;
-            
+            console.log(pullRequestData)
             if (prList.length > 0) {
                 const prNumber = prList[0].number // There sould only be 1 pr here
                 this.octokit.rest.pulls.updateBranch({
@@ -90,6 +96,8 @@ export default class GithubUtils {
                     repo: this.repo,
                     pull_number: prNumber,
                 });
+
+                console.log("Update the branch if it had a pull request")
             }
         }
     }
