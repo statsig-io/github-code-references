@@ -1,5 +1,6 @@
 # Ignore all of node_modules
 node_modules
+tests
 
 *.code-workspace
 

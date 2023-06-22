@@ -21,6 +21,7 @@ async function getProjectData() {
     let fileNames = await GithubUtils_1.default.getFiles(githubKey);
     let allGates = (0, FileUtils_1.getFeatureGatesInFiles)(fileNames);
     let allConfigs = (0, FileUtils_1.getDynamicConfigsInFiles)(fileNames);
+    console.log("allGates:", allGates);
     // Post request to the project with the input API key
     // Collect gates into map where the key is the gate name
     const timeout = 250000;
@@ -32,14 +33,15 @@ async function getProjectData() {
     // Get data only on the feature gates found within the local files
     let finalGates = [];
     let staleGates = new Map; // fileName, gateName
+    console.log('parsed gate Data', parsedGateData);
     for (let fileWithGates of allGates) {
         let updatedGates = [];
-        ``;
         for (let gate of fileWithGates.gates) {
             // The gates found on local files should match gates existing on statsig api
             if (parsedGateData.has(gate.gateName)) {
                 // Get the respective gate from project data
                 let projectGate = parsedGateData.get(gate.gateName);
+                console.log("Found a gate both on api and in files");
                 // gate is of type Gate, defined in GateData.ts
                 // To add more properties change the Gate object
                 gate = {
