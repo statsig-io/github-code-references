@@ -24,10 +24,10 @@ export const extensionToGateFullRegexMap = new Map<string, RegExp>([
 
 // Used to replace gates as expected to be used
 export const extensionToGatePartialRegexMap = new Map<string, RegExp>([
-    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
-    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
+    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
     ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
-    ["tsx", /[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["tsx", /[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
 ]);
 
 export const extensionToConfigRegexMap = new Map<string, RegExp>([
