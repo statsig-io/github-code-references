@@ -67,6 +67,7 @@ class GithubUtils {
                 repo: this.repo,
                 head: head,
             });
+            console.log("Get pr on", head);
             const prList = pullRequestData.data;
             if (prList.length > 0) {
                 const prNumber = prList[0].number; // There sould only be 1 pr here
@@ -101,10 +102,12 @@ class GithubUtils {
     }
     async createPullRequest(targetBranch, title, body) {
         // Only one PR should exist on the target branch
-        // List all pulls to get the one we want
+        // List all pulls on clean branch to get the one we want
+        const head = `${this.owner}:${targetBranch}`;
         let pullRequestData = await this.octokit.rest.pulls.list({
             owner: this.owner,
             repo: this.repo,
+            head: head,
         });
         const prList = pullRequestData.data;
         try {
