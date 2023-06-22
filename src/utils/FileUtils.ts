@@ -147,10 +147,11 @@ export function searchGates(fileDir: string) {
     const extension = splitDir.at(-1);
 
     if (SUPPORTED_EXTENSIONS.has(extension)) {
-        
+        console.log(`On file ${fileDir} with supported extension ${extension}`);
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8')
         const lineDividedData = fileData.split('\n')
+        console.log(lineDividedData[0])
 
         // Different languages, clients, servers have differentw ways of creating gates
         // Different regex target each instead of using one big regex blob
