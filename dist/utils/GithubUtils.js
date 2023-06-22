@@ -83,7 +83,6 @@ class GithubUtils {
     async setupBranchLocally(targetBranch) {
         // Checkout the branch!
         await this.git.fetch();
-        await this.git.stash(); // Just in case
         await this.git.checkout(targetBranch, ['-f']); // Force the swap, ignore local changes
         const branch = await this.git.branch();
         const currentBranch = branch.current;
