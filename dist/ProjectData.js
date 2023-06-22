@@ -52,8 +52,7 @@ async function getProjectData() {
                 };
                 updatedGates.push(gate);
                 // Create the map
-                // if (isGateStale(gate.gateType.reason)) { Test on Temporary gates
-                if (gate.gateType == "TEMPORARY") {
+                if (isGateStale(gate.gateType)) {
                     const fileDir = fileWithGates.fileDir;
                     if (staleGates.has(fileDir)) {
                         staleGates.get(fileDir).push(gate.gateName);
