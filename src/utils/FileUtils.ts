@@ -147,7 +147,7 @@ export function searchGates(fileDir: string) {
     const extension = splitDir.at(-1);
 
     if (SUPPORTED_EXTENSIONS.has(extension)) {
-        console.log(`On file ${fileDir} with supported extension ${extension}`);
+
         // Read within the file for the target string
         const fileData = fs.readFileSync(fileDir, 'utf-8')
         const lineDividedData = fileData.split('\n')
@@ -163,8 +163,9 @@ export function searchGates(fileDir: string) {
 
             // If a gate exists in a file, add to the list of total gates found
             if (found) {
-                const gateName = found.groups.gateName
+                console.log(`On file ${fileDir} with supported extension ${extension}`);
                 console.log("Gate Match Found!", found)
+                const gateName = found.groups.gateName
                 gatesFound.push({
                     'line': line.toString(), 
                     'gateName': gateName,
