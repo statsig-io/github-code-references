@@ -14,17 +14,17 @@ const SUPPORTED_EXTENSIONS = new Set(['ts', 'py', 'js', 'tsx']);
 const REGEX_FLAG = 'i';
 // Used to find all gates and for replacing unexpected gate usages
 exports.extensionToGateFullRegexMap = new Map([
-    ["ts", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
-    ["js", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
+    ["ts", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
+    ["js", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
     ["py", /(?<lineStart>[\w _]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
-    ["tsx", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
+    ["tsx", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
 ]);
 // Used to replace gates as expected to be used
 exports.extensionToGatePartialRegexMap = new Map([
-    ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
-    ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
+    ["ts", /[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
+    ["js", /[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
     ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
-    ["tsx", /[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
+    ["tsx", /[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
 ]);
 exports.extensionToConfigRegexMap = new Map([
     ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],
@@ -148,8 +148,6 @@ function searchGates(fileDir) {
             const found = currLine.match(regex);
             // If a gate exists in a file, add to the list of total gates found
             if (found) {
-                console.log(`On file ${fileDir} with supported extension ${extension}`);
-                console.log("Gate Match Found!", found);
                 const gateName = found.groups.gateName;
                 gatesFound.push({
                     'line': line.toString(),
