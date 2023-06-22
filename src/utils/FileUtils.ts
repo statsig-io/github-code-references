@@ -9,7 +9,7 @@ const ignoreList = new Set<string>(['.git', 'node_modules', 'README.md',
 const extensionIgnoreList = new Set<string>(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map'])
 
 // Add to these overtime
-const SUPPORTED_EXTENSIONS = new Set<string>(['ts', 'py', 'js'])
+const SUPPORTED_EXTENSIONS = new Set<string>(['ts', 'py', 'js', 'tsx'])
 
 // Regex match all found
 const REGEX_FLAG = 'i';

@@ -9,7 +9,7 @@ const ignoreList = new Set(['.git', 'node_modules', 'README.md',
     'action.yml', '.github', '.gitignore', 'package-lock.json', 'package.json', 'FileUtils.ts']);
 const extensionIgnoreList = new Set(['git', 'yaml', 'yml', 'json', 'github', 'gitignore', 'md', 'map']);
 // Add to these overtime
-const SUPPORTED_EXTENSIONS = new Set(['ts', 'py', 'js']);
+const SUPPORTED_EXTENSIONS = new Set(['ts', 'py', 'js', 'tsx']);
 // Regex match all found
 const REGEX_FLAG = 'i';
 // Used to find all gates and for replacing unexpected gate usages
