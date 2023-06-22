@@ -14,31 +14,36 @@ const SUPPORTED_EXTENSIONS = new Set(['ts', 'py', 'js']);
 const REGEX_FLAG = 'i';
 // Used to find all gates and for replacing unexpected gate usages
 exports.extensionToGateFullRegexMap = new Map([
-    ["ts", /(?<lineStart>[\n\w_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
-    ["js", /(?<lineStart>[\n\w_ ]*=)?[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
-    ["py", /(?<lineStart>[\n\w _]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
+    ["ts", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["js", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["py", /(?<lineStart>[\w _]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
+    ["tsx", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
 ]);
 // Used to replace gates as expected to be used
 exports.extensionToGatePartialRegexMap = new Map([
     ["ts", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
     ["js", /[a-zA-Z_ .]*checkGate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
     ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
+    ["tsx", /[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
 ]);
 exports.extensionToConfigRegexMap = new Map([
     ["ts", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],
     ["js", /[a-zA-Z_ .]*getConfig\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\)/i],
     ["py", /[a-zA-Z _.]*get_config\(.*, *['"]?(?<configName>[\w _-]*)['"]?\)/i],
+    ["tsx", /[a-zA-Z_ .]*[use]*Config\([\w ,]*['"]?(?<configName>[\w _-]*)['"]?\) *;?/i],
 ]);
 // The values that replace stale gates or configs
 const extensionToGateReplace = new Map([
     ["ts", " false;"],
     ["js", " false;"],
     ["py", " False"],
+    ["tsx", " false;"]
 ]);
 const extensionToConfigReplace = new Map([
     ["ts", " {}"],
     ["js", " {}"],
     ["py", " {}"],
+    ["tsx", ""],
 ]);
 function getGeneralGateRegex(extension) {
     const baseRegex = exports.extensionToGateFullRegexMap.get(extension).source;
