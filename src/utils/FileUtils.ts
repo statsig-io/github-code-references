@@ -16,10 +16,10 @@ const REGEX_FLAG = 'i';
 
 // Used to find all gates and for replacing unexpected gate usages
 export const extensionToGateFullRegexMap = new Map<string, RegExp>([
-    ["ts", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
-    ["js", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["ts", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
+    ["js", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
     ["py", /(?<lineStart>[\w _]*=)?[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
-    ["tsx", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *;?/i],
+    ["tsx", /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*[use]*Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i],
 ]);
 
 // Used to replace gates as expected to be used
