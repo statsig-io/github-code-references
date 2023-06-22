@@ -116,7 +116,7 @@ async function getProjectData() {
         await githubUtil.configureBranch(cleanBranchRef);
         // Checkout the branch
         console.log('Checkout the Clean Branch');
-        // commit anything that currently exits (module updates)
+        // Ignore any local changes, there shouldn't be any so far
         await githubUtil.setupBranchLocally(cleanBranchName);
         // Scan and clean stale gates
         console.log('Scan and Clean the Gates');
