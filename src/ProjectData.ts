@@ -122,8 +122,7 @@ export default async function getProjectData() {
     Utils.outputFinalConfigData(finalConfigs);
 
     // Create a Pull Request using GITHUB API only when scheduled (or manually ran)
-    // if (GithubUtils.isGithubEventSchedule()) {
-    if (GithubUtils.getGithubEventName() == "workflow_dispatch") {
+    if (GithubUtils.getGithubEventName() == "workflow_dispatch" || GithubUtils.isGithubEventSchedule) {
         console.log(`\n Creating a Pull Request`)
 
         const repoOwner = GithubUtils.getRepoOwner();
