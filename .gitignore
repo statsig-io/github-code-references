@@ -1,10 +1,10 @@
 # Ignore all of node_modules
 node_modules
 tests
+.vscode
 
 *.code-workspace
 
 src/RegexTester.ts
 dist/RegexTester.js
 dist/RegexTester.map
-node_modules
