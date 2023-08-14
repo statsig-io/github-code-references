@@ -1,0 +1,9 @@
+# Ignore all of node_modules
+node_modules
+tests
+
+*.code-workspace
+
+src/RegexTester.ts
+dist/RegexTester.js
+dist/RegexTester.map
