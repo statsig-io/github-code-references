@@ -4,10 +4,10 @@
   "description": "",
   "main": "dist/ProjectData.js",
   "scripts": {
-    "build": "ncc build src/ProjectData.ts"
+    "build": "ncc build src/ProjectData.ts",
     "test": "jest --config jest.config.js",
     "coverage": "jest --collectCoverage --"
-  }
+  },
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@octokit/rest": "^19.0.11",
@@ -25,5 +25,5 @@
     "ts-jest": "^29.1.0",
     "tsc": "^2.0.4",
     "typescript": "^5.1.3"
-  },
+  }
 }
