@@ -7,3 +7,4 @@ tests
 src/RegexTester.ts
 dist/RegexTester.js
 dist/RegexTester.map
+node_modules
