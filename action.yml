@@ -13,10 +13,6 @@ inputs:
     required: true
     default: ''
 
-# outputs:
-  # project-data: # id of output
-    # description: "The project data using the API Key"
-
 runs:
   using: 'node16'
   main: 'build/index.js'
