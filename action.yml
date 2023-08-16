@@ -18,5 +18,5 @@ inputs:
     # description: "The project data using the API Key"
 
 runs:
-  using: 'node12'
+  using: 'node16'
   main: 'build/index.js'
