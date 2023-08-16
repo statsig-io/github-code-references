@@ -164,6 +164,7 @@ export default class GithubUtils {
       }
     } catch (pullError) {
       console.log("Pull Request not created or updated, no new changes");
+      console.log("The Log Below will give more Details");
       console.log(pullError);
     }
   }
