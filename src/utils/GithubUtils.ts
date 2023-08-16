@@ -34,13 +34,7 @@ export default class GithubUtils {
     this.git.addConfig("user.name", "Statsig-GithubCodeRefs");
     this.git.addConfig("user.email", "githubcoderefs@statsig.com");
     this.git
-      .raw([
-        "config",
-        "--global",
-        "--add",
-        "safe.directory",
-        "/github/workspace",
-      ])
+      .raw(["config", "--global", "--add", "safe.directory", "*"])
       .then((response) => console.log("Git configuration updated:", response))
       .catch((err) => console.error("Error configuring Git:", err));
     this.owner = owner;
