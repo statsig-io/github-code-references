@@ -14,4 +14,4 @@ COPY src ./src
 COPY dist ./dist
 
 # Set the entrypoint to be the specific JavaScript file
-ENTRYPOINT ["node", "dist/Projectdata.js"]
+ENTRYPOINT ["node", "dist/ProjectData.js"]
