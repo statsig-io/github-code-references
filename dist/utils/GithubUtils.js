@@ -19,8 +19,18 @@ class GithubUtils {
             auth: this.apiKey,
         });
         this.git = (0, simple_git_1.simpleGit)().clean(simple_git_1.CleanOptions.FORCE);
-        this.git.addConfig('user.name', 'Statsig-GithubCodeRefs');
-        this.git.addConfig('user.email', 'githubcoderefs@statsig.com');
+        this.git.addConfig("user.name", "Statsig-GithubCodeRefs");
+        this.git.addConfig("user.email", "githubcoderefs@statsig.com");
+        this.git
+            .raw([
+            "config",
+            "--global",
+            "--add",
+            "safe.directory",
+            "/github/workspace",
+        ])
+            .then((response) => console.log("Git configuration updated:", response))
+            .catch((err) => console.error("Error configuring Git:", err));
         this.owner = owner;
         this.repo = repo;
         this.mainBranch = mainBranch;
@@ -47,8 +57,8 @@ class GithubUtils {
                 repo: this.repo,
                 ref: this.mainBranch,
                 headers: {
-                    Accept: 'sha',
-                }
+                    Accept: "sha",
+                },
             });
             const commitSha = latestCommit.data.sha;
             // Now create the branch based off of the latest sha
@@ -83,10 +93,10 @@ class GithubUtils {
     async setupBranchLocally(targetBranch) {
         // Checkout the branch!
         await this.git.fetch();
-        await this.git.checkout(targetBranch, ['-f']); // Force the swap, ignore local changes
+        await this.git.checkout(targetBranch, ["-f"]); // Force the swap, ignore local changes
         const branch = await this.git.branch();
         const currentBranch = branch.current;
-        console.log('On branch:', currentBranch);
+        console.log("On branch:", currentBranch);
         // Ensure recent changes exist locally
         await this.git.fetch();
         await this.git.pull();
@@ -94,11 +104,11 @@ class GithubUtils {
     // Commit any local changes to the current branch locally
     async commitLocal(commitMessage) {
         // Make changes, commit, and push
-        await this.git.add('*'); // Add all changed files
+        await this.git.add("*"); // Add all changed files
         await this.git.commit(commitMessage); // Commit the changed files
         // Push the changes to the checked out branch
         await this.git.push();
-        console.log('Commit and push cleaned gates');
+        console.log("Commit and push cleaned gates");
     }
     async createPullRequest(targetBranch, title, body) {
         // Only one PR should exist on the target branch
@@ -120,9 +130,10 @@ class GithubUtils {
                     head: targetBranch,
                     base: this.mainBranch,
                 });
-                console.log('Created a Pull Request');
+                console.log("Created a Pull Request");
             }
-            else { // PR exists, try updating
+            else {
+                // PR exists, try updating
                 const prNumber = prList[0].number; // There sould only be 1 pr here
                 await this.octokit.rest.pulls.update({
                     owner: this.owner,
@@ -131,11 +142,11 @@ class GithubUtils {
                     title: title,
                     body: body, // Kept getting errors without a body?
                 });
-                console.log('Updated a Pull Request');
+                console.log("Updated a Pull Request");
             }
         }
         catch (pullError) {
-            console.log('Pull Request not created or updated, no new changes');
+            console.log("Pull Request not created or updated, no new changes");
             console.log(pullError);
         }
     }
@@ -144,7 +155,8 @@ class GithubUtils {
         let fileList = [];
         const directory = GithubUtils.getGithubDirectory();
         // Only run on Pull Requests
-        if (!GithubUtils.isGithubEventSchedule() && !(GithubUtils.getGithubEventName() == "workflow_dispatch")) {
+        if (!GithubUtils.isGithubEventSchedule() &&
+            !(GithubUtils.getGithubEventName() == "workflow_dispatch")) {
             const pullRequestNum = GithubUtils.getPullRequestNum();
             const githubOwner = GithubUtils.getRepoOwner();
             const repoName = GithubUtils.getRepoName();
@@ -160,24 +172,24 @@ class GithubUtils {
             try {
                 result = await axios_1.default.get(`https://api.github.com/repos/${githubOwner}/${repoName}/pulls/${pullRequestNum}/files`, {
                     headers: {
-                        'Authorization': `Bearer ${githubKey}`,
-                        'Accept': 'application/vnd.github+json',
-                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${githubKey}`,
+                        Accept: "application/vnd.github+json",
+                        "Content-Type": "application/json",
                     },
                     timeout: timeout,
                     data: {
-                        'per_page': 100,
-                        'page': 1,
-                    }
+                        per_page: 100,
+                        page: 1,
+                    },
                 });
             }
             catch (e) {
                 result = e?.response;
                 throw Error(`Error Requesting after ${retries} attempts`);
             }
-            console.log('Picking up Files ☺');
+            console.log("Picking up Files ☺");
             fileList = (0, FileUtils_1.parsePullRequestData)(result?.data, directory);
-            console.log('Finished picking up Files ☺\n');
+            console.log("Finished picking up Files ☺\n");
         }
         else {
             fileList = await (0, FileUtils_1.scanFiles)(directory); // No need to do a Get request, just check locally
@@ -190,24 +202,26 @@ class GithubUtils {
     }
     // Static functions that use environment variables from Github workflow
     static getGithubDirectory() {
+        // The local directory of the workflow
         return process.env.GITHUB_WORKSPACE;
     }
     static getGithubEventName() {
+        // pullrequest, schedule, etc
         return process.env.GITHUB_EVENT_NAME;
     }
     static isGithubEventSchedule() {
-        return this.getGithubEventName() == 'schedule';
+        return this.getGithubEventName() == "schedule";
     }
     static getRepoOwner() {
-        const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
+        const repo = process.env.GITHUB_REPOSITORY.split("/"); // owner/repo
         return repo[0];
     }
     static getRepoName() {
-        const repo = process.env.GITHUB_REPOSITORY.split('/'); // owner/repo
+        const repo = process.env.GITHUB_REPOSITORY.split("/"); // owner/repo
         return repo[1];
     }
     static getPullRequestNum() {
-        const githubRef = process.env.GITHUB_REF.split('/'); // refs/pulls/pr_num/merge
+        const githubRef = process.env.GITHUB_REF.split("/"); // refs/pulls/pr_num/merge
         return githubRef[2];
     }
     static getRefName() {

@@ -13,8 +13,6 @@ RUN npm install
 COPY src ./src
 COPY dist ./dist
 
-RUN git config --global --add safe.directory /github/workspace
-
 
 # Set the entrypoint to be the specific JavaScript file
 ENTRYPOINT ["node", "dist/ProjectData.js"]
