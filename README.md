@@ -53,7 +53,7 @@ jobs:
 
       - name: Find Feature Gates and Dynamic Configs
         id: data
-        uses: ./ # Put in location to Github-Code-References/action.yml here
+        uses: statsig-io/github-code-references@main # Put in location to Github-Code-References/action.yml here
         with:
           sdk-key: ${{ secrets.SDK_KEY }}
           github-key: ${{ secrets.GH_ACCESS_TOKEN }}
