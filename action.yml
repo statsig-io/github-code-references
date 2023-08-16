@@ -1,4 +1,4 @@
-name: "Get Statsig References"
+name: 'Get Statsig References'
 description: Gathers the Project Data from an API key
 
 author: "Jairo Garciga"
