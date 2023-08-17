@@ -1,15 +1,15 @@
-name: 'Get Statsig References'
-description: Gathers the Project Data from an API key
+name: 'Statsig Github Code References'
+description: 'Gathers the Project Data from an API key'
 
-author: "jairo-statsig"
+author: 'jairo-statsig'
 
 inputs:
   sdk-key:
-    description: "The Statsig SDK key"
+    description: 'The Statsig SDK key'
     required: true
     default: ''
   github-key:
-    description: "A Github key that can access your repo to read pull request info"
+    description: 'A Github key that can access your repo to read pull request info'
     required: true
     default: ''
 
