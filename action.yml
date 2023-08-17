@@ -1,7 +1,7 @@
 name: 'Get Statsig References'
 description: Gathers the Project Data from an API key
 
-author: "Jairo Garciga"
+author: "jairo-statsig"
 
 inputs:
   sdk-key:
