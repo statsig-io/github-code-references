@@ -2,6 +2,9 @@ name: 'Statsig Github Code References'
 description: 'Gathers the Project Data from an API key'
 
 author: 'jairo-statsig'
+branding:
+  icon: 'code'
+  color: 'blue'
 
 inputs:
   sdk-key:
