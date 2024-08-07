@@ -1,15 +1,14 @@
-import { pullRequestData, invalidPullRequestData } from "./PullRequestData";
+import * as fs from "fs";
 import {
   SupportedFileExtensionsMap,
   getGeneralGateRegex,
-  getSpecificFullGateRegex,
   parsePullRequestData,
   replaceStaleConfigs,
   replaceStaleGates,
   searchConfigs,
   searchGates,
 } from "../src/utils/FileUtils";
-import * as fs from "fs";
+import { invalidPullRequestData, pullRequestData } from "./PullRequestData";
 
 const nodeTestFile = "regex_tests/nodejsTests.js";
 const pythonTestFile = "regex_tests/pythonTests.py";

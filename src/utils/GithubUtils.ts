@@ -5,12 +5,13 @@ Purposes:
 */
 
 import { Octokit } from "@octokit/rest";
-import axios, { AxiosResponse, AxiosError } from "axios";
-import axiosRetry from "axios-retry";
-import { simpleGit, SimpleGit, CleanOptions } from "simple-git";
-import { parsePullRequestData, scanFiles } from "./FileUtils";
-import { ForegroundColor, ColorReset } from "./Utils";
+import axios, { AxiosError, AxiosResponse } from "axios";
 
+import { CleanOptions, simpleGit } from "simple-git";
+import { parsePullRequestData, scanFiles } from "./FileUtils";
+import { ColorReset, ForegroundColor } from "./Utils";
+
+import axiosRetry = require("axios-retry");
 export default class GithubUtils {
   apiKey: string;
   octokit: Octokit;
