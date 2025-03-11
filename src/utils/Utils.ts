@@ -72,7 +72,11 @@ export default class Utils {
       );
     } catch (e: unknown) {
       result = (e as AxiosError)?.response;
-      throw Error(`Error Requesting after ${retries} attempts`);
+      throw Error(
+        `Error Requesting after ${retries} attempts: ${
+          (e as AxiosError).message
+        }`
+      );
     }
 
     return result;
