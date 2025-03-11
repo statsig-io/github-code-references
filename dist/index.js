@@ -42141,7 +42141,7 @@ class GithubUtils {
             }
             catch (e) {
                 result = e?.response;
-                throw Error(`Error Requesting after ${retries} attempts`);
+                throw Error(`Error Requesting after ${retries} attempts: ${e.message}`);
             }
             console.log("Picking up Files ☺");
             fileList = (0, FileUtils_1.parsePullRequestData)(result?.data, directory);
