@@ -2,9 +2,9 @@
   "name": "github-code-references",
   "version": "1.0.0",
   "description": "",
-  "main": "dist/ProjectData.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "ncc build src/ProjectData.ts",
+    "build": "ncc build src/index.ts",
     "test": "jest --config jest.config.js",
     "coverage": "jest --collectCoverage --"
   },
