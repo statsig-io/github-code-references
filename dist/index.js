@@ -41718,11 +41718,11 @@ const REGEX_FLAG = "i";
 exports.extensionToGateFullRegexMap = new Map([
     [
         "ts",
-        /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
+        /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:useGate(Value)?|checkGate)\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
     ],
     [
         "js",
-        /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
+        /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:useGate(Value)?|checkGate)\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
     ],
     [
         "py",
@@ -41730,23 +41730,23 @@ exports.extensionToGateFullRegexMap = new Map([
     ],
     [
         "tsx",
-        /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
+        /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:useGate(Value)?|checkGate)\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
     ],
 ]);
 // Used to replace gates as expected to be used
 exports.extensionToGatePartialRegexMap = new Map([
     [
         "ts",
-        /[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
+        /[a-zA-Z_ .]*(?:useGate(Value)?|checkGate)\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
     ],
     [
         "js",
-        /[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
+        /[a-zA-Z_ .]*(?:useGate(Value)?|checkGate)\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
     ],
     ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
     [
         "tsx",
-        /[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
+        /[a-zA-Z_ .]*(?:useGate(Value)?|checkGate)\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
     ],
 ]);
 exports.extensionToConfigRegexMap = new Map([

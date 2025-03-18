@@ -42,11 +42,11 @@ const REGEX_FLAG = "i";
 export const extensionToGateFullRegexMap = new Map<string, RegExp>([
   [
     "ts",
-    /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
+    /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:useGate(Value)?|checkGate)\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
   ],
   [
     "js",
-    /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
+    /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:useGate(Value)?|checkGate)\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
   ],
   [
     "py",
@@ -54,7 +54,7 @@ export const extensionToGateFullRegexMap = new Map<string, RegExp>([
   ],
   [
     "tsx",
-    /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
+    /(?<lineStart>[{},\w_ ]*=)?[a-zA-Z_ .]*(?:useGate(Value)?|checkGate)\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
   ],
 ]);
 
@@ -62,16 +62,16 @@ export const extensionToGateFullRegexMap = new Map<string, RegExp>([
 export const extensionToGatePartialRegexMap = new Map<string, RegExp>([
   [
     "ts",
-    /[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
+    /[a-zA-Z_ .]*(?:useGate(Value)?|checkGate)\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
   ],
   [
     "js",
-    /[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
+    /[a-zA-Z_ .]*(?:useGate(Value)?|checkGate)\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
   ],
   ["py", /[a-zA-Z _.]*check_gate\(.*, *['"]?(?<gateName>[\w _-]*)['"]?\) */i],
   [
     "tsx",
-    /[a-zA-Z_ .]*(?:use|check)Gate\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
+    /[a-zA-Z_ .]*(?:useGate(Value)?|checkGate)\([\w ,]*['"]?(?<gateName>[\w _-]*)['"]?\) *(?:.value)?;?/i,
   ],
 ]);
 
