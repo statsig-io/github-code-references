@@ -30,8 +30,11 @@
   },
   "pnpm": {
     "overrides": {
+      "@babel/runtime": "7.26.10",
+      "@octokit/plugin-paginate-rest@11": "11.4.1",
       "cross-spawn": "7.0.5",
-      "semver": "7.5.2"
+      "semver": "7.5.2",
+      "undici": "5.28.5"
     }
   }
 }

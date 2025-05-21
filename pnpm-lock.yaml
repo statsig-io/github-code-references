@@ -5,8 +5,11 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  '@babel/runtime': 7.26.10
+  '@octokit/plugin-paginate-rest@11': 11.4.1
   cross-spawn: 7.0.5
   semver: 7.5.2
+  undici: 5.28.5
 
 dependencies:
   '@actions/core':
@@ -73,7 +76,7 @@ packages:
     resolution: {integrity: sha512-KhC/cZsq7f8I4LfZSJKgCvEwfkE8o1538VoBeoGzokVLLnbFDEAdFD3UhoMklxo2un9NJVBdANOresx7vTHlHw==}
     dependencies:
       tunnel: 0.0.6
-      undici: 5.28.4
+      undici: 5.28.5
     dev: false
 
   /@ampproject/remapping@2.3.0:
@@ -351,8 +354,8 @@ packages:
       '@babel/helper-plugin-utils': 7.24.8
     dev: true
 
-  /@babel/runtime@7.25.0:
-    resolution: {integrity: sha512-7dRy4DwXwtzBrPbZflqxnvfxLF8kdZXPkhymtDeFoFqE6ldzjQFgYTtYIFARcLEYDrqfBfYcZt1WqFxRoyC9Rw==}
+  /@babel/runtime@7.26.10:
+    resolution: {integrity: sha512-2WJMeRQPHKSPemqk/awGrAiuFfzBmOIPXKizAsVhWH9YJqLZ0H+HS4c8loHGgW6utJ3E/ejXQUsiGaQy2NZ9Fw==}
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.14.1
@@ -864,18 +867,18 @@ packages:
       '@octokit/core': 5.2.1
     dev: false
 
-  /@octokit/plugin-paginate-rest@11.3.1(@octokit/core@5.2.1):
-    resolution: {integrity: sha512-ryqobs26cLtM1kQxqeZui4v8FeznirUsksiA+RYemMPJ7Micju0WSkv50dBksTuZks9O5cg4wp+t8fZ/cLY56g==}
+  /@octokit/plugin-paginate-rest@11.4.1(@octokit/core@5.2.1):
+    resolution: {integrity: sha512-GHQGdIv6Y/I+QzYbQWLVvL6bZhDhCJcwnL381vnX82lpJy4brA3/jRwYN5Lsmc57UhjBG9vH1KvyxgqLYZZGPQ==}
     engines: {node: '>= 18'}
     peerDependencies:
-      '@octokit/core': '5'
+      '@octokit/core': '>=6'
     dependencies:
       '@octokit/core': 5.2.1
       '@octokit/types': 13.10.0
     dev: false
 
-  /@octokit/plugin-paginate-rest@11.6.0(@octokit/core@6.1.5):
-    resolution: {integrity: sha512-n5KPteiF7pWKgBIBJSk8qzoZWcUkza2O6A0za97pMGVrGfPdltxrfmfF5GucHYvHGZD8BdaZmmHGz5cX/3gdpw==}
+  /@octokit/plugin-paginate-rest@11.4.1(@octokit/core@6.1.5):
+    resolution: {integrity: sha512-GHQGdIv6Y/I+QzYbQWLVvL6bZhDhCJcwnL381vnX82lpJy4brA3/jRwYN5Lsmc57UhjBG9vH1KvyxgqLYZZGPQ==}
     engines: {node: '>= 18'}
     peerDependencies:
       '@octokit/core': '>=6'
@@ -988,7 +991,7 @@ packages:
     engines: {node: '>= 18'}
     dependencies:
       '@octokit/core': 6.1.5
-      '@octokit/plugin-paginate-rest': 11.6.0(@octokit/core@6.1.5)
+      '@octokit/plugin-paginate-rest': 11.4.1(@octokit/core@6.1.5)
       '@octokit/plugin-request-log': 5.3.1(@octokit/core@6.1.5)
       '@octokit/plugin-rest-endpoint-methods': 13.5.0(@octokit/core@6.1.5)
     dev: false
@@ -1211,7 +1214,7 @@ packages:
   /axios-retry@3.9.1:
     resolution: {integrity: sha512-8PJDLJv7qTTMMwdnbMvrLYuvB47M81wRtxQmEdV5w4rgbTXTt+vtPkXwajOfOdSyv/wZICJOC+/UhXH4aQ/R+w==}
     dependencies:
-      '@babel/runtime': 7.25.0
+      '@babel/runtime': 7.26.10
       is-retry-allowed: 2.2.0
     dev: false
 
@@ -2561,7 +2564,7 @@ packages:
       '@octokit/core': 5.2.1
       '@octokit/oauth-app': 6.1.0
       '@octokit/plugin-paginate-graphql': 4.0.1(@octokit/core@5.2.1)
-      '@octokit/plugin-paginate-rest': 11.3.1(@octokit/core@5.2.1)
+      '@octokit/plugin-paginate-rest': 11.4.1(@octokit/core@5.2.1)
       '@octokit/plugin-rest-endpoint-methods': 13.2.2(@octokit/core@5.2.1)
       '@octokit/plugin-retry': 6.1.0(@octokit/core@5.2.1)
       '@octokit/plugin-throttling': 8.2.0(@octokit/core@5.2.1)
@@ -2970,8 +2973,8 @@ packages:
   /undici-types@5.26.5:
     resolution: {integrity: sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==}
 
-  /undici@5.28.4:
-    resolution: {integrity: sha512-72RFADWFqKmUb2hmmvNODKL3p9hcB6Gt2DOQMis1SEBaV6a4MH8soBvzg+95CYhCKPFedut2JY9bMfrDl9D23g==}
+  /undici@5.28.5:
+    resolution: {integrity: sha512-zICwjrDrcrUE0pyyJc1I2QzBkLM8FINsgOrt6WjA+BgajVq9Nxu2PbFFXUrAggLfDXlZGZBVZYw7WNV5KiBiBA==}
     engines: {node: '>=14.0'}
     dependencies:
       '@fastify/busboy': 2.1.1
